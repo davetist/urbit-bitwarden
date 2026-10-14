@@ -1,0 +1,6 @@
+{
+  "runtime_restart_seconds": 1.119982667034492,
+  "refresh_grace_result": "same response retained across restart",
+  "official_cli_local_unlock_sync_decrypt_after_restart": true,
+  "retained_extension_edit": true
+}

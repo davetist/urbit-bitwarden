@@ -1,0 +1,9 @@
+{
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "enrollment_no_overflow": true,
+  "consent_no_overflow": true,
+  "owner_denial": true
+}

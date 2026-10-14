@@ -1,0 +1,7 @@
+{
+  "official_cli_sync_denied_after_connect_revoke": true,
+  "extension_grant_revoked": true,
+  "cached_local_decryption_not_erased": true,
+  "official_extension_sync_after_revocation_logged_out": true,
+  "extension_evidence": "extension-revoked.png"
+}

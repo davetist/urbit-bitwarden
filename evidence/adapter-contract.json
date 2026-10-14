@@ -1,0 +1,13 @@
+{
+  "passed": [
+    "wrong PKCE/callback/client/scope and reused code",
+    "vault/document and refresh client isolation",
+    "six overlapping refreshes return one rotation",
+    "old refresh revocation during grace cannot resurrect session",
+    "consumed refresh replay after grace invalidates family",
+    "Connect revocation checked before grace response",
+    "actual access/code expiry and refresh recovery",
+    "unauthenticated, wrong-Origin and wrong-CSRF approval rejection"
+  ],
+  "tests": "real Gall/Eyre HTTP; six concurrent refresh requests; actual elapsed expiry"
+}

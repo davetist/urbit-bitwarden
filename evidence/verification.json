@@ -1,0 +1,36 @@
+{
+  "hoon": {
+    "passed": 74,
+    "skipped": 0,
+    "execution": "stock Vere test thread returned [0 %avow 0 %noun 0]"
+  },
+  "connect_http": {
+    "passed": 43,
+    "skipped": 0
+  },
+  "web_codec": {
+    "passed": 19,
+    "skipped": 0
+  },
+  "swift_sdk": {
+    "passed": 68
+  },
+  "swift_notes_consumer": {
+    "passed": 2
+  },
+  "tooling": {
+    "passed": 61,
+    "initial_flake": "OS ephemeral port selected outside existing allowed fixture block; unchanged rerun passed"
+  },
+  "protocol": {
+    "routes": 27,
+    "schema_fixtures": 14,
+    "passed": true
+  },
+  "web_typecheck_build": true,
+  "setup_orchestration": true,
+  "fresh_native_https_fixture": true,
+  "fixture_ownership_guards": true,
+  "enrollment_retry_webcrypto_harness": true,
+  "source_boundary_checks": true
+}

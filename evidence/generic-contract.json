@@ -1,0 +1,11 @@
+{
+  "resource_consumer": "grant-probe notes",
+  "valid_exchange": true,
+  "generic_http_cannot_exchange_resource_code": true,
+  "wrong_client_pkce_callback_rejected": true,
+  "single_use_code": true,
+  "resource_isolation": true,
+  "document_scope_isolation": true,
+  "owner_revocation": true,
+  "ordinary_document_consumer_strict_refresh_preserved": true
+}

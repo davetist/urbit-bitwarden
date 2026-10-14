@@ -1,0 +1,76 @@
+::  Pure agent lifecycle tests: dummy responses only, no live credentials.
+/+  *test
+/=  vault  /app/bitwarden
+|%
++$  session  [client=@t expires=@da access=@ux refresh=@ux consumed=(set @ux)]
++$  state
+  $:  %0  account=json  signing-key=@  origin=@t
+      sessions=(map @t session)  ciphers=(map @t json)  folders=(map @t json)
+      serial=@ud  revision=@da
+      cache=(map @t [old=@ux until=@da response=json])
+      csrf=(map @ux [token=@ux expires=@da])
+  ==
+++  clock
+  |=  now=@da
+  =/  bowl=bowl:gall  *bowl:gall
+  bowl(now now, our ~zod, src ~zod)
+++  fixture
+  |=  [until=@da live=?]
+  =/  old=state  *state
+  =.  cache.old  (~(put by cache.old) 'sid' [0x0 until s+'dummy-response'])
+  ?.  live  old
+  old(sessions (~(put by sessions.old) 'sid' ['cli' until 0x1 0x2 ~]))
+++  loaded
+  |=  [now=@da until=@da live=?]
+  =/  agent  ~(. vault (clock now))
+  (on-load:agent !>((fixture until live)))
+++  test-load-prunes-expired-response
+  =/  result  (loaded ~2026.10.14..12.00.06 ~2026.10.14..12.00.05 &)
+  =/  agent  +.result
+  =/  saved  !<(state on-save:agent)
+  ;:  weld
+    (expect-eq !>(~) !>(cache.saved))
+    (expect-eq !>(1) !>((lent ~(tap by sessions.saved))))
+    (expect-eq !>(~) !>(-.result))
+  ==
+++  test-load-prunes-at-exact-deadline
+  =/  result  (loaded ~2026.10.14..12.00.05 ~2026.10.14..12.00.05 &)
+  =/  agent  +.result
+  (expect-eq !>(~) !>(cache:!<(state on-save:agent)))
+++  test-load-prunes-missing-session
+  =/  result  (loaded ~2026.10.14..12.00.00 ~2026.10.14..12.00.05 |)
+  =/  agent  +.result
+  (expect-eq !>(~) !>(cache:!<(state on-save:agent)))
+++  test-load-preserves-and-rearms-valid-response
+  =/  until  ~2026.10.14..12.00.05
+  =/  result  (loaded ~2026.10.14..12.00.00 until &)
+  =/  agent  +.result
+  =/  saved  !<(state on-save:agent)
+  =/  expected=(list card:agent:gall)
+    ~[[%pass /cache-expiry/sid/[(scot %da until)] %arvo %b %wait until]]
+  ;:  weld
+    (expect-eq !>(cache:(fixture until &)) !>(cache.saved))
+    (expect-eq !>(expected) !>(-.result))
+  ==
+++  wake
+  |=  [now=@da until=@da expected=@da]
+  =/  result  (loaded ~2026.10.14..12.00.00 until &)
+  =/  agent  ~(. +.result (clock now))
+  (on-arvo:agent [/cache-expiry/sid/[(scot %da expected)] [%behn %wake ~]])
+++  test-idle-wake-expires-only-response
+  =/  result  (wake ~2026.10.14..12.00.05 ~2026.10.14..12.00.05 ~2026.10.14..12.00.05)
+  =/  agent  +.result
+  =/  saved  !<(state on-save:agent)
+  ;:  weld
+    (expect-eq !>(~) !>(cache.saved))
+    (expect-eq !>(1) !>((lent ~(tap by sessions.saved))))
+  ==
+++  test-stale-wake-preserves-new-response
+  =/  result  (wake ~2026.10.14..12.00.05 ~2026.10.14..12.00.08 ~2026.10.14..12.00.05)
+  =/  agent  +.result
+  (expect-eq !>(cache:(fixture ~2026.10.14..12.00.08 &)) !>(cache:!<(state on-save:agent)))
+++  test-early-wake-preserves-response
+  =/  result  (wake ~2026.10.14..12.00.03 ~2026.10.14..12.00.05 ~2026.10.14..12.00.05)
+  =/  agent  +.result
+  (expect-eq !>(cache:(fixture ~2026.10.14..12.00.05 &)) !>(cache:!<(state on-save:agent)))
+--

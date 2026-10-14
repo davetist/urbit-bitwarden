@@ -1,0 +1,15 @@
+{
+  "cli": {
+    "url": "https://github.com/bitwarden/clients/releases/download/cli-v2026.9.1/bw-macos-arm64-2026.9.1.zip",
+    "sha256": "9f52edf5fb855e277315c1106f1bae326a87c41b425a4c0e00fd1440e77fa0a6"
+  },
+  "browser": {
+    "url": "https://github.com/bitwarden/clients/releases/download/browser-v2026.9.3/dist-chrome-2026.9.3.zip",
+    "sha256": "7185bad74d44b1d7e81b3dc9858a206bf9debff272d7e5bfc7f56a4b9d942ca0"
+  },
+  "runtime": {
+    "version": "4.6",
+    "sha256": "1794e75c15162298d43c1e5e2e4f643e989caf04360562af170050a0d919f1ce",
+    "source": "https://github.com/urbit/vere/releases/tag/vere-v4.6"
+  }
+}

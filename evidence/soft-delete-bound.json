@@ -1,0 +1,4 @@
+{
+  "soft_delete_bound": true,
+  "rejected_mutation_atomic": true
+}

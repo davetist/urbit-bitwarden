@@ -1,0 +1,17 @@
+{
+  "cli": {
+    "archive_sha256": "9f52edf5fb855e277315c1106f1bae326a87c41b425a4c0e00fd1440e77fa0a6",
+    "extracted_files_compared": 1,
+    "unmodified": true
+  },
+  "browser": {
+    "archive_sha256": "7185bad74d44b1d7e81b3dc9858a206bf9debff272d7e5bfc7f56a4b9d942ca0",
+    "extracted_files_compared": 191,
+    "unmodified": true
+  },
+  "runtime": {
+    "version": "4.6",
+    "sha256": "1794e75c15162298d43c1e5e2e4f643e989caf04360562af170050a0d919f1ce",
+    "stock": true
+  }
+}

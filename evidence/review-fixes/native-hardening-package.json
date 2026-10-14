@@ -1,0 +1,20 @@
+{
+  "date": "2026-10-14",
+  "fixture": "review-fixes",
+  "installation": "extracted source archive into existing owned fixture",
+  "fresh_machine_setup": false,
+  "source_sha256": {
+    "integrations/bitwarden/desk/app/bitwarden.hoon": "5710c056f0d288c599af5b2d0d7411240bd098841292b5cf5bba692ef3012f9c",
+    "integrations/bitwarden/desk/tests/bitwarden/cache.hoon": "9035986cca5b84a79adac336e3da9c8eee3802e36485db22a45b0fe1decfbf20",
+    "integrations/bitwarden/scripts/test_official_lifecycle.py": "ca1a9a8c0941ae173ba3d9f538f8c0734f2385f8133aaa38d669e92bc5420bc5"
+  },
+  "installed_native_cache_tests_passed": 7,
+  "installed_official_cli_lifecycle_passed": true,
+  "extension_explicit_sync_of_fresh_cli_edit_passed": true,
+  "cli_version": "2026.9.1",
+  "extension_version": "2026.9.3",
+  "browser_closed": true,
+  "review_ship_stopped": true,
+  "restricted_security_validation": "deferred by user",
+  "excluded_token_derivations": "unchanged"
+}

@@ -1,0 +1,8 @@
+{
+  "passed": [
+    "adapter logout releases underlying Connect grant",
+    "stale writes, per-cipher and request-size limits",
+    "aggregate 4 MiB storage bound and hard-delete reclamation",
+    "1000 cipher bound includes soft-deleted items; hard delete frees capacity"
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "cycles": 4,
+  "restore_response": true,
+  "ciphertext_preserved": true,
+  "idempotent": true,
+  "same_second_monotonic_revisions": true,
+  "trash_count_preserved": true,
+  "adversarial_authorization_checks": "deferred"
+}

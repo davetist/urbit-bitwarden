@@ -1,0 +1,57 @@
+[
+  {
+    "path": "desk/app/connect.hoon",
+    "change": "modified",
+    "sha256": "42804b0e3d3be096435715a20824a33dbf9775ed1ea2163eb367ea6c56d2dd87"
+  },
+  {
+    "path": "desk/lib/connect-assets.hoon",
+    "change": "modified",
+    "sha256": "350589850597ecd377e5e90d7d5cb665aab65172ef14b9798abe4e3c37570246"
+  },
+  {
+    "path": "desk/lib/connect-http.hoon",
+    "change": "modified",
+    "sha256": "545134f0f6379624e09b1988253facc01894196be4076cacefe5d83cb66923a3"
+  },
+  {
+    "path": "desk/lib/connect-integrations.hoon",
+    "change": "added",
+    "sha256": "d9b763dcfabfc172ec4875401b4ed73578cc979b41013bf93f8c0ef1b03a3102"
+  },
+  {
+    "path": "desk/lib/connect-state.hoon",
+    "change": "modified",
+    "sha256": "a7e66eaac431561a01ae0fbb7378a7e77f935833bfe5fc73e5bb1336625715a4"
+  },
+  {
+    "path": "desk/mar/connect-exchange.hoon",
+    "change": "added",
+    "sha256": "535fdd1e17a304790a321ccbbe7c7812639b630c1484643ebe04fbbcd0bf37f2"
+  },
+  {
+    "path": "desk/mar/connect-revoke.hoon",
+    "change": "added",
+    "sha256": "737d58e9bda76daed0a8665f93a74e7a7e8041b90c08ac1167cd52dcaf72f4a6"
+  },
+  {
+    "path": "desk/sur/connect.hoon",
+    "change": "modified",
+    "sha256": "840ed5911b92828c1ab4bf1161a0380db419bc3723a49d285f29db9a44ccedcd"
+  },
+  {
+    "path": "desk/tests/connect/http.hoon",
+    "change": "modified",
+    "sha256": "4823142786499fe449cbcd6536596dc4cecf6dfe5a761f4a2c3f5666fd65f33d"
+  },
+  {
+    "path": "desk/tests/connect/integrations.hoon",
+    "change": "added",
+    "sha256": "1f0c64f5f9692d003d3dd365d627a0572150b22d01cce4d9ad1c95d8f54c4485"
+  },
+  {
+    "path": "desk/tests/connect/state.hoon",
+    "change": "modified",
+    "sha256": "5244f9385832dff48beb123883597d28862f4f759dd75af515c4e79a314d2667"
+  }
+]

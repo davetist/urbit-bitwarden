@@ -1,0 +1,4 @@
+{
+  "official_cli_password_prelogin_rejected": true,
+  "official_cli_wrong_callback_state_rejected_with_valid_code_and_matching_pkce_challenge": true
+}

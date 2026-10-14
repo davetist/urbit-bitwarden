@@ -1,0 +1,6 @@
+{
+  "caller_spoof_rejected": true,
+  "other_resource_rejected": true,
+  "own_resource_revoked": true,
+  "idempotent": true
+}
