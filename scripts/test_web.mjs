@@ -1,12 +1,12 @@
 // Responsive checks on the served Bitwarden desk and reusable consent.
-import {chromium}from'../../../web/node_modules/playwright/index.mjs';import fs from'node:fs';import path from'node:path';import os from'node:os';import crypto from'node:crypto';import{execFileSync}from'node:child_process';import assert from'node:assert/strict';
-const root=path.resolve(import.meta.dirname,'../../..');
+import {chromium}from'playwright';import fs from'node:fs';import path from'node:path';import os from'node:os';import crypto from'node:crypto';import{execFileSync}from'node:child_process';import assert from'node:assert/strict';
+const root=path.resolve(import.meta.dirname,'..');
 const selected=process.env.CONNECT_BW_FIXTURE||'sso';
 if(!['sso','review-fixes'].includes(selected))throw Error('Unknown fixture');
 const work=path.join(root,selected==='sso'?'.work/bitwarden-sso':'.work/bitwarden-review-fixes');
 const origin=selected==='sso'?'https://localhost:19681':'https://localhost:19781';
 const server=origin+'/apps/bitwarden';
-const evidence=path.join(root,'integrations/bitwarden/evidence',selected==='sso'?'':'review-fixes');fs.mkdirSync(evidence,{recursive:true});
+const evidence=path.join(root,'evidence',selected==='sso'?'':'review-fixes');fs.mkdirSync(evidence,{recursive:true});
 const pub=execFileSync('openssl',['x509','-in',work+'/tls/cert.pem','-pubkey','-noout']);const pin=crypto.createHash('sha256').update(execFileSync('openssl',['pkey','-pubin','-outform','DER'],{input:pub})).digest('base64');
 const executablePath=process.env.BW_BROWSER_EXECUTABLE||path.join(os.homedir(),'Library/Caches/ms-playwright/chromium-1234/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing');
 const browser=await chromium.launch({headless:true,executablePath,args:['--ignore-certificate-errors-spki-list='+pin]});

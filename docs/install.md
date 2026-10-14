@@ -4,12 +4,22 @@ The vault backend runs in Gall/Hoon; HTTPS terminates in stock Eyre/Vere. Python
 
 Use an existing ship you own, a backed-up pier, and an HTTPS hostname reachable by every intended client. Phones need a network-reachable hostname, not the desktop's `localhost`. The certificate must cover that hostname and be trusted by each client's normal trust store. This helper does not change DNS, firewall rules, listener ports or service supervisors. The checked runtime/kernel baseline is recorded in `toolchain.json`; this installer does not upgrade either one.
 
-## Select and inspect
+## Obtain the desks
 
-Extract `integrations/bitwarden/dist/connect-bitwarden-sso-source.tgz` into a new source directory. Check its published SHA-256 first; the included manifest verifies the bytes to be imported, but does not establish the publisher's identity by itself. Run the helper as the pier's operating-system owner on the same host. The existing ship must be running with its stock `.urb/conn.sock` local control socket available. The pier directory itself must be a canonical path; its `.run` may be a regular executable or a symlink to the selected regular executable. The installer does not execute that binary or follow other pier-data symlinks.
+The Bitwarden desk uses the latest independently maintained [Connect desk](https://github.com/davetist/urbit-connect). There is no pinned Connect version or Git submodule. From a checkout of this repository, build a self-contained source package:
 
 ```sh
-python3 /path/to/source/integrations/bitwarden/scripts/deploy.py \
+python3 scripts/package.py
+```
+
+The tooling obtains the latest Connect `main` sources under ignored `.work/dependencies/urbit-connect`. Set `URBIT_CONNECT_ROOT=/absolute/path/to/urbit-connect` to use a local development checkout instead. The archive includes the Bitwarden desk at `desk/` and Connect at `dependencies/urbit-connect/desk/`, plus the operator tools and licenses needed for installation. Its manifest records which Connect source was packaged for provenance; that record is not a compatibility pin. Once built, deployment needs neither Git nor a running source checkout or external service. Rebuild the package to include later Connect updates.
+
+## Select and inspect
+
+Extract `dist/urbit-bitwarden-source.tgz` into a new source directory. Check it against `dist/urbit-bitwarden-source.tgz.sha256` from the build (or a trusted published checksum when downloading a package); the included manifest verifies the bytes to be imported, but does not establish the publisher's identity by itself. Run the helper as the pier's operating-system owner on the same host. The existing ship must be running with its stock `.urb/conn.sock` local control socket available. The pier directory itself must be a canonical path; its `.run` may be a regular executable or a symlink to the selected regular executable. The installer does not execute that binary or follow other pier-data symlinks.
+
+```sh
+python3 /path/to/source/scripts/deploy.py \
   --pier /absolute/path/to/your-pier \
   --ship '~sampel-palnet' \
   --origin https://ship.example \
@@ -48,7 +58,7 @@ Prefer the ship's existing valid Eyre certificate and its existing renewal arran
 If you already have a PEM certificate chain and matching PEM private key, the installer can pass them directly to Eyre. It checks that the pair loads and requires a private key file with no group/other permissions. It does not display the key, put it in a command argument, or save another copy. This explicit command replaces Eyre's existing certificate, so use it only for the chosen ship and correct hostname:
 
 ```sh
-python3 /path/to/source/integrations/bitwarden/scripts/deploy.py \
+python3 /path/to/source/scripts/deploy.py \
   --pier /absolute/path/to/your-pier \
   --ship '~sampel-palnet' \
   --origin https://ship.example \

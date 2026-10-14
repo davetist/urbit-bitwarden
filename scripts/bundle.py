@@ -1,5 +1,5 @@
 from pathlib import Path
-ROOT=Path(__file__).resolve().parents[3];source=ROOT/'integrations/bitwarden/web';dest=ROOT/'integrations/bitwarden/desk/lib/vault-assets.hoon'
+ROOT=Path(__file__).resolve().parents[1];source=ROOT/'web';dest=ROOT/'desk/lib/vault-assets.hoon'
 entries=[]
 for path,file,mime in [('/', 'index.html','text/html'),('/sso-connector.html','index.html','text/html'),('/vault/app.js','app.js','text/javascript'),('/vault/style.css','style.css','text/css')]:
  raw=(source/file).read_bytes();digits=format(int.from_bytes(raw,'little'),'x');value='0x'+'.'.join(reversed([digits[max(0,j-4):j] for j in range(len(digits),0,-4)]))

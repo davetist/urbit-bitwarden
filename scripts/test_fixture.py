@@ -23,7 +23,7 @@ class FixtureTests(unittest.TestCase):
                 work, origin, evidence = json.loads(result.stdout)
                 self.assertEqual(Path(work), ROOT / '.work' / directory)
                 self.assertEqual(origin, f'https://localhost:{port}')
-                self.assertEqual(Path(evidence), ROOT / 'integrations/bitwarden/evidence' / ('review-fixes' if name == 'review-fixes' else ''))
+                self.assertEqual(Path(evidence), ROOT / 'evidence' / ('review-fixes' if name == 'review-fixes' else ''))
 
     def test_unknown_selection_fails_before_work(self):
         result = subprocess.run([sys.executable, '-c', 'import fixture'], cwd=SCRIPTS,
@@ -38,7 +38,7 @@ class FixtureTests(unittest.TestCase):
                    'test_adapter.py', 'test_restart.py', 'test_official_negative.py',
                    'test_native_revoke.py', 'test_hardening.py', 'test_pending.py',
                    'probe_sso.py', 'test_native_crypto.py']
-        forbidden = ['.work/bitwarden-sso', 'https://localhost:19681', 'integrations/bitwarden/evidence/']
+        forbidden = ['.work/bitwarden-sso', 'https://localhost:19681', 'evidence/']
         for name in helpers:
             with self.subTest(helper=name):
                 tree = ast.parse((SCRIPTS / name).read_text())

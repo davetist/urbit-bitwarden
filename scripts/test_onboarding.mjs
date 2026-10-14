@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import {chromium} from '../../../web/node_modules/playwright/index.mjs';
+import {chromium} from 'playwright';
 const root=path.resolve(import.meta.dirname,'..');
 const origin='https://fixture.invalid',base=origin+'/apps/bitwarden';
 const web=path.join(root,'web');

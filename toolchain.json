@@ -1,0 +1,15 @@
+{
+  "vere": {
+    "version": "4.6",
+    "archiveURL": "https://github.com/urbit/vere/releases/download/vere-v4.6/macos-aarch64.tgz",
+    "archiveSHA256": "dbe59fc917699ae0e03749fbe50ff2ab1cbc2d5b862c13585a4c64e7e9be4a37",
+    "localPath": ".work/toolchains/vere-4.6/vere-v4.6-macos-aarch64",
+    "sha256": "1794e75c15162298d43c1e5e2e4f643e989caf04360562af170050a0d919f1ce"
+  },
+  "pill": {
+    "url": "https://bootstrap.urbit.org/urbit-v4.6.pill",
+    "localPath": ".work/toolchains/urbit-v4.6.pill",
+    "sha256": "f8b08c53dd6d0aa9c4f7654f0a7bcd11e94089222888a3c99c0a10eedcbb377b"
+  },
+  "kernel": 408
+}

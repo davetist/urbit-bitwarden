@@ -3,10 +3,13 @@ Substitute infrastructure paths/control, never assertion bodies or responses.
 """
 from api import WORK,ROOT,ORIGIN,API as FixtureAPI
 from install import install,control
+from fixture import CONNECT_ROOT
+from connect_dependency import ensure_connect
 import sys,ssl,urllib.request,json,unittest,types,subprocess,os,signal,time,shutil
-SCRIPTS=ROOT/'integrations/bitwarden/scripts';TESTS=ROOT/'tests/integration';sys.path.insert(0,str(TESTS));sys.path.insert(0,str(ROOT/'scripts'))
+ensure_connect()
+SCRIPTS=ROOT/'scripts';TESTS=CONNECT_ROOT/'tests/integration';sys.path.insert(0,str(TESTS));sys.path.insert(0,str(CONNECT_ROOT/'scripts'))
 import support,targets,dev_ship
-scratch=WORK/'regression-control';shutil.copytree(ROOT/'desk',scratch/'zod/connect',dirs_exist_ok=True)
+scratch=WORK/'regression-control';shutil.copytree(CONNECT_ROOT/'desk',scratch/'zod/connect',dirs_exist_ok=True)
 class FixtureTargets:
  def require_owned(self):
   assert (WORK/'owner.json').is_file() and (WORK/'pier/.urb').is_dir();return self
@@ -28,7 +31,7 @@ def start():
   time.sleep(.25)
  raise AssertionError('Dedicated fixture did not restart')
 def run(args,*a,**kw):
- if len(args)>1 and str(args[1])==str(ROOT/'scripts/dev_ship.py'):
+ if len(args)>1 and str(args[1])==str(CONNECT_ROOT/'scripts/dev_ship.py'):
   assert args[2:]==['start'];start();return subprocess.CompletedProcess(args,0,b'',b'')
  return original_run(args,*a,**kw)
 subprocess.run=run
@@ -60,7 +63,8 @@ modules=[]
 for file in sorted(TESTS.glob('test_*.py')):
  name=file.stem;module=types.ModuleType(name);module.__file__=str(file);sys.modules[name]=module
  source=file.read_text().replace("ROOT/'.work/alpha/dev/zod/connect/app/connect.hoon'","TARGETS.state('dev')/'zod/connect/app/connect.hoon'")
- source=source.replace("ROOT / 'artifacts/alpha/reload-response.json'","ROOT / 'integrations/bitwarden/evidence/connect-reload-response.json'")
+ source=source.replace("ROOT / 'artifacts/alpha/reload-response.json'","BW_RELOAD_EVIDENCE")
+ module.__dict__['BW_RELOAD_EVIDENCE']=ROOT/'evidence/connect-reload-response.json'
  if name=='test_info':
   source=source.replace('timeout=10)',"timeout=10,context=ssl.create_default_context(cafile=WORK/'tls/cert.pem'))")
   module.__dict__.update(ssl=ssl,WORK=WORK)
@@ -69,7 +73,7 @@ for file in sorted(TESTS.glob('test_*.py')):
 resume=sys.argv[1]if len(sys.argv)>1 else None
 results=[]
 if resume:
- previous=json.loads((ROOT/'integrations/bitwarden/evidence/connect-regressions.json').read_text())
+ previous=json.loads((ROOT/'evidence/connect-regressions.json').read_text())
  results=[r for r in previous if r['module']<resume]
 for module in modules:
  if resume and module.__name__<resume:continue
@@ -82,6 +86,6 @@ for client in original_clients:
  registration={k:client[k]for k in ['id','name','redirectURI']}
  if 'integration' in client:registration['integration']=client['integration']
  assert api.call('/connect/owner/v1/clients',registration,owner=True)[0]==200
-(ROOT/'integrations/bitwarden/evidence/connect-regressions.json').write_text(json.dumps(results,indent=2)+'\n')
+(ROOT/'evidence/connect-regressions.json').write_text(json.dumps(results,indent=2)+'\n')
 assert all(not r['errors'] and not r['failures'] and not r['skipped']for r in results)
 assert len(results)==len(modules)

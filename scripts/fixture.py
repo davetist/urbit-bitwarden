@@ -4,7 +4,9 @@ import json
 import os
 import subprocess
 
-ROOT = Path(__file__).resolve().parents[3]
+from connect_dependency import CONNECT_ROOT
+
+ROOT = Path(__file__).resolve().parents[1]
 NAME = os.environ.get('CONNECT_BW_FIXTURE', 'sso')
 if NAME == 'sso':
     WORK = ROOT / '.work/bitwarden-sso'
@@ -20,7 +22,7 @@ ORIGIN = f'https://localhost:{HTTPS_PORT}'
 BASE_PATH = '/apps/bitwarden'
 SERVER_URL = ORIGIN + BASE_PATH
 EXPECTED = {'project': str(ROOT), 'fixture': FIXTURE_ID}
-EVIDENCE = ROOT / 'integrations/bitwarden/evidence'
+EVIDENCE = ROOT / 'evidence'
 if NAME == 'review-fixes': EVIDENCE = EVIDENCE / 'review-fixes'
 
 

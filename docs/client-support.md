@@ -4,7 +4,7 @@ The Bitwarden desk is an Urbit-native personal-vault backend. Connect owns gener
 
 ## Versions and evidence boundary
 
-The current usability run exercised the following clients against `/apps/bitwarden`:
+The retained usability run from before the repository split exercised the following clients against `/apps/bitwarden`. These results retain their original scope and are not a new run against every later Connect version. Bitwarden targets the latest Connect desk; see [repository provenance](repository-split.md).
 
 | Client | Completed functional checks | Evidence |
 |---|---|---|
@@ -88,17 +88,17 @@ Expanded client-action transmission checks and journal/security validation are d
 Use the owned review fixture and its matching enrollment/client profiles. Do not run parallel CLI processes against one profile. These are functional/correctness commands, not a record that every command has passed the current changes:
 
 ```sh
-CONNECT_BW_FIXTURE=review-fixes python3 integrations/bitwarden/scripts/test_fixture.py
-CONNECT_BW_FIXTURE=review-fixes python3 integrations/bitwarden/scripts/test_start_ports.py
-CONNECT_BW_FIXTURE=review-fixes python3 integrations/bitwarden/scripts/test_token_cache.py
-CONNECT_BW_FIXTURE=review-fixes python3 integrations/bitwarden/scripts/test_refresh_compat.py
-CONNECT_BW_FIXTURE=review-fixes python3 integrations/bitwarden/scripts/test_functional_lifecycle.py
-CONNECT_BW_FIXTURE=review-fixes python3 integrations/bitwarden/scripts/test_soft_delete_bound.py
-CONNECT_BW_FIXTURE=review-fixes python3 integrations/bitwarden/scripts/test_official_lifecycle.py
-CONNECT_BW_FIXTURE=review-fixes python3 integrations/bitwarden/scripts/test_usability.py
-CONNECT_BW_FIXTURE=review-fixes python3 integrations/bitwarden/scripts/test_folder_import.py
-CONNECT_BW_FIXTURE=review-fixes python3 integrations/bitwarden/scripts/test_official_usability.py
-CONNECT_BW_FIXTURE=review-fixes node integrations/bitwarden/scripts/browser.mjs --functional-only
+CONNECT_BW_FIXTURE=review-fixes python3 scripts/test_fixture.py
+CONNECT_BW_FIXTURE=review-fixes python3 scripts/test_start_ports.py
+CONNECT_BW_FIXTURE=review-fixes python3 scripts/test_token_cache.py
+CONNECT_BW_FIXTURE=review-fixes python3 scripts/test_refresh_compat.py
+CONNECT_BW_FIXTURE=review-fixes python3 scripts/test_functional_lifecycle.py
+CONNECT_BW_FIXTURE=review-fixes python3 scripts/test_soft_delete_bound.py
+CONNECT_BW_FIXTURE=review-fixes python3 scripts/test_official_lifecycle.py
+CONNECT_BW_FIXTURE=review-fixes python3 scripts/test_usability.py
+CONNECT_BW_FIXTURE=review-fixes python3 scripts/test_folder_import.py
+CONNECT_BW_FIXTURE=review-fixes python3 scripts/test_official_usability.py
+CONNECT_BW_FIXTURE=review-fixes node scripts/browser.mjs --functional-only
 ```
 
 The browser's functional-only mode disables request/key capture. Existing mixed authorization/replay suites and journal audit remain available as historical tooling, but are outside this execution and must not be reported as newly passing. Password-protected export, Android installed-client behavior, physical devices and other desktop operating systems remain unqualified. Current native deployment/recovery, official-client workflows and CLI JSON export/import results are linked above. No CORS workaround or desktop sandbox change was needed for the tested default signed macOS client.

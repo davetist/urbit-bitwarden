@@ -1,7 +1,8 @@
 """Install source desks only on the dedicated fake ship, via atomic Clay import."""
 from pathlib import Path
 import subprocess,sys,hashlib,json
-from fixture import ROOT
+from fixture import ROOT, CONNECT_ROOT
+from connect_dependency import ensure_connect
 CONTROL=Path(__file__).with_name('control.py')
 def control(expr):
     print('Control request:',len(expr),'source characters',flush=True)
@@ -29,5 +30,7 @@ def install(name, source):
     print('Imported',name,'desk; compilation must be verified separately.')
 if __name__=='__main__':
     name=sys.argv[1] if len(sys.argv)>1 else 'connect'
-    source=ROOT/'desk' if name=='connect' else ROOT/'integrations'/name/'desk'
+    if name not in ('connect','bitwarden','grant-probe'): raise ValueError('Unexpected fixture desk')
+    if name!='bitwarden': ensure_connect()
+    source={'bitwarden':ROOT/'desk','connect':CONNECT_ROOT/'desk','grant-probe':CONNECT_ROOT/'integrations/grant-probe/desk'}[name]
     install(name,source)

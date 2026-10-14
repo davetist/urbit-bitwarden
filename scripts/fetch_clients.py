@@ -5,7 +5,7 @@ from fixture import ROOT, WORK, EVIDENCE
 EVIDENCE.mkdir(parents=True,exist_ok=True)
 p=argparse.ArgumentParser();p.add_argument('--from-directory',type=Path);args=p.parse_args()
 vendor=WORK/'vendor';vendor.mkdir(parents=True,exist_ok=True)
-manifest=json.loads((ROOT/'integrations/bitwarden/artifacts.json').read_text());verified={}
+manifest=json.loads((ROOT/'artifacts.json').read_text());verified={}
 for name in ['cli','browser']:
  item=manifest[name];archive=vendor/(name+'.zip')
  if not archive.exists():

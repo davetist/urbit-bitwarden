@@ -14,4 +14,4 @@ assert A.call('/connect/owner/v1/revoke',{'sessionId':sid},owner=True)[0]==200
 sid=login('notes-native','http://localhost:18065/callback','notes:read');revoke('grant-probe',sid);assert scry('connect','integration/grant-probe/'+sid)is None
 revoke('grant-probe',sid)
 print('PASS resource revoke checks kernel caller provenance and session ownership; repeat revoke is idempotent')
-(ROOT/'integrations/bitwarden/evidence/resource-revoke.json').write_text(json.dumps({'caller_spoof_rejected':True,'other_resource_rejected':True,'own_resource_revoked':True,'idempotent':True},indent=2)+'\n')
+(ROOT/'evidence/resource-revoke.json').write_text(json.dumps({'caller_spoof_rejected':True,'other_resource_rejected':True,'own_resource_revoked':True,'idempotent':True},indent=2)+'\n')

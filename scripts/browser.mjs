@@ -1,13 +1,13 @@
-import { chromium } from '../../../web/node_modules/playwright/index.mjs';
+import { chromium } from 'playwright';
 import os from 'node:os';import fs from 'node:fs';import path from 'node:path';import crypto from 'node:crypto';import {execFileSync} from 'node:child_process';
-const root=path.resolve(import.meta.dirname,'../../..');
+const root=path.resolve(import.meta.dirname,'..');
 const functionalOnly=process.argv.includes('--functional-only');
 if(functionalOnly&&process.argv.includes('--enroll'))throw Error('Functional mode uses an already-enrolled fixture; it does not capture enrollment keys.');
 const selected=process.env.CONNECT_BW_FIXTURE||'sso';
 if(!['sso','review-fixes'].includes(selected))throw Error('Unknown fixture');
 const work=path.join(root,selected==='sso'?'.work/bitwarden-sso':'.work/bitwarden-review-fixes');
 const origin=selected==='sso'?'https://localhost:19681':'https://localhost:19781';
-const evidence=path.join(root,'integrations/bitwarden/evidence',selected==='sso'?'':'review-fixes');fs.mkdirSync(evidence,{recursive:true});
+const evidence=path.join(root,'evidence',selected==='sso'?'':'review-fixes');fs.mkdirSync(evidence,{recursive:true});
 const vendor=path.join(work,'vendor');
 const pub=execFileSync('openssl',['x509','-in',work+'/tls/cert.pem','-pubkey','-noout']);
 const der=execFileSync('openssl',['pkey','-pubin','-outform','DER'],{input:pub});

@@ -10,7 +10,7 @@ A full stopped-pier backup preserves the Bitwarden account's wrapped key, encryp
 2. Select the exact stopped pier, declared ship name and a new archive path outside the pier:
 
 ```sh
-python3 integrations/bitwarden/scripts/backup.py create \
+python3 scripts/backup.py create \
   --pier /absolute/path/to/your-pier --ship '~sampel-palnet' \
   --output /private/backups/sampel-palnet-2026-10-14.tgz
 ```
@@ -18,7 +18,7 @@ python3 integrations/bitwarden/scripts/backup.py create \
 3. Verify the archive whenever it has been copied to another storage device:
 
 ```sh
-python3 integrations/bitwarden/scripts/backup.py verify \
+python3 scripts/backup.py verify \
   --archive /private/backups/sampel-palnet-2026-10-14.tgz
 ```
 
@@ -31,7 +31,7 @@ After a routine backup, restart the original ship normally. **That restart means
 ## Restore into an isolated new directory
 
 ```sh
-python3 integrations/bitwarden/scripts/backup.py restore \
+python3 scripts/backup.py restore \
   --archive /private/backups/sampel-palnet-2026-10-14.tgz \
   --target /private/recovery/sampel-palnet-restored
 ```

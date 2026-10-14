@@ -7,4 +7,4 @@ for scope in ['api','offline_access']:
  assert s==400 and b['error']=='invalid_grant'
  assert sessions()==before
 print('PASS incomplete owner-approved scopes reject login and release Connect grant')
-(ROOT/'integrations/bitwarden/evidence/partial-scope.json').write_text(json.dumps({'api_only_rejected_and_released':True,'offline_access_only_rejected_and_released':True},indent=2)+'\n')
+(ROOT/'evidence/partial-scope.json').write_text(json.dumps({'api_only_rejected_and_released':True,'offline_access_only_rejected_and_released':True},indent=2)+'\n')

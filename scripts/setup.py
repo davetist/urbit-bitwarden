@@ -8,6 +8,7 @@ import sys
 import tarfile
 import urllib.request
 from fixture import ROOT, WORK, ORIGIN, owned, running_process
+from connect_dependency import ensure_connect
 
 SCRIPTS = Path(__file__).resolve().parent
 
@@ -24,6 +25,7 @@ def prepare():
     # Detect unsupported syntax before acquiring resources or booting a ship.
     for script in SCRIPTS.glob('*.py'):
         compile(script.read_text(), str(script), 'exec')
+    ensure_connect(refresh=True)
     cfg = json.loads((ROOT / 'toolchain.json').read_text())
     for name in ('vere', 'pill'):
         item = cfg[name]; target = ROOT / item['localPath']
@@ -42,9 +44,9 @@ def prepare():
         if hashlib.sha256(target.read_bytes()).hexdigest() != item['sha256']:
             raise RuntimeError(name + ' checksum mismatch')
     run('fetch_clients.py')
-    if not (ROOT / 'web/node_modules/playwright').exists():
-        subprocess.run(['npm', 'ci'], cwd=ROOT / 'web', check=True)
-    subprocess.run(['npx', '--yes', 'playwright@1.62.1', 'install', 'chromium', '--no-shell'], cwd=ROOT / 'web', check=True)
+    if not (ROOT / 'node_modules/playwright').exists():
+        subprocess.run(['npm', 'ci'], cwd=ROOT, check=True)
+    subprocess.run(['npx', '--yes', 'playwright@1.62.1', 'install', 'chromium', '--no-shell'], cwd=ROOT, check=True)
     # Official CLI browser opener capture is test infrastructure, not a server.
     bindir = WORK / 'bin'; bindir.mkdir(exist_ok=True)
     shim = bindir / 'open'

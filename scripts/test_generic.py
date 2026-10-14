@@ -23,5 +23,5 @@ s,rot,_=api.call('/connect/oauth/token',{'grant_type':'refresh_token','client_id
 assert api.call('/connect/oauth/token',{'grant_type':'refresh_token','client_id':'notes-document','refresh_token':auth['refresh_token']},form=True)[0]==400
 assert api.call('/connect/v1/collections/notes',token=rot['access_token'])[0]==401
 report={'resource_consumer':'grant-probe notes','valid_exchange':True,'generic_http_cannot_exchange_resource_code':True,'wrong_client_pkce_callback_rejected':True,'single_use_code':True,'resource_isolation':True,'document_scope_isolation':True,'owner_revocation':True,'ordinary_document_consumer_strict_refresh_preserved':True}
-(ROOT/'integrations/bitwarden/evidence/generic-contract.json').write_text(json.dumps(report,indent=2)+'\n')
+(ROOT/'evidence/generic-contract.json').write_text(json.dumps(report,indent=2)+'\n')
 print('PASS independent notes resource, PKCE/callback/client binding, single-use codes, isolation, revocation and unchanged document-client refresh.')

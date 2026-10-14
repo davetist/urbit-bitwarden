@@ -16,7 +16,7 @@ import urllib.parse
 
 from noun import atom, cell, jam
 
-DESKS = {'connect': 'desk', 'bitwarden': 'integrations/bitwarden/desk'}
+DESKS = {'connect': 'dependencies/urbit-connect/desk', 'bitwarden': 'desk'}
 ROUTES = {'/connect': 'connect', '/apps/connect': 'connect', '/apps/bitwarden': 'bitwarden'}
 
 

@@ -2,11 +2,13 @@
 
 This native Bitwarden Gall desk connects official Bitwarden clients to Connect's reusable local-resource authorization through Enterprise SSO. The backend implements CLI, browser-extension, desktop and mobile client contracts; the exact versions and completed acceptance checks are listed in [client support](docs/client-support.md). Stock Vere 4.6, Gall, Hoon and native Eyre HTTPS serve every production request. Python/Node scripts provide local installation, backup and development/verification tooling; no auth backend, reverse proxy, Bitwarden server library, Vaultwarden code or runtime fork is required.
 
-Connect owns registration, PKCE authorization codes, ship-owner consent and live grant revocation. The Bitwarden desk owns the `cli`/`browser`/`desktop`/`mobile` IDs, `api offline_access` scope, JWT claims, encrypted vault API and bounded refresh retry. See [the generic contract](../../docs/resource-integrations.md).
+Connect owns registration, PKCE authorization codes, ship-owner consent and live grant revocation. The Bitwarden desk owns the `cli`/`browser`/`desktop`/`mobile` IDs, `api offline_access` scope, JWT claims, encrypted vault API and bounded refresh retry. See [the generic contract](https://github.com/davetist/urbit-connect/blob/main/docs/resource-integrations.md).
 
 Previous hardening changes and verification: [remaining native hardening](evidence/remaining-native-hardening.md). Exact client/action support and deferred journal checks: [client support](docs/client-support.md). The two separately assigned token-derivation repairs remain pending. Retention of authorization tokens that cannot decrypt or read passwords is an [accepted known limitation](docs/known-limitations.md), not a usability blocker; the current session lifetimes are retained.
 
 ## Install and connect
+
+Install this desk alongside the latest [Urbit Connect](https://github.com/davetist/urbit-connect) desk on the same ship. Connect is maintained independently; this repository has no pinned Connect version or Git submodule. Its reusable authorization features stay in Connect, while the Bitwarden desk, setup UI, tests, documentation and operator tools live here. The [repository split record](docs/repository-split.md) explains source history and the boundary of the retained evidence.
 
 Use the [installation/update guide](docs/install.md) to select an existing owned ship, verify the source package and import the Connect and Bitwarden desks through stock Clay. HTTPS terminates in native Eyre; the guide covers trusted certificates and native ACME renewal. The installer does not change the ship's DNS, ports or supervisor. Phones need a hostname reachable from the phone and a certificate trusted by the client.
 
@@ -32,20 +34,23 @@ Ordinary password sign-in remains disabled. The previously exercised CLI prelogi
 
 ## Reproduce on Apple Silicon macOS
 
-Prerequisites: Python 3.10+, Node 22.12+, npm, OpenSSL, the repository's pinned stock Vere and pill (`toolchain.json`). `web/node_modules/playwright` and Chrome for Testing 151.0.7922.34 are needed for the browser harness. Setup pins browser installation through Playwright 1.62.1 (revision 1234), independently of the newer web-test package. Client downloads are pinned in `artifacts.json`; no account or paid service is needed. The dedicated fixture lives exclusively under `.work/bitwarden-sso`, with loopback ports HTTP 19680, native HTTPS 19681 and Ames 19682. Keep this directory private: it contains synthetic credentials, cookies, tokens, keys, client profiles and journal data.
+Prerequisites: Git, Python 3.10+, Node 22.12+, npm, OpenSSL, the repository's pinned stock Vere and pill (`toolchain.json`). `node_modules/playwright` and Chrome for Testing 151.0.7922.34 are needed for the browser harness. Setup pins browser installation through Playwright 1.62.1 (revision 1234), independently of the newer web-test package. Client downloads are pinned in `artifacts.json`; no account or paid service is needed. The dedicated fixture lives exclusively under `.work/bitwarden-sso`, with loopback ports HTTP 19680, native HTTPS 19681 and Ames 19682. Keep this directory private: it contains synthetic credentials, cookies, tokens, keys, client profiles and journal data.
 
 ```sh
-python3 integrations/bitwarden/scripts/setup.py
-node integrations/bitwarden/scripts/browser.mjs --enroll
+npm ci
+python3 scripts/setup.py
+node scripts/browser.mjs --enroll
 ```
+
+Run these commands from this repository root. Setup obtains the latest Connect source from `main` into ignored `.work/dependencies/urbit-connect`; set `URBIT_CONNECT_ROOT` to an existing Connect checkout when developing both desks locally. This source checkout supports installation and generic regression tests; production requests remain entirely within the installed Urbit desks.
 
 Setup refuses occupied ports for a new fixture and never reuses other piers. The fixture certificate is trusted only by the test CLI via `NODE_EXTRA_CA_CERTS` and by the isolated browser via its exact SPKI pin; no global trust change. If Chrome disables the unpacked official release, enable Developer mode in this isolated profile at `chrome://extensions`. The harness preserves official extension files byte-for-byte. Set `BW_BROWSER_EXECUTABLE` only if the Playwright browser path is unavailable.
 
-The harness prints a private stdio control interface; it opens no debugging TCP port. Start official CLI SSO from a PTY using `python3 integrations/bitwarden/scripts/cli_sso.py`, then open the captured URL from private `cli-browser-url.json` in that same owner-authenticated browser. The PATH-only browser-opener shim captures the official URL; it does not alter client code or protocol. Approve the real UI. The CLI uses its own loopback callback listener. Extension settings should use self-hosted `https://localhost:19681/apps/bitwarden`, SSO organization `urbit-vault`, and the same email. Its official connector returns the code/state with the upstream postMessage contract.
+The harness prints a private stdio control interface; it opens no debugging TCP port. Start official CLI SSO from a PTY using `python3 scripts/cli_sso.py`, then open the captured URL from private `cli-browser-url.json` in that same owner-authenticated browser. The PATH-only browser-opener shim captures the official URL; it does not alter client code or protocol. Approve the real UI. The CLI uses its own loopback callback listener. Extension settings should use self-hosted `https://localhost:19681/apps/bitwarden`, SSO organization `urbit-vault`, and the same email. Its official connector returns the code/state with the upstream postMessage contract.
 
-After enrollment, scripts `cli_ops.py create`, `read` and `delete` use the official CLI; the password is passed only to local `unlock --passwordenv`, never in argv. `test_generic.py` expects the unrelated `notes-native` registration created by `test_policy.py`. Existing protocol, hardening, pending, restart, resource-revoke and official-negative scripts use the selected fixture. Mixed security suites remain deferred during the current usability work. `test_connect_regressions.py` removes its registrations and revokes all previous test sessions; run it last, after client acceptance. It substitutes fixture paths/control in the existing Connect HTTP tests without changing their assertions.
+After enrollment, scripts `cli_ops.py create`, `read` and `delete` use the official CLI; the password is passed only to local `unlock --passwordenv`, never in argv. `test_generic.py` expects the unrelated `notes-native` registration created by `test_policy.py`. Existing protocol, hardening, pending, restart, resource-revoke and official-negative scripts use the selected fixture. Mixed security suites remain deferred during the current usability work. `test_connect_regressions.py` removes its registrations and revokes all previous test sessions; run it last, after client acceptance. It substitutes fixture paths/control in the selected Connect checkout's HTTP tests without changing their assertions. Those regression helpers are development dependencies, not part of the running Bitwarden backend.
 
-Stop the owned fixture with `python3 integrations/bitwarden/scripts/stop.py`. No script deletes the evidence or other fixtures.
+Stop the owned fixture with `python3 scripts/stop.py`. No script deletes the evidence or other fixtures.
 
 ## Boundaries and recovery
 
@@ -61,7 +66,7 @@ Revocation prevents further server access; it cannot erase plaintext or encrypte
 
 The following is the existing audit procedure, not a check executed or authorized by the current usability work. Run it only when the separate validation restriction is lifted.
 
-Run `python3 integrations/bitwarden/scripts/audit.py` after browser enrollment and exercised client workflows, while the fixture is running and its `cli` registration still exists. The runner creates an isolated Python venv, installs pinned **lmdb 1.7.5** (read-only audit tooling, not server code), obtains a fresh probe token, exports both active Gall states through the stock local control socket without rendering their contents, verifies a native JWT against Python HMAC, and scans the raw LMDB plus decoded input events. Its prerequisites are the private files produced by setup and `browser.mjs --enroll`; the browser harness saves request traffic after each UI operation. Evidence is written to `evidence/history-audit.json`. All three positive controls—encrypted key envelope, owner cookie and issued access token—must appear in decoded events. No secret value is written to public evidence.
+Run `python3 scripts/audit.py` after browser enrollment and exercised client workflows, while the fixture is running and its `cli` registration still exists. The runner creates an isolated Python venv, installs pinned **lmdb 1.7.5** (read-only audit tooling, not server code), obtains a fresh probe token, exports both active Gall states through the stock local control socket without rendering their contents, verifies a native JWT against Python HMAC, and scans the raw LMDB plus decoded input events. Its prerequisites are the private files produced by setup and `browser.mjs --enroll`; the browser harness saves request traffic after each UI operation. Evidence is written to `evidence/history-audit.json`. All three positive controls—encrypted key envelope, owner cookie and issued access token—must appear in decoded events. No secret value is written to public evidence.
 
 The separate `test_connect_regressions.py` intentionally removes the Bitwarden client registrations. Run the audit first, or restore the exact registration policies before auditing afterward. Private logs and piers are excluded from source packaging.
 

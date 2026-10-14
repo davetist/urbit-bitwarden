@@ -1,0 +1,42 @@
+{
+  "date": "2026-10-15",
+  "scope": "Repository separation and relocated tooling; no new security qualification",
+  "originalConnectCommit": "44e919268eed9b6780a3b695f1d49a2022e0db7b",
+  "extractedBitwardenHistory": "604e673b2c7edf97a23afa4577c432891952542a",
+  "genericConnectCommitChecked": "b2c18acef796766568ad2f5318ae9a052a157438",
+  "connectCompatibility": "latest Connect desk; checked commit is provenance, not a version pin",
+  "preservation": {
+    "originalBitwardenSubtreeFiles": 134,
+    "allFilesRetained": true,
+    "bitwardenDeskWebAndHistoricalEvidenceByteIdentical": true,
+    "genericConnectDeskWebSDKAndProbeByteIdentical": true,
+    "publishedHistoryRewritten": false
+  },
+  "offlineTests": {
+    "genericSourceArchiveAndContractCopies": 5,
+    "browserOnboardingAndEnrollmentRetry": 14,
+    "fixtureLifecycleAndOfficialCLIHelperWithSyntheticProcesses": 10,
+    "deploymentContracts": 11,
+    "opaqueSyntheticBackupRestore": 7,
+    "fixtureSelectionAndOwnership": 6,
+    "portLifecycle": 3,
+    "latestConnectAndRepositoryLayout": 3,
+    "failures": 0,
+    "skips": 0
+  },
+  "nativePackageCheck": {
+    "freshDisposableFakeShip": true,
+    "installedThroughExtractedArchiveTooling": true,
+    "nativeHTTPSDiscoveryAndConfig": "passed for both desks",
+    "ownerSurfaces": "passed for both desks",
+    "servedBitwardenJavaScriptAndCSSMatchSource": true,
+    "previousPrivateFixturesModified": false
+  },
+  "dependencyCheck": "Default helper fetched latest published generic Connect main without a sibling checkout override",
+  "officialApplicationsRerun": false,
+  "officialApplicationsEvidence": "Prior client evidence preserved; native desk and browser setup source unchanged",
+  "excluded": [
+    "Two separately assigned token-derivation repairs",
+    "Restricted credential-state, journal and adversarial validation"
+  ]
+}

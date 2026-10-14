@@ -16,13 +16,13 @@ for mode in ['timeout','reload']:
    wait=pool.submit(A.call,'/identity/connect/token',form,form=True)
    time.sleep(.5);assert not wait.done()
    if mode=='reload':
-    source=WORK/'pending-reload-desk';shutil.copytree(ROOT/'integrations/bitwarden/desk',source,dirs_exist_ok=True)
+    source=WORK/'pending-reload-desk';shutil.copytree(ROOT/'desk',source,dirs_exist_ok=True)
     p=source/'app/bitwarden.hoon';p.write_text(':: Pending response regression.\n'+p.read_text());install('bitwarden',source)
    s,b,_=wait.result(timeout=34);assert s==503 and b['error']=='temporarily_unavailable',(mode,s)
  finally:hood('kiln-revive','%connect')
  time.sleep(1)
  assert sessions()==before,'orphan exchange leaked a Connect grant'
  passed.append(mode+' completes HTTP with 503 and cleans late grant')
-install('bitwarden',ROOT/'integrations/bitwarden/desk')
+install('bitwarden',ROOT/'desk')
 print('\n'.join('PASS '+x for x in passed))
 (EVIDENCE/'pending.json').write_text(json.dumps({'passed':passed},indent=2)+'\n')

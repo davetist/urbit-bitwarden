@@ -14,10 +14,10 @@ from noun import cell, jam
 
 class DeploymentTests(unittest.TestCase):
     def source(self, root):
-        files = {'desk/app/connect.hoon': b'connect source',
-                 'desk/desk.bill': b'~[%connect]',
-                 'integrations/bitwarden/desk/app/bitwarden.hoon': b'vault source',
-                 'integrations/bitwarden/desk/desk.bill': b'~[%bitwarden]'}
+        files = {'dependencies/urbit-connect/desk/app/connect.hoon': b'connect source',
+                 'dependencies/urbit-connect/desk/desk.bill': b'~[%connect]',
+                 'desk/app/bitwarden.hoon': b'vault source',
+                 'desk/desk.bill': b'~[%bitwarden]'}
         for name, value in files.items():
             path = root / name; path.parent.mkdir(parents=True, exist_ok=True); path.write_bytes(value)
         (root / 'INTEGRATION-MANIFEST.json').write_text(json.dumps({
@@ -30,15 +30,15 @@ class DeploymentTests(unittest.TestCase):
             release = deploy.load_source(root)
             self.assertEqual(set(release['desks']), {'connect', 'bitwarden'})
             self.assertEqual(sum(len(entries) for entries in release['desks'].values()), len(files))
-            (root / 'desk/app/connect.hoon').write_text('changed')
+            (root / 'dependencies/urbit-connect/desk/app/connect.hoon').write_text('changed')
             with self.assertRaisesRegex(ValueError, 'hash'): deploy.load_source(root)
 
     def test_source_refuses_unlisted_files_and_links(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory).resolve(); self.source(root)
-            extra = root / 'desk/unlisted.hoon'; extra.write_text('not in package')
+            extra = root / 'dependencies/urbit-connect/desk/unlisted.hoon'; extra.write_text('not in package')
             with self.assertRaisesRegex(ValueError, 'manifest'): deploy.load_source(root)
-            extra.unlink(); extra.symlink_to(root / 'desk/app/connect.hoon')
+            extra.unlink(); extra.symlink_to(root / 'dependencies/urbit-connect/desk/app/connect.hoon')
             with self.assertRaisesRegex(ValueError, 'symlink'): deploy.load_source(root)
 
     def test_source_root_alias_resolves_but_descendant_links_are_refused(self):
@@ -47,7 +47,7 @@ class DeploymentTests(unittest.TestCase):
             self.source(root)
             alias = base / 'selected-source'; alias.symlink_to(root, target_is_directory=True)
             self.assertEqual(deploy.load_source(alias), deploy.load_source(root))
-            source = root / 'desk/app/connect.hoon'; raw = source.read_bytes(); source.unlink()
+            source = root / 'dependencies/urbit-connect/desk/app/connect.hoon'; raw = source.read_bytes(); source.unlink()
             elsewhere = base / 'external.hoon'; elsewhere.write_bytes(raw); source.symlink_to(elsewhere)
             with self.assertRaisesRegex(ValueError, 'symlink'): deploy.load_source(alias)
 
