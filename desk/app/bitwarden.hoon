@@ -19,6 +19,23 @@
   |=  [sid=@t until=@da]
   ^-  card
   [%pass /cache-expiry/[sid]/[(scot %da until)] %arvo %b %wait until]
+++  service-origin
+  |=  value=@t
+  ^-  @t
+  ?:  =(value '')  ''
+  ?:  ?&  (gte (met 3 value) 15)
+          =('/apps/bitwarden' (crip (slag (sub (met 3 value) 15) (trip value))))
+      ==
+    value
+  (cat 3 value '/apps/bitwarden')
+++  route-cards
+  ^-  (list card)
+  ::  Eyre only disconnects a binding owned by the same original duct.
+  :~  [%pass /bind/root %arvo %e %disconnect `/]
+      [%pass /bind/api %arvo %e %disconnect `/api]
+      [%pass /bind/identity %arvo %e %disconnect `/identity]
+      [%pass /bind/vault %arvo %e %connect `/apps/bitwarden %bitwarden]
+  ==
 ++  unavailable
   |=  rid=@ta
   ^-  (list card)
@@ -36,17 +53,16 @@
     def  ~(. (default-agent this %|) bowl)
 ++  on-init
   ^-  (quip card _this)
-  :_  this
-  :~  [%pass /bind/api %arvo %e %connect `/api %bitwarden]
-      [%pass /bind/identity %arvo %e %connect `/identity %bitwarden]
-      [%pass /bind/root %arvo %e %connect `/ %bitwarden]
-  ==
+  [route-cards this]
 ++  on-save  !>(state)
 ++  on-load
   |=  old=vase
   ^-  (quip card _this)
   =.  state  !<(vault-state old)
   =.  pending  ~
+  =.  origin.state  (service-origin origin.state)
+  =?  account  &(!=(account ~) =((opt:v account 'creationDate') ~))
+    (put:v account 'creationDate' s+(iso:v revision.state))
   ::  Keep restart retries only while their original grace window is live.
   =.  cache.state
     (malt (skim ~(tap by cache.state) |=([p=@t q=[old=@ux until=@da response=json]] &((~(has by sessions) p) (lth now.bowl until.q)))))
@@ -58,7 +74,7 @@
     ^-  (list card)
     ?.  ?=([%http-response @ ~] p)  ~
     (unavailable i.t.p)
-  [(weld timers completed) this]
+  [(weld route-cards (weld timers completed)) this]
 ++  on-poke
   |=  [=mark =vase]
   ^-  (quip card _this)
@@ -85,7 +101,10 @@
   ?.  =(%handle-http-request mark)  (on-poke:def mark vase)
   =/  [rid=@ta req=inbound-request:eyre]  !<([@ta inbound-request:eyre] vase)
   ?>  (http-watch:ce sup.bowl src.bowl /http-response/[rid])
-  ?:  &(?=(^ body.request.req) (gth p.u.body.request.req 262.144))  (reply rid 413 ~)
+  ::  Official clients import the encrypted personal vault in one request.
+  =/  request-path  (head (split:v '?' url.request.req))
+  =/  body-limit  ?:(=(request-path '/apps/bitwarden/api/ciphers/import') 6.291.456 262.144)
+  ?:  &(?=(^ body.request.req) (gth p.u.body.request.req body-limit))  (reply rid 413 ~)
   =/  attempt  (mule |.(!>((handle rid req))))
   ?:  ?=(%| -.attempt)  (reply rid 400 invalid)
   !<((quip card _this) p.attempt)
@@ -175,9 +194,9 @@
     =/  fields  (form ?~(body.request.req '' q.u.body.request.req))
     =/  kind  (~(gut by fields) 'grant_type' '')
     =/  client  (~(gut by fields) 'client_id' '')
-    ?.  |(=(client 'cli') =(client 'browser'))  (reply rid 400 invalid)
+    ?.  (~(has in (silt ~['cli' 'browser' 'desktop' 'mobile'])) client)  (reply rid 400 invalid)
     =/  allowed
-      ?:  =(kind 'authorization_code')  (silt ~['scope' 'grant_type' 'client_id' 'code' 'code_verifier' 'redirect_uri' 'deviceType' 'deviceIdentifier' 'deviceName' 'devicePushToken' 'twoFactorRemember'])
+      ?:  =(kind 'authorization_code')  (silt ~['scope' 'grant_type' 'client_id' 'code' 'code_verifier' 'redirect_uri' 'deviceType' 'deviceIdentifier' 'deviceName' 'devicePushToken' 'twoFactorRemember' 'deeplinkScheme' 'username'])
       (silt ~['grant_type' 'client_id' 'refresh_token'])
     ?>  (levy ~(tap in ~(key by fields)) |=(key=@t (~(has in allowed) key)))
     ?:  =(kind 'authorization_code')
@@ -224,6 +243,7 @@
     :~  ['object' s+'profile']
         ['id' s+'00000000-0000-4000-8000-000000000001']
         ['name' s+'Urbit vault']
+        ['creationDate' (opt:v account 'creationDate')]
         ['email' (opt:v account 'email')]
         ['emailVerified' b+%.y]
         ['premium' b+%.n]
@@ -277,17 +297,9 @@
     =.  ciphers  updated
     =.  revision.state  next
     (reply rid 200 ?:(deleted ~ stored))
-  ++  save-cipher
-    |=  [rid=@ta id=@t data=json old=json]
-    ^-  (quip card _this)
-    ?.  ?=([%o *] data)  (reply rid 400 ~)
-    ?.  ?=([%s *] (opt:v data 'name'))  (reply rid 400 ~)
-    ?:  !=(~ (opt:v data 'organizationId'))  (reply rid 400 ~)
-    =/  known=json  (opt:v data 'lastKnownRevisionDate')
-    ?:  &(!=(~ old) !=(~ known) !=(known (opt:v old 'revisionDate')))
-      (reply rid 409 (pairs:enjs:format ~[['message' s+'Item changed; synchronize before editing.']]))
-    =/  next=@da  (next-time:v now.bowl revision.state)
-    =/  stamp=json  s+(iso:v next)
+  ++  cipher-record
+    |=  [id=@t data=json old=json stamp=json]
+    ^-  json
     =/  stored=json  data
     =.  stored  (put:v stored 'id' s+id)
     =.  stored  (put:v stored 'object' s+'cipherDetails')
@@ -302,6 +314,19 @@
     =.  stored  (put:v stored 'viewPassword' b+%.y)
     =.  stored  (put:v stored 'organizationUseTotp' b+%.n)
     =.  stored  (put:v stored 'permissions' (pairs:enjs:format ~[['delete' b+%.y] ['restore' b+%.y]]))
+    stored
+  ++  save-cipher
+    |=  [rid=@ta id=@t data=json old=json]
+    ^-  (quip card _this)
+    ?.  ?=([%o *] data)  (reply rid 400 ~)
+    ?.  ?=([%s *] (opt:v data 'name'))  (reply rid 400 ~)
+    ?:  !=(~ (opt:v data 'organizationId'))  (reply rid 400 ~)
+    =/  known=json  (opt:v data 'lastKnownRevisionDate')
+    ?:  &(!=(~ old) !=(~ known) !=(known (opt:v old 'revisionDate')))
+      (reply rid 409 (pairs:enjs:format ~[['message' s+'Item changed; synchronize before editing.']]))
+    =/  next=@da  (next-time:v now.bowl revision.state)
+    =/  stamp=json  s+(iso:v next)
+    =/  stored=json  (cipher-record id data old stamp)
     ?:  (gth (cipher-size stored) 65.536)  (reply rid 413 ~)
     ?:  &(=(~ old) (gte (lent ~(tap by ciphers)) 1.000))  (reply rid 429 ~)
     =/  updated  (~(put by ciphers) id stored)
@@ -310,9 +335,155 @@
     =.  ciphers  updated
     =.  revision.state  next
     (reply rid 200 stored)
+  ++  fresh-id
+    |=  [number=@ud vault=(map @t json) dirs=(map @t json)]
+    ^-  [id=@t serial=@ud]
+    =/  serial  +(number)
+    ::  Preserve the existing sequence and skip identifiers from older state.
+    =/  id  (uuid:v +(serial))
+    ?:  |((~(has by vault) id) (~(has by dirs) id))
+      $(number serial)
+    [id serial]
+  ++  folder-record
+    |=  [id=@t name=json stamp=json]
+    ^-  json
+    (pairs:enjs:format ~[['object' s+'folder'] ['id' s+id] ['name' name] ['revisionDate' stamp]])
+  ++  folder-bytes
+    |=  values=(map @t json)
+    ^-  @ud
+    (roll ~(val by values) |=([value=json total=@ud] (add total (met 3 (en:json:html value)))))
+  ++  save-folder
+    |=  [rid=@ta id=@t data=json]
+    ^-  (quip card _this)
+    =/  name  (opt:v data 'name')
+    ?.  ?=([%s *] name)  (reply rid 400 ~)
+    =/  next=@da  (next-time:v now.bowl revision.state)
+    =/  stored  (folder-record id name s+(iso:v next))
+    ?:  (gth (met 3 (en:json:html stored)) 65.536)  (reply rid 413 ~)
+    =/  updated  (~(put by folders) id stored)
+    ?:  (gth (lent ~(tap by updated)) 1.000)  (reply rid 429 ~)
+    ?:  (gth (folder-bytes updated) 1.048.576)  (reply rid 413 ~)
+    =.  folders  updated
+    =.  revision.state  next
+    (reply rid 200 stored)
+  ++  remove-folders
+    |=  [rid=@ta ids=(set @t)]
+    ^-  (quip card _this)
+    =/  next=@da  (next-time:v now.bowl revision.state)
+    =.  folders  (malt (skim ~(tap by folders) |=([p=@t q=json] !(~(has in ids) p))))
+    =.  ciphers
+      %-  malt
+      %+  turn  ~(tap by ciphers)
+      |=  [p=@t q=json]
+      ^-  [@t json]
+      ?.  (~(has in ids) (str:v (opt:v q 'folderId')))  [p q]
+      [p (put:v (put:v q 'folderId' ~) 'revisionDate' s+(iso:v next))]
+    =.  revision.state  next
+    (reply rid 200 ~)
+  ++  bulk-remove-folders
+    |=  [rid=@ta data=json]
+    ^-  (quip card _this)
+    =/  ids  (opt:v data 'ids')
+    ?.  ?=([%a *] ids)  (reply rid 400 ~)
+    ?.  (levy p.ids |=(item=json ?=([%s *] item)))  (reply rid 400 ~)
+    (remove-folders rid (silt (turn p.ids str:v)))
+  ++  import-vault
+    |=  [rid=@ta data=json]
+    ^-  (quip card _this)
+    ?.  ?=([%o *] data)  (reply rid 400 ~)
+    =/  incoming  (opt:v data 'ciphers')
+    =/  directories  (opt:v data 'folders')
+    =/  links  (opt:v data 'folderRelationships')
+    ?.  ?=([%a *] incoming)  (reply rid 400 ~)
+    =?  directories  =(directories ~)  a+~
+    =?  links  =(links ~)  a+~
+    ?.  &(?=([%a *] directories) ?=([%a *] links))  (reply rid 400 ~)
+    ?:  (gth (add (lent p.incoming) (lent ~(tap by ciphers))) 1.000)  (reply rid 429 ~)
+    ?:  (gth (lent p.directories) 1.000)  (reply rid 429 ~)
+    =/  next=@da  (next-time:v now.bowl revision.state)
+    =/  stamp=json  s+(iso:v next)
+    ::  All changes stay in local candidates until the whole import succeeds.
+    =/  dirs=(map @t json)  folders
+    =/  vault=(map @t json)  ciphers
+    =/  number=@ud  serial.state
+    =/  indices=(map @ud @t)  ~
+    =/  directory-list=(list json)  p.directories
+    =/  directory-index=@ud  0
+    =/  prepared=[status=@ud dirs=(map @t json) number=@ud indices=(map @ud @t)]
+      |-
+      ?~  directory-list  [200 dirs number indices]
+      =/  item=json  i.directory-list
+      =/  name=json  (opt:v item 'name')
+      ?.  ?=([%s *] name)  [400 dirs number indices]
+      =/  hint=@t  (str:v (opt:v item 'id'))
+      ::  File hints may only reuse folders present before this request.
+      ?:  &(!=(hint '') (~(has by folders) hint))
+        $(directory-list t.directory-list, directory-index +(directory-index), indices (~(put by indices) directory-index hint))
+      =^  id=@t  number  (fresh-id number vault dirs)
+      =/  stored=json  (folder-record id name stamp)
+      ?:  (gth (met 3 (en:json:html stored)) 65.536)  [413 dirs number indices]
+      =.  dirs  (~(put by dirs) id stored)
+      ?:  (gth (lent ~(tap by dirs)) 1.000)  [429 dirs number indices]
+      ?:  (gth (folder-bytes dirs) 1.048.576)  [413 dirs number indices]
+      $(directory-list t.directory-list, directory-index +(directory-index), indices (~(put by indices) directory-index id))
+    ?.  =(200 status.prepared)  (reply rid status.prepared ~)
+    =.  dirs  dirs.prepared
+    =.  number  number.prepared
+    =.  indices  indices.prepared
+    =/  relations=(map @ud @t)  ~
+    =/  link-list=(list json)  p.links
+    =/  mapped=(unit (map @ud @t))
+      |-
+      ?~  link-list  `relations
+      =/  key=json  (opt:v i.link-list 'key')
+      =/  value=json  (opt:v i.link-list 'value')
+      ?.  &(?=([%n *] key) ?=([%n *] value))  ~
+      =/  cipher-index=(unit @ud)  (rush p.key dem)
+      =/  folder-index=(unit @ud)  (rush p.value dem)
+      ?~  cipher-index  ~
+      ?~  folder-index  ~
+      ?.  (lth u.cipher-index (lent p.incoming))  ~
+      =/  dir=(unit @t)  (~(get by indices) u.folder-index)
+      ?~  dir  ~
+      ?:  (~(has by relations) u.cipher-index)  ~
+      $(link-list t.link-list, relations (~(put by relations) u.cipher-index u.dir))
+    ?~  mapped  (reply rid 400 ~)
+    =.  relations  u.mapped
+    =/  cipher-list=(list json)  p.incoming
+    =/  cipher-index=@ud  0
+    =/  bytes=@ud  (roll ~(val by vault) |=([value=json total=@ud] (add total (cipher-size value))))
+    =/  imported=[status=@ud vault=(map @t json) number=@ud]
+      |-
+      ?~  cipher-list  [200 vault number]
+      =/  item=json  i.cipher-list
+      ?.  ?=([%o *] item)  [400 vault number]
+      ?.  ?=([%s *] (opt:v item 'name'))  [400 vault number]
+      ?:  !=(~ (opt:v item 'organizationId'))  [400 vault number]
+      =/  dir=(unit @t)  (~(get by relations) cipher-index)
+      =/  linked=json  ?~(dir item (put:v item 'folderId' s+u.dir))
+      =/  folder=json  (opt:v linked 'folderId')
+      ?:  &(!=(~ folder) !(~(has by dirs) (str:v folder)))  [400 vault number]
+      =^  id=@t  number  (fresh-id number vault dirs)
+      =/  stored=json  (cipher-record id linked ~ stamp)
+      =/  size=@ud  (cipher-size stored)
+      ?:  (gth size 65.536)  [413 vault number]
+      =.  bytes  (add bytes size)
+      ?:  (gth bytes 4.194.304)  [413 vault number]
+      $(cipher-list t.cipher-list, cipher-index +(cipher-index), vault (~(put by vault) id stored))
+    ?.  =(200 status.imported)  (reply rid status.imported ~)
+    =.  folders  dirs
+    =.  ciphers  vault.imported
+    =.  serial.state  number.imported
+    =.  revision.state  next
+    (reply rid 200 ~)
   ++  handle
     |=  [rid=@ta req=inbound-request:eyre]
     ^-  (quip card _this)
+    =/  original  (head (split:v '?' url.request.req))
+    ?.  |(=(original '/apps/bitwarden') =('/apps/bitwarden/' (crip (scag 16 (trip original)))))
+      (reply rid 404 ~)
+    =/  local-url  (crip (slag 15 (trip url.request.req)))
+    =.  req  req(url.request ?:(=(local-url '') '/' local-url))
     =/  url  (head (split:v '?' url.request.req))
     =/  method  method.request.req
     =/  headers  header-list.request.req
@@ -332,7 +503,7 @@
         =.  csrf.state  (malt (skim ~(tap by csrf.state) |=([p=@ux q=[token=@ux expires=@da]] (gth expires.q now.bowl))))
         ?:  (gte (lent ~(tap by csrf.state)) 8)  (reply rid 429 ~)
         =.  csrf.state  (~(put by csrf.state) context [(shax csrf) (add now.bowl ~m30)])
-        (reply rid 200 (pairs:enjs:format ~[['csrf' s+csrf] ['enrolled' b+!=(account ~)]]))
+        (reply rid 200 (pairs:enjs:format ~[['csrf' s+csrf] ['enrolled' b+!=(account ~)] ['email' (opt:v account 'email')] ['webVaultURL' s+(service-origin (cat 3 'https://' (fall (get-header:http 'host' headers) '')))]]))
       ?.  &(=('/vault/enroll' url) =(method %'POST') =(account ~))  (reply rid 409 ~)
       =/  proof  (~(get by csrf.state) context)
       ?>  ?=(^ proof)
@@ -348,7 +519,7 @@
       ?>  =('2.' (crip (scag 2 (trip (str:v (get:v data 'key'))))))
       ?>  =('2.' (crip (scag 2 (trip (str:v (get:v data 'privateKey'))))))
       ?>  (lte (met 3 payload) 16.384)
-      =.  state  state(account data, origin origin, signing-key (shas %vault-sign eny.bowl), revision now.bowl)
+      =.  state  state(account (put:v data 'creationDate' s+(iso:v now.bowl)), origin (service-origin origin), signing-key (shas %vault-sign eny.bowl), revision now.bowl)
       (reply rid 200 (pairs:enjs:format ~[['enrolled' b+%.y]]))
     ?:  =('/identity/connect/token' url)  (token rid req)
     ?:  |(=('/identity/accounts/prelogin' url) =('/identity/accounts/prelogin/password' url))
@@ -386,9 +557,9 @@
       =/  result  (reply rid 200 ~)
       [(weld (turn removed |=([p=@t q=session] (revoke-card our.bowl p))) -.result) +.result]
     ?:  =('/api/config' url)
-      =/  base  ?:(=(origin.state '') (cat 3 'https://' (fall (get-header:http 'host' headers) '')) origin.state)
+      =/  base  (service-origin ?:(=(origin.state '') (cat 3 'https://' (fall (get-header:http 'host' headers) '')) origin.state))
       =/  env  (pairs:enjs:format ~[['vault' s+base] ['api' s+(cat 3 base '/api')] ['identity' s+(cat 3 base '/identity')] ['notifications' s+(cat 3 base '/notifications')] ['sso' s+(cat 3 base '/identity')] ['cloudRegion' ~]])
-      (reply rid 200 (pairs:enjs:format ~[['object' s+'config'] ['version' s+'2026.6.0'] ['server' (pairs:enjs:format ~[['name' s+'Urbit-native Bitwarden backend']])] ['environment' env] ['featureStates' o+~] ['settings' (pairs:enjs:format ~[['disableUserRegistration' b+%.y]])]]))
+      (reply rid 200 (pairs:enjs:format ~[['object' s+'config'] ['version' s+'2026.6.0'] ['server' (pairs:enjs:format ~[['name' s+'Urbit-native Bitwarden backend'] ['url' s+base]])] ['environment' env] ['featureStates' o+~] ['settings' (pairs:enjs:format ~[['disableUserRegistration' b+%.y]])]]))
     ?:  =('/api/devices/knowndevice' url)  (reply rid 200 b+%.n)
     ?:  =('/api/organizations/domain/sso/details' url)
       (reply rid 200 (pairs:enjs:format ~[['object' s+'list'] ['data' a+~] ['continuationToken' ~]]))
@@ -424,16 +595,35 @@
       ?~  body.request.req  ~
       (fall (de:json:html q.u.body.request.req) ~)
     ?+  path  (reply rid 404 ~)
+        [%api %folders ~]
+      ?:  =(%'GET' method)
+        (reply rid 200 (pairs:enjs:format ~[['object' s+'list'] ['data' a+~(val by folders)] ['continuationToken' ~]]))
+      ?:  =(%'DELETE' method)  (bulk-remove-folders rid data)
+      ?.  =(%'POST' method)  (reply rid 405 ~)
+      =^  id=@t  serial.state  (fresh-id serial.state ciphers folders)
+      (save-folder rid id data)
+        [%api %folders %all ~]
+      ?.  =(%'DELETE' method)  (reply rid 405 ~)
+      (remove-folders rid ~(key by folders))
+        [%api %folders id=@ta ~]
+      ?.  (~(has by folders) i.t.t.path)  (reply rid 404 ~)
+      ?:  =(%'GET' method)  (reply rid 200 (~(got by folders) i.t.t.path))
+      ?:  =(%'PUT' method)  (save-folder rid i.t.t.path data)
+      ?.  =(%'DELETE' method)  (reply rid 405 ~)
+      (remove-folders rid (silt ~[i.t.t.path]))
+        [%api %ciphers %import ~]
+      ?.  =(%'POST' method)  (reply rid 405 ~)
+      (import-vault rid data)
         [%api %ciphers ~]
       ?:  =(%'GET' method)
         (reply rid 200 (pairs:enjs:format ~[['object' s+'list'] ['data' a+~(val by ciphers)] ['continuationToken' ~]]))
       ?.  =(%'POST' method)  (reply rid 405 ~)
-      =.  serial.state  +(serial.state)
-      (save-cipher rid (uuid:v +(serial.state)) data ~)
+      =^  id=@t  serial.state  (fresh-id serial.state ciphers folders)
+      (save-cipher rid id data ~)
         [%api %ciphers %create ~]
       ?.  =(%'POST' method)  (reply rid 405 ~)
-      =.  serial.state  +(serial.state)
-      (save-cipher rid (uuid:v +(serial.state)) (get:v data 'cipher') ~)
+      =^  id=@t  serial.state  (fresh-id serial.state ciphers folders)
+      (save-cipher rid id (get:v data 'cipher') ~)
         [%api %ciphers id=@ta ~]
       =/  old=(unit json)  (~(get by ciphers) i.t.t.path)
       ?~  old  (reply rid 404 ~)

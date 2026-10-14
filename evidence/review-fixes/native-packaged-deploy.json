@@ -1,0 +1,20 @@
+{
+  "ship": "~zod",
+  "origin": "https://localhost:19781",
+  "bitwardenURL": "https://localhost:19781/apps/bitwarden",
+  "manifestSHA256": "e28d0f1d6c5b21afa3dccc579e791b97e63bbb004646bab30ae6a3b6b79f5d4f",
+  "desks": [
+    "connect",
+    "bitwarden"
+  ],
+  "existingDesks": [
+    "connect",
+    "bitwarden"
+  ],
+  "applied": true,
+  "nativeSourceSHA256": {
+    "connect": "7b483ba9c0e035a5fb39b6314cd199243f9eef578d882bb779df573195c84230",
+    "bitwarden": "c9f69f946aafb1965c2458c91b7d8ca864174d1663d3f926bc2c9d4bfc645ad1"
+  },
+  "requiredIosServerUrlVerified": true
+}

@@ -1,0 +1,19 @@
+{
+  "client": "unmodified official Chrome extension 2026.9.3",
+  "server_url": "https://localhost:19781/apps/bitwarden",
+  "fresh_sso_and_native_connect_consent": true,
+  "extension_callback_return": true,
+  "local_unlock": true,
+  "automatic_initial_sync": true,
+  "explicit_sync": true,
+  "controlled_page": "http://127.0.0.1:19880/login.html",
+  "official_popup_autofill_before_edit": true,
+  "extension_name_and_password_edit_saved": true,
+  "official_cli_decrypted_edit_readback": true,
+  "official_popup_autofill_after_edit": true,
+  "form_checks": "Both form submissions verified the expected synthetic username/password without displaying the password",
+  "timed_background_sync": "source-confirmed defaults; not timed in this run",
+  "request_or_journal_inspection": false,
+  "test_profile_developer_mode_restored": true,
+  "temporary_browser_closed": true
+}

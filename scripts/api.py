@@ -1,7 +1,7 @@
 """Private fixture API with redirects disabled and certificate verification."""
 import json,ssl,urllib.request,urllib.error,urllib.parse,secrets,hashlib,base64
 from install import ROOT,control
-from fixture import WORK, ORIGIN, EVIDENCE
+from fixture import WORK, ORIGIN, EVIDENCE, BASE_PATH
 class NoRedirect(urllib.request.HTTPRedirectHandler):
  def redirect_request(self,*a,**kw):return None
 class API:
@@ -9,6 +9,7 @@ class API:
   self.cookie=json.loads((WORK/'owner.json').read_text())['cookie']+'; connect-fixture-tests=1';self.csrf=None
   self.opener=urllib.request.build_opener(NoRedirect(),urllib.request.HTTPSHandler(context=ssl.create_default_context(cafile=WORK/'tls/cert.pem')))
  def call(self,path,data=None,method=None,owner=False,token=None,form=False,headers=None):
+  if path.startswith(('/api/', '/identity/', '/vault/')):path=BASE_PATH+path
   h={};body=None
   if owner:h.update(Cookie=self.cookie,Origin=ORIGIN)
   if owner and self.csrf:h['X-Connect-CSRF']=self.csrf

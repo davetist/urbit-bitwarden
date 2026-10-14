@@ -1,0 +1,20 @@
+{
+  "large_single_request_import": true,
+  "existing_folder_hint_reused_without_rename": true,
+  "unknown_folder_hint_gets_server_id": true,
+  "distinct_folder_and_cipher_identifiers": true,
+  "import_folder_hint_cannot_reuse_newly_allocated_folder": true,
+  "atomic_rejection_cases": [
+    "late invalid item",
+    "invalid relationship index",
+    "duplicate relationship",
+    "item size bound",
+    "cipher count bound",
+    "folder count bound",
+    "folder aggregate bound",
+    "cipher aggregate bound"
+  ],
+  "bulk_folder_delete_preserves_ciphertext": true,
+  "delete_all_folders_preserves_ciphers": true,
+  "restricted_validation": "not run"
+}

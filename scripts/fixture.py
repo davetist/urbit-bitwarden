@@ -17,6 +17,8 @@ elif NAME == 'review-fixes':
 else:
     raise ValueError('Unknown CONNECT_BW_FIXTURE; use sso or review-fixes')
 ORIGIN = f'https://localhost:{HTTPS_PORT}'
+BASE_PATH = '/apps/bitwarden'
+SERVER_URL = ORIGIN + BASE_PATH
 EXPECTED = {'project': str(ROOT), 'fixture': FIXTURE_ID}
 EVIDENCE = ROOT / 'integrations/bitwarden/evidence'
 if NAME == 'review-fixes': EVIDENCE = EVIDENCE / 'review-fixes'

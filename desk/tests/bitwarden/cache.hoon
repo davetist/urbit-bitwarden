@@ -10,6 +10,10 @@
       cache=(map @t [old=@ux until=@da response=json])
       csrf=(map @ux [token=@ux expires=@da])
   ==
+++  cache-cards
+  |=  cards=(list card:agent:gall)
+  ^+  cards
+  (skim cards |=(c=card:agent:gall ?=([%pass [%cache-expiry *] *] c)))
 ++  clock
   |=  now=@da
   =/  bowl=bowl:gall  *bowl:gall
@@ -31,7 +35,7 @@
   ;:  weld
     (expect-eq !>(~) !>(cache.saved))
     (expect-eq !>(1) !>((lent ~(tap by sessions.saved))))
-    (expect-eq !>(~) !>(-.result))
+    (expect-eq !>(~) !>((cache-cards -.result)))
   ==
 ++  test-load-prunes-at-exact-deadline
   =/  result  (loaded ~2026.10.14..12.00.05 ~2026.10.14..12.00.05 &)
@@ -50,7 +54,7 @@
     ~[[%pass /cache-expiry/sid/[(scot %da until)] %arvo %b %wait until]]
   ;:  weld
     (expect-eq !>(cache:(fixture until &)) !>(cache.saved))
-    (expect-eq !>(expected) !>(-.result))
+    (expect-eq !>(expected) !>((cache-cards -.result)))
   ==
 ++  wake
   |=  [now=@da until=@da expected=@da]

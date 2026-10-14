@@ -1,0 +1,11 @@
+{
+  "source_stopped_before_copy": true,
+  "full_pier_hashes_verified": true,
+  "original_stopped_copy_preserved": true,
+  "restored_pier_booted": true,
+  "official_cli": "2026.9.1",
+  "local_unlock_sync_and_decrypt": true,
+  "source_and_restore_never_concurrent": true,
+  "copied_files": 19,
+  "restricted_validation": "not run"
+}

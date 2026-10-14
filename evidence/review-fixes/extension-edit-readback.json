@@ -1,0 +1,5 @@
+{
+  "official_extension_name_and_password_update": true,
+  "official_cli_sync_decrypt_readback": true,
+  "request_or_journal_inspection": false
+}

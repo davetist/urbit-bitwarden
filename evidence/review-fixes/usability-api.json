@@ -1,0 +1,14 @@
+{
+  "namespaced_routes": true,
+  "profile_creation_date": true,
+  "folders_create_rename_read_delete": true,
+  "folder_delete_preserves_items": true,
+  "personal_types_roundtrip": [
+    1,
+    2,
+    3,
+    4
+  ],
+  "import_folder_relationship": true,
+  "restricted_validation": "not run"
+}

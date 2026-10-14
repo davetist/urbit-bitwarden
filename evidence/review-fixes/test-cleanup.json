@@ -1,0 +1,12 @@
+{
+  "synthetic_runtime_stopped": true,
+  "original_stopped_recovery_pier_preserved": true,
+  "three_task_vault_records_removed": true,
+  "temporary_plaintext_export_removed": true,
+  "owned_browser_stopped": true,
+  "browser_developer_mode_restored": true,
+  "controlled_login_server_stopped": true,
+  "owned_ios_simulator_deleted": true,
+  "owned_desktop_stopped_and_native_host_url_handler_state_restored": true,
+  "original_demo_and_unrelated_files_preserved": true
+}

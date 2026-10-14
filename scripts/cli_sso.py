@@ -2,7 +2,7 @@
 import os
 import subprocess
 import json
-from fixture import WORK, ORIGIN, owned
+from fixture import WORK, SERVER_URL, owned
 
 
 def main():
@@ -18,7 +18,7 @@ def main():
     status = subprocess.run([bw, 'status'], env=env, capture_output=True, text=True)
     if status.returncode or json.loads(status.stdout).get('status') != 'unauthenticated':
         raise SystemExit('CLI profile is already authenticated or unreadable; preserve it and use a fresh fixture for new acceptance.')
-    config = subprocess.run([bw, 'config', 'server', ORIGIN], env=env, capture_output=True, text=True)
+    config = subprocess.run([bw, 'config', 'server', SERVER_URL], env=env, capture_output=True, text=True)
     if config.returncode: raise SystemExit('CLI configuration failed')
     # SSO requires an interactive terminal. Parent starts this script with a PTY.
     login = subprocess.run([bw, 'login', '--sso', 'urbit-vault'], env=env, capture_output=True, text=True)

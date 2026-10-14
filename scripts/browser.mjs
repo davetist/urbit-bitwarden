@@ -14,6 +14,7 @@ const der=execFileSync('openssl',['pkey','-pubin','-outform','DER'],{input:pub})
 const pin=crypto.createHash('sha256').update(der).digest('base64');
 const browser=process.env.BW_BROWSER_EXECUTABLE||path.join(os.homedir(),'Library/Caches/ms-playwright/chromium-1234/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing');
 const context=await chromium.launchPersistentContext(work+'/browser-profile',{headless:false,executablePath:browser,ignoreDefaultArgs:['--disable-extensions'],args:['--disable-extensions-except='+vendor+'/browser','--load-extension='+vendor+'/browser','--ignore-certificate-errors-spki-list='+pin],viewport:{width:1120,height:920}});
+context.setDefaultTimeout(5000);
 const traffic=!functionalOnly&&fs.existsSync(work+'/browser-traffic.json')?JSON.parse(fs.readFileSync(work+'/browser-traffic.json')):[];
 if(!functionalOnly)context.on('request',r=>{if(r.url().startsWith(origin))traffic.push({method:r.method(),url:r.url(),body:r.postData(),headers:r.headers()});});
 const save=()=>{if(functionalOnly)return;fs.writeFileSync(work+'/browser-traffic.json',JSON.stringify(traffic,null,2),{mode:0o600});};
@@ -21,7 +22,7 @@ process.on('SIGTERM',async()=>{save();await context.close();process.exit(0);});
 const cookie=JSON.parse(fs.readFileSync(work+'/owner.json')).cookie;
 await context.addCookies(cookie.split('; ').map(c=>{const i=c.indexOf('=');return{name:c.slice(0,i),value:c.slice(i+1),url:origin,httpOnly:true,secure:true,sameSite:'Lax'};}));
 const page=await context.newPage();
-await page.goto(origin+'/');
+await page.goto(origin+'/apps/bitwarden/');
 if(process.argv.includes('--enroll')){
  const fixturePath=work+'/fixture.json';
  if(fs.existsSync(fixturePath))throw new Error('Fixture already exists; refusing reenrollment');
@@ -30,6 +31,7 @@ if(process.argv.includes('--enroll')){
  await page.evaluate(()=>{window.__audit=[];const encrypt=crypto.subtle.encrypt.bind(crypto.subtle);crypto.subtle.encrypt=async(a,k,p)=>{window.__audit.push(Array.from(new Uint8Array(p)));return encrypt(a,k,p);};});
  await page.getByLabel('Email',{exact:true}).fill(fixture.email);
  await page.getByLabel('Local vault password',{exact:true}).fill(fixture.password);
+ await page.getByLabel('Confirm local vault password',{exact:true}).fill(fixture.password);
  await page.getByRole('button',{name:'Create encrypted vault'}).click();
  await page.getByRole('status').filter({hasText:'Encrypted vault created.'}).waitFor({timeout:60000});
  const plain=await page.evaluate(()=>window.__audit);
@@ -59,7 +61,10 @@ for await (const line of readline.createInterface({input:process.stdin})) {
   else if(action.op==='fill') {
    const value=action.fixture?JSON.parse(fs.readFileSync(work+'/fixture.json'))[action.fixture]:action.value;
    await target.getByLabel(action.label,{exact:action.exact??true}).fill(value);
-  } else if(action.op==='click') await target.getByRole(action.role||'button',{name:action.name,exact:action.exact??true}).click();
+  } else if(action.op==='click') {const found=target.getByRole(action.role||'button',{name:action.name,exact:action.exact??true});await(action.index===undefined?found:found.nth(action.index)).click();}
+  else if(action.op==='focus') await target.bringToFront();
+  else if(action.op==='key') await target.keyboard.press(action.key);
+  else if(action.op==='text-click') await target.getByText(action.name,{exact:true}).click();
   else if(action.op==='select') await target.getByLabel(action.label,{exact:true}).selectOption(action.value);
   else if(action.op==='screenshot') await target.screenshot({path:evidence+'/'+action.name+'.png'});
   else if(action.op==='close') {save();await context.close();break;}

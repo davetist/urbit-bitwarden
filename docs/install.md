@@ -1,0 +1,63 @@
+# Install the native Bitwarden desk
+
+The vault backend runs in Gall/Hoon; HTTPS terminates in stock Eyre/Vere. Python is a one-time local operator tool for source import and backup, not a running backend or service. No proxy, external identity service or runtime extension is required. Connect remains generic authorization software; the Bitwarden desk owns the encrypted vault and Bitwarden protocol.
+
+Use an existing ship you own, a backed-up pier, and an HTTPS hostname reachable by every intended client. Phones need a network-reachable hostname, not the desktop's `localhost`. The certificate must cover that hostname and be trusted by each client's normal trust store. This helper does not change DNS, firewall rules, listener ports or service supervisors. The checked runtime/kernel baseline is recorded in `toolchain.json`; this installer does not upgrade either one.
+
+## Select and inspect
+
+Extract `integrations/bitwarden/dist/connect-bitwarden-sso-source.tgz` into a new source directory. Check its published SHA-256 first; the included manifest verifies the bytes to be imported, but does not establish the publisher's identity by itself. Run the helper as the pier's operating-system owner on the same host. The existing ship must be running with its stock `.urb/conn.sock` local control socket available. The pier directory itself must be a canonical path; its `.run` may be a regular executable or a symlink to the selected regular executable. The installer does not execute that binary or follow other pier-data symlinks.
+
+```sh
+python3 /path/to/source/integrations/bitwarden/scripts/deploy.py \
+  --pier /absolute/path/to/your-pier \
+  --ship '~sampel-palnet' \
+  --origin https://ship.example \
+  --source /path/to/source
+```
+
+Replace both example identity and paths with your exact selection. This default is a plan: it checks the live ship identity, the two desk names, route ownership, and every source file in the selected desks against `INTEGRATION-MANIFEST.json`. It does not import files or change certificates. The explicitly selected source directory may be a filesystem alias and is resolved once; paths inside its manifest and desks may not be symlinks. Missing, altered or unlisted desk source is refused. The source root is the extracted directory containing `INTEGRATION-MANIFEST.json`, independent of the current working directory or where this helper is launched. No owner code, cookie or Bitwarden token is needed by the installer.
+
+The owner page and **self-hosted server URL for official clients** are:
+
+```text
+https://ship.example/apps/bitwarden
+```
+
+`--origin` is the origin only. The installer appends `/apps/bitwarden`. The desk serves its UI and Bitwarden API beneath that prefix; it does not claim `/`, `/api` or `/identity`. Connect uses `/apps/connect` and `/connect`. The installer refuses another app's overlapping exact or child routes. The ship's home page and unrelated apps stay available.
+
+## Install or update
+
+After reviewing that selection, repeat the same command with `--apply`. Connect source is imported and installed first, followed by the Bitwarden desk. The imports use the live selected ship identity, not a fake-ship name. They update the selected source files through Clay; they do not replace `%base` or delete unrelated files.
+
+If either selected desk already exists, inspect it first and explicitly add `--update-existing`. That authorizes replacement of packaged files in those **two named desks only**. Preserve any local modifications separately before choosing it. Import is phased because Hoon marks must be available before non-Hoon desk metadata; it is not a transaction spanning both desks. A failed command can leave an incomplete import. Fix the reported source or native error and rerun the same verified release; do not reset a pier or delete application state as a retry technique.
+
+The command reports successful control requests, not a substitute for an end-user acceptance check. After installation:
+
+1. Open the displayed Bitwarden URL with normal HTTPS validation, log in to the ship if requested, and complete the owner setup/enrollment there.
+2. Confirm Connect is configured for the same exact HTTPS origin. Owner authorization remains in Connect; the vault password is used locally to wrap/unlock the account key.
+3. Configure an official client with the displayed server URL, choose single sign-on and follow the page's organization instructions.
+4. Unlock locally, create one synthetic login, sync it to a second official client, then delete/restore it. Confirm the original ship home page still opens.
+
+Updates preserve the existing session policy: 60-second access tokens, a 30-day absolute grant lifetime and a five-second retry grace. Application reloads may require an in-flight request to retry; an import is not a logout or a vault reset.
+
+## Native HTTPS and renewal
+
+Prefer the ship's existing valid Eyre certificate and its existing renewal arrangement. Stock Urbit includes `%acme`, which obtains and renews certificates natively. On a suitable networked planet/star, `|dns-config` guides the existing Urbit domain setup. A custom domain can be added to Eyre with the native `%turf` rule; Eyre notifies `%acme` of the requested domains. DNS must already point to the ship, and the CA's HTTP challenge must reach native Eyre on public port 80. These are explicit operator network choices, never actions performed by this installer. Keep those requirements working for renewal. Public certificate issuance still uses the ordinary certificate authority; no external vault or authorization service is introduced. The native implementation is in [Eyre](https://github.com/urbit/urbit/blob/master/pkg/arvo/sys/vane/eyre.hoon) and [ACME](https://github.com/urbit/urbit/blob/master/pkg/arvo/app/acme.hoon).
+
+If you already have a PEM certificate chain and matching PEM private key, the installer can pass them directly to Eyre. It checks that the pair loads and requires a private key file with no group/other permissions. It does not display the key, put it in a command argument, or save another copy. This explicit command replaces Eyre's existing certificate, so use it only for the chosen ship and correct hostname:
+
+```sh
+python3 /path/to/source/integrations/bitwarden/scripts/deploy.py \
+  --pier /absolute/path/to/your-pier \
+  --ship '~sampel-palnet' \
+  --origin https://ship.example \
+  --tls-only --cert /private/path/fullchain.pem --key /private/path/privkey.pem \
+  --apply --apply-tls
+```
+
+Omit `--apply --apply-tls` to inspect that certificate replacement plan. For manually supplied certificates, repeat the command with the renewed files before expiry; `--tls-only` does not reload either application. Manual PEM installation does not create an automatic renewal job. Use the ship's native `%acme` configuration when automatic native renewal is desired. Never bypass certificate validation in real clients. No certificate installation, public listener change or renewal was performed merely by adding this tooling.
+
+## Known limitation, with precise scope
+
+Urbit journal history may retain **access/refresh authorization tokens. These tokens cannot decrypt the vault or read its passwords.** A still-valid stolen token can authorize access to the encrypted vault, subject to its permissions; it is not the master password or unwrapped vault key. This is an accepted known limitation, not a deployment blocker. Session lifetimes remain unchanged. See [known limitations](known-limitations.md) and [backup/recovery](backup.md).

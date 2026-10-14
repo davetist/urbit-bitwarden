@@ -1,1 +1,49 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>Urbit vault · Connect</title><link rel="stylesheet" href="/vault/style.css"><script defer src="/vault/app.js"></script></head><body><main><p class="eyebrow">URBIT VAULT / CONNECT</p><h1>Keep the key with you.</h1><p id="intro">Authorize with your ship. Unlock locally in Bitwarden.</p><p id="status" role="status"></p><section id="setup"><p>This synthetic-data preview supports Enterprise SSO in the official CLI and Chrome extension. Organization: <strong>urbit-vault</strong>.</p><p>Enroll once here. Your browser creates and encrypts your account keys. The password and unwrapped keys stay in this browser.</p><p><a href="/~/login?redirect=/">Log in as the ship owner</a></p><form id="enroll"><label>Email<input id="email" type="email" required autocomplete="off"></label><label>Local vault password<input id="password" type="password" minlength="16" required autocomplete="new-password"></label><button>Create encrypted vault</button></form><p>Use SSO to sign in, then the local unlock screen. Password login, password changes, account deletion, API keys and password-verification actions are unsupported. Do not import real secrets.</p><a href="/apps/connect/">Manage approvals and revoke access in Connect</a></section></main></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Bitwarden · Your Urbit vault</title>
+<link rel="stylesheet" href="/apps/bitwarden/vault/style.css">
+<script defer src="/apps/bitwarden/vault/app.js"></script>
+</head>
+<body><main>
+<header><p class="eyebrow">YOUR SHIP / YOUR VAULT</p><h1>Keep the key with you.</h1><p id="intro">Authorize with your ship. Unlock locally in Bitwarden.</p></header>
+<p id="status" role="status" aria-live="polite">Loading your vault…</p>
+<button id="retry" class="secondary" hidden>Try again</button>
+<div id="legacy-connection" hidden><p>The old extension connection must be replaced for this server address. This signs out existing extension connections. It does not delete your encrypted vault.</p><button id="update-legacy" class="secondary">Update legacy Bitwarden connection</button></div>
+<section id="owner-required" hidden>
+<h2>Open your ship first.</h2>
+<p>Only the ship owner can create this vault or enable its Bitwarden clients.</p>
+<a class="button" href="/~/login?redirect=%2Fapps%2Fbitwarden%2F">Log in as the ship owner</a>
+</section>
+<section id="setup" hidden>
+<h2>Create your encrypted vault.</h2>
+<p>Enroll once. This browser creates and encrypts your account keys. Your local vault password and unwrapped keys stay in this browser.</p>
+<form id="enroll">
+<label for="email">Email</label><input id="email" name="email" type="email" required autocomplete="email" spellcheck="false" autocapitalize="none">
+<label for="password">Local vault password</label><input id="password" name="password" type="password" minlength="16" required autocomplete="new-password" aria-describedby="password-help">
+<p id="password-help" class="hint">Use at least 16 characters. Keep this password safe: ship access cannot recover it.</p>
+<label for="password-confirm">Confirm local vault password</label><input id="password-confirm" name="password-confirm" type="password" minlength="16" required autocomplete="new-password">
+<button type="submit">Create encrypted vault</button>
+</form>
+</section>
+<section id="enrolled" hidden>
+<div class="account"><span class="eyebrow">ENROLLED ACCOUNT</span><strong id="account-email"></strong></div>
+<h2>Connect your Bitwarden apps.</h2>
+<p>Use the official extension, desktop or mobile app. Select <strong>Self-hosted</strong> as the server, then enter this URL:</p>
+<dl class="connection"><div><dt>Server URL</dt><dd id="server-url"></dd></div></dl>
+<ol class="steps">
+<li>Enter your enrolled email, then choose <strong>Single sign-on</strong> or <strong>Enterprise SSO</strong>.</li>
+<li>Enter organization identifier <code>urbit-vault</code>.</li>
+<li>Approve the connection on your ship, then return to Bitwarden and unlock with your <strong>local vault password</strong>.</li>
+</ol>
+<details><summary>Custom environment URLs</summary><p>Most apps fill these automatically from the server URL. If your client asks for individual URLs, use:</p><dl class="connection"><div><dt>API URL</dt><dd id="api-url"></dd></div><div><dt>Identity URL</dt><dd id="identity-url"></dd></div><div><dt>Web vault URL</dt><dd id="webvault-url"></dd></div></dl><p class="hint">This web address opens setup and SSO. View and edit your passwords in the official Bitwarden apps.</p></details>
+<details><summary>Command line</summary><p>Set the server, sign in through SSO, then unlock your vault locally:</p><pre><code id="cli-server"></code><code>bw login --sso</code><code>bw unlock</code></pre><p>When prompted, use organization identifier <code>urbit-vault</code>.</p></details>
+<details><summary>Enable clients after an update</summary><p>This checks the CLI, extension, desktop and mobile registrations in Connect. Matching disabled clients will be enabled; missing clients will be added. Conflicting registrations need your review in Connect.</p><button id="enable-clients" class="secondary">Enable official clients</button></details>
+</section>
+<footer>
+<p class="limitation"><strong>Preview limitations.</strong> This preview has not completed its security review. Use synthetic data. Use SSO and local unlock; password login, password changes, account deletion and API keys are unsupported.</p>
+<p>Urbit history can retain <strong>authorization tokens, not plaintext vault passwords</strong>. These tokens can access encrypted vault data while valid. <strong>They cannot decrypt or read your passwords.</strong></p>
+<a href="/apps/connect/">Manage approvals and revoke access in Connect <span aria-hidden="true">↗</span></a>
+</footer>
+</main></body></html>

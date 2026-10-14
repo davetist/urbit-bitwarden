@@ -1,0 +1,76 @@
+{
+  "client": "Official-source Bitwarden iOS",
+  "version": "2026.9.1",
+  "build": "3533",
+  "simulator_id": "21ED0F07-A235-4771-8F3A-AA5BC7FE62BD",
+  "server": "https://localhost:19781/apps/bitwarden",
+  "results": {
+    "self_hosted_configuration": true,
+    "standard_ship_login": true,
+    "native_connect_mobile_consent": true,
+    "native_callback_return": true,
+    "local_unlock": true,
+    "initial_sync": true,
+    "item_workflow": true,
+    "existing_item_view": true,
+    "secure_note_create": true,
+    "item_name_edit": true,
+    "explicit_sync": true,
+    "independent_client_item_download": true,
+    "app_restart_local_reunlock": true
+  },
+  "first_attempt": "Pending consent expired during UI tooling setup; no session-lifetime changes. Second normal login promptly completed consent.",
+  "boundaries": {
+    "vault_password_entered": true,
+    "traffic_capture": false,
+    "credential_state_inspected": false,
+    "journal_inspected": false,
+    "client_source_modified": false,
+    "device_clipboard_cleared": true,
+    "vault_password_entry": "Only native local Unlock field, privately via dedicated simulator clipboard, cleared after entry; no password visibility toggle used",
+    "push_notifications": "Declined"
+  },
+  "next": "Parent may verify retained synthetic item via official CLI/desktop and perform owned fixture cleanup after all clients finish.",
+  "resolved_issue": {
+    "observed": "Official app exited during native Logging in immediately after callback, before local unlock.",
+    "crash_type": "EXC_BREAKPOINT",
+    "stack": [
+      "OSLogErrorReporter.log(error:)",
+      "DefaultConfigService.updateConfigFromServer(isPreAuth:)",
+      "DefaultConfigService.getConfig(forceRefresh:isPreAuth:)",
+      "DefaultAuthService.getIdentityTokenResponse(...)",
+      "DefaultAuthService.loginWithSingleSignOn(code:email:)"
+    ],
+    "static_contract_mismatch": "ConfigResponseModel.ThirdPartyConfigResponseModel requires nonoptional name and url; backend server object only emits name.",
+    "backend_source": "integrations/bitwarden/desk/app/bitwarden.hoon /api/config",
+    "client_source": "BitwardenKit/Core/Platform/Services/API/Response/ConfigResponseModel.swift",
+    "debug_behavior": "OSLogErrorReporter assertions on logged decoding errors are official Debug behavior. No assertion was disabled.",
+    "resolution": "Parent added required server.url using the configured service base and reran native compilation/functional checks. Unchanged official app then resumed its already-issued SSO session at local unlock without crashing."
+  },
+  "details": {
+    "existing_item": "Connect SSO proof \u2014 packaged desk",
+    "created_item": "iOS usability proof",
+    "saved_item_name": "iOS usability proof edited",
+    "saved_note": "Created by the official iOS client on the native Urbit desk.",
+    "explicit_sync_observation": "Settings > Other > Sync now; Syncing complete toast; Last sync advanced00:34 to00:39",
+    "new_external_item_after_explicit_sync": "Owned extension autofill proof",
+    "restart_observation": "Normal terminate/launch -> native locked-vault screen -> local unlock -> edited note and independent item visible",
+    "initial_sync_observation": "After first local unlock, existing encrypted login decrypted and displayed before any manual Sync action",
+    "edit_scope": "Name edit verified after explicit sync and app restart; an AX-only notes-field set was not saved, so notes-content editing is not claimed",
+    "item_cleanup": "Retained intentionally for parent desktop/CLI readback and later owned test cleanup",
+    "ui_automation_notes": "Native app controls operated by XcodeBuildMCP; ASWebAuthenticationSession via CUA screenshot coordinates; gesture scroll-up reveals consent below Safari toolbar. Public field punctuation/autocorrect handled by native Paste or AX name set; no app code changed."
+  },
+  "screenshots": [
+    "/private/tmp/bitwarden-mobile.ukiYbD/official-ios-existing-item.png",
+    "/private/tmp/bitwarden-mobile.ukiYbD/official-ios-sync.png",
+    "/private/tmp/bitwarden-mobile.ukiYbD/official-ios-cross-client-sync.png",
+    "/private/tmp/bitwarden-mobile.ukiYbD/official-ios-edited-note.png",
+    "/private/tmp/bitwarden-mobile.ukiYbD/official-ios-reopened-vault.png"
+  ],
+  "cleanup": {
+    "owned_simulator_deleted": true,
+    "certificate_removed_with_device": true,
+    "source_build_evidence_preserved": true,
+    "item_cleanup": "Parent owns remaining vault test-item cleanup after cross-client readback"
+  }
+}
