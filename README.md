@@ -4,7 +4,7 @@ This native Bitwarden Gall desk translates the official Bitwarden CLI and Chrome
 
 Connect owns registration, PKCE authorization codes, ship-owner consent and live grant revocation. The Bitwarden desk owns the `cli`/`browser` IDs, `api offline_access` scope, JWT claims, encrypted vault API and bounded refresh retry. See [the generic contract](../../docs/resource-integrations.md).
 
-Current scoped changes and verification: [remaining native hardening](evidence/remaining-native-hardening.md). Exact client/action support and deferred journal checks: [client support](docs/client-support.md). The two separately assigned token-derivation repairs remain pending.
+Current scoped changes and verification: [remaining native hardening](evidence/remaining-native-hardening.md). Exact client/action support and deferred journal checks: [client support](docs/client-support.md). The two separately assigned token-derivation repairs remain pending. Journal credential retention is an [accepted known limitation](docs/known-limitations.md), not a usability blocker; the current session lifetimes are retained.
 
 ## Supported workflow
 
@@ -33,7 +33,7 @@ Stop the owned fixture with `python3 integrations/bitwarden/scripts/stop.py`. No
 
 ## Boundaries and recovery
 
-Access tokens expire after 60 seconds; Connect's grant absolute lifetime remains authoritative. JWT signatures are native Hoon HMAC-SHA256, but API acceptance also requires exact token-digest membership and a live Connect grant. Refreshes rotate once, with a five-second cache returning the same response to overlapping official-client retries. Native Behn timers expire those responses during idle operation; reload prunes expired entries and re-arms valid ones. Historical journal/snapshot copies are not erased. A consumed predecessor used after grace revokes both adapter and Connect sessions. Each adapter family retains at most 4,096 consumed refresh digests; reaching that limit requires a new SSO authorization. Owner revocation is checked before the retry cache. Logout using a current or consumed refresh token deletes the family and releases its Connect grant. The ordinary Connect document-client refresh policy is unchanged.
+Access tokens expire after 60 seconds; Connect's 30-day absolute grant lifetime remains authoritative and is not extended by refresh. JWT signatures are native Hoon HMAC-SHA256, but API acceptance also requires exact token-digest membership and a live Connect grant. Refreshes rotate once, with a five-second cache returning the same response to overlapping official-client retries. Native Behn timers expire those responses during idle operation; reload prunes expired entries and re-arms valid ones. Historical journal/snapshot copies are not erased. A consumed predecessor used after grace revokes both Bitwarden and Connect sessions. Each Bitwarden session family retains at most 4,096 consumed refresh digests; reaching that limit requires a new SSO authorization. Owner revocation is checked before the retry cache. Logout using a current or consumed refresh token deletes the family and releases its Connect grant. The ordinary Connect document-client refresh policy is unchanged.
 
 Pending code exchanges are limited to 32 and time out after 30 seconds with HTTP 503. Reload completes held HTTP requests with 503. Late successful exchanges are revoked instead of becoming orphan grants. Enrollment can resume after partial registration failure; it reuses only matching enabled policies and refuses to overwrite conflicting clients.
 

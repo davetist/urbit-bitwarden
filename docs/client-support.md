@@ -29,9 +29,11 @@ The existing five-second refresh-response cache remains durable to preserve iden
 
 This is active-state cleanup. A stopped or stalled runtime cannot process a timer, and previously written snapshots/events may still contain credentials. The request path continues to enforce expiry before returning a cached response even if timer delivery is delayed.
 
-## Journal limitation
+## Journal limitation — accepted
 
-Vere records input before Gall handles it. A Gall route rejection, application allowlist or cache deletion does not remove an already received request from history. No new server capability flags were guessed or enabled to claim otherwise.
+The owner accepts journal credential retention as a known limitation, not a usability blocker. Keep the existing 60-second access lifetime, 30-day absolute Connect grant and five-second retry grace. See [the recorded decision and native retention tools](known-limitations.md).
+
+Ordinary Bitwarden HTTP requests become event inputs whose original headers and bodies are retained in history. A Gall route rejection, application allowlist or cache deletion does not redact that original input. This statement concerns the persisted input, not a claim that the disk write precedes Gall evaluation. No new server capability flags were guessed or enabled to claim prevention.
 
 An action can be labelled **prevented before transmission** only after the pinned official client is shown to avoid sending the sensitive material. No additional action received that label in this change: expanded client-action and journal security validation were explicitly deferred by the user. If a required official action has no compatible pre-transmission control, it remains an unresolved constraint, not a successful fix.
 
