@@ -26,15 +26,15 @@ def main():
     for line in output.splitlines():
         if '/tests/bitwarden/cache/' in line or line.startswith(('expected', 'actual', 'syntax error', '-find', '-nest')):
             print(line)
-    if result.returncode or result.stdout.strip() != '[0 %avow 0 %noun 0]' or len(passed) != 7:
-        raise SystemExit('Native cache lifecycle tests failed or did not execute all 7 cases.')
+    if result.returncode or result.stdout.strip() != '[0 %avow 0 %noun 0]' or len(passed) != 9:
+        raise SystemExit('Native cache lifecycle tests failed or did not execute all 9 cases.')
     EVIDENCE.mkdir(parents=True, exist_ok=True)
     (EVIDENCE / 'cache-lifecycle.json').write_text(json.dumps({
         'execution': 'stock Vere Hoon test thread; instantiated agent with inert dummy responses',
         'passed': passed, 'count': len(passed), 'live_credential_state_inspected': False,
         'journal_inspected': False,
     }, indent=2) + '\n')
-    print('PASS 7 native cache lifecycle tests; no live credential or journal inspection')
+    print('PASS 9 native cache lifecycle tests; no live credential or journal inspection')
 
 
 if __name__ == '__main__': main()

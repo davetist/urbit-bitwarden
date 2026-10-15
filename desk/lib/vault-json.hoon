@@ -1,6 +1,10 @@
 ::  Wire helpers. Encrypted fields remain opaque JSON.
 /+  jose
 |%
+++  token-id
+  |=  seed=@
+  ^-  @t
+  (scot %uv (shas %token-id seed))
 ++  get
   |=  [obj=json key=@t]
   ^-  json

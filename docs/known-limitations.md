@@ -2,7 +2,7 @@
 
 ## Retained authorization tokens cannot decrypt or read passwords
 
-Owner decision, 2026-10-14: retaining authorization tokens in Urbit history is an accepted known limitation; these tokens cannot decrypt the vault or reveal passwords. It is not a blocker for making the Bitwarden desk usable. Eliminating this retention is not a release prerequisite. This decision does not resolve the two separately assigned token issues or mark restricted validation complete.
+Owner decision, 2026-10-14: retaining authorization tokens in Urbit history is an accepted known limitation; these tokens cannot decrypt the vault or reveal passwords. It is not a blocker for making the Bitwarden desk usable. Eliminating this retention is not a release prerequisite. The separate token-derivation issues are fixed in the current source. This decision does not mark restricted journal validation complete.
 
 Keep the current lifetimes unchanged:
 
@@ -26,6 +26,6 @@ This native maintenance route remains a follow-up opportunity, not a prerequisit
 
 ## Separate outstanding work
 
-The two assigned token issues remain in progress, and the restricted security checks remain deferred. This accepted limitation does not change those statuses. Unsupported client actions and unexercised clients remain labelled accurately in [client support](client-support.md); an unsupported operation is not evidence that its sensitive inputs were prevented before transmission.
+The two token-derivation fixes were verified with an isolated synthetic ship. The restricted journal and credential-state checks remain deferred. This accepted limitation is unchanged. Unsupported client actions and unexercised clients remain labelled accurately in [client support](client-support.md); an unsupported operation is not evidence that its sensitive inputs were prevented before transmission.
 
 The [scoped functional report](../evidence/remaining-native-hardening.md) records demonstrated behavior. Ordinary offline password guessing against copied ciphertext, client compromise and backend availability are not additional Urbit-specific defects.

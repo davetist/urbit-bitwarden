@@ -25,7 +25,7 @@ def cue(data):
 n=cue((WORK/'state-bitwarden.jam').read_bytes())
 for _ in range(4):n=n[1]
 state=n
-assert state[0]==0
+assert state[0]==1
 account=state[1][0];key=state[1][1][0]
 auth=json.loads((WORK/'http-session.json').read_text());token=auth['access_token'];head,body,sig=token.split('.')
 actual=base64.urlsafe_b64decode(sig+'==');expected=hmac.new(key.to_bytes(32,'little'),(head+'.'+body).encode(),hashlib.sha256).digest()

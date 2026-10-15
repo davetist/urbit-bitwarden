@@ -4,13 +4,14 @@
 |%
 +$  card  card:agent:gall
 +$  session  [client=@t expires=@da access=@ux refresh=@ux consumed=(set @ux)]
-+$  vault-state
-  $:  %0  account=json  signing-key=@  origin=@t
++$  vault-data
+  $:  account=json  signing-key=@  origin=@t
       sessions=(map @t session)  ciphers=(map @t json)  folders=(map @t json)
       serial=@ud  revision=@da
       cache=(map @t [old=@ux until=@da response=json])
       csrf=(map @ux [token=@ux expires=@da])
   ==
++$  vault-state  [%1 vault-data]
 ++  revoke-card
   |=  [ship=@p sid=@t]
   ^-  card
@@ -58,7 +59,17 @@
 ++  on-load
   |=  old=vase
   ^-  (quip card _this)
-  =.  state  !<(vault-state old)
+  =/  legacy  ?=(%0 -.q.old)
+  =.  state
+    ?:  legacy
+      =/  previous  !<([%0 vault-data] old)
+      [%1 +.previous]
+    !<(vault-state old)
+  ::  Old JWT ids disclosed refresh entropy. Reauthorize once on upgrade.
+  =/  revoked=(list card)
+    ?.  legacy  ~
+    (turn ~(tap by sessions) |=([p=@t q=session] (revoke-card our.bowl p)))
+  =?  state  legacy  state(sessions ~, cache ~, csrf ~)
   =.  pending  ~
   =.  origin.state  (service-origin origin.state)
   =?  account  &(!=(account ~) =((opt:v account 'creationDate') ~))
@@ -74,7 +85,7 @@
     ^-  (list card)
     ?.  ?=([%http-response @ ~] p)  ~
     (unavailable i.t.p)
-  [(weld route-cards (weld timers completed)) this]
+  [(weld revoked (weld route-cards (weld timers completed))) this]
 ++  on-poke
   |=  [=mark =vase]
   ^-  (quip card _this)
@@ -161,7 +172,7 @@
           ['exp' (sect:enjs:format expiry)]  ['nbf' (sect:enjs:format now.bowl)]
           ['iat' (sect:enjs:format now.bowl)]  ['amr' a+~[s+'Application']]
           ['scope' a+~[s+'api' s+'offline_access']]  ['device' s+device]
-          ['sstamp' s+'connect-sso-v1']  ['jti' s+(scot %uv eny.bowl)]
+          ['sstamp' s+'connect-sso-v1']  ['jti' s+(token-id:v eny.bowl)]
           ['sid' s+sid]  ['client_id' s+client.value]
       ==
     =/  token  (jwt:v claims signing-key.state)
