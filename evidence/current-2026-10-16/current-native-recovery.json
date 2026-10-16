@@ -1,0 +1,12 @@
+{
+  "passed": true,
+  "sourceStoppedBeforeCopy": true,
+  "sourcePreserved": true,
+  "simultaneousSourceAndRestore": false,
+  "archiveHashesVerified": true,
+  "restoredNativeBoot": true,
+  "officialCLIReunlockSyncDecrypt": true,
+  "crossClientRecordsCompared": 4,
+  "copiedFiles": 19,
+  "journalInspected": false
+}

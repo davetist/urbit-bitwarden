@@ -1,0 +1,10 @@
+{
+  "concurrent_retries": 6,
+  "identical_response": true,
+  "six_retry_seconds": 0.26523858308792114,
+  "current_refresh_survives_cache_expiry": true,
+  "restart_seconds": 1.3402065830305219,
+  "identical_response_across_restart_demonstrated": true,
+  "post_restart_sync": true,
+  "security_replay_tests": "deferred"
+}

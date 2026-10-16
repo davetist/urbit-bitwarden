@@ -4,14 +4,16 @@ The Bitwarden desk is an Urbit-native personal-vault backend. Connect owns gener
 
 ## Versions and evidence boundary
 
-The retained usability run from before the repository split exercised the following clients against `/apps/bitwarden`. These results retain their original scope and are not a new run against every later Connect version. Bitwarden targets the latest Connect desk; see [repository provenance](repository-split.md).
+The **2026-10-16 rerun** exercised both current standalone desks together on a fresh owned fake ship. It includes the JWT/session-identifier repairs and the repository split. [Readiness assessment](../evidence/current-2026-10-16/assessment.md), [actual results](../evidence/current-2026-10-16/results.json), and [tested source hashes](../evidence/current-2026-10-16/source-pair.json) replace the older run as the evidence for these workflows. Commit fields identify starting HEADs; file hashes identify the tested working trees. They are provenance, not compatibility pins.
 
-| Client | Completed functional checks | Evidence |
+| Client | Completed current functional checks | Evidence |
 |---|---|---|
-| Official CLI 2026.9.1 | Fresh SSO/local unlock; encrypt/sync/decrypt login, note, card and identity; folder create/rename/delete; JSON export → delete → import recovery with folder relationships | [CLI results](../evidence/review-fixes/official-cli-usability.json) |
-| Official Chrome extension 2026.9.3 | Fresh SSO/local unlock; automatic initial sync; explicit Sync now; controlled-page autofill before and after password editing; edited item read back by CLI | [Extension results](../evidence/review-fixes/official-extension-usability.json), [CLI readback](../evidence/review-fixes/extension-edit-readback.json) |
-| Signed official macOS desktop 2026.9.1 | Normal OS SSO callback; local unlock; automatic initial sync; secure-note create/edit/view; independent CLI readback | [Desktop results](../evidence/review-fixes/official-desktop-usability.json) |
-| Unchanged official iOS 2026.9.1 source, build 3533, in Simulator | SSO/callback/local unlock; automatic initial sync; existing-item view; secure-note creation/title editing; explicit sync of another client's item; app restart/local re-unlock; CLI readback | [iOS results](../evidence/review-fixes/ios-functional-progress.json), [CLI readback](../evidence/review-fixes/ios-cli-readback.json) |
+| Official CLI 2026.9.1 | Fresh SSO/local unlock; all four personal types; folder create/rename/delete; JSON export → delete → import with folder relationships; trash/restore; lock/re-unlock; sync denied after owner revocation | [CLI results](../evidence/current-2026-10-16/official-cli-usability.json), [lifecycle](../evidence/current-2026-10-16/official-cli-lifecycle.json), [revocation](../evidence/current-2026-10-16/native-revocation.json) |
+| Official Chrome extension 2026.9.3 | Fresh SSO/local unlock; automatic initial sync; explicit cross-client Sync now; controlled-page toolbar autofill before/after password editing; independent CLI decryption | [Autofill](../evidence/current-2026-10-16/current-extension-autofill.json), [CLI readback](../evidence/current-2026-10-16/current-extension-cli-readback.json) |
+| Signed official macOS desktop 2026.9.1 | Fresh SSO through normal OS callback; local unlock; automatic initial sync; note create/edit/view; independent CLI decryption | [Launch conditions](../evidence/current-2026-10-16/current-desktop-launch.json), [CLI readback](../evidence/current-2026-10-16/current-desktop-cli-readback.json) |
+| Unchanged official iOS 2026.9.1 source, build 3533, in Simulator | Fresh SSO/callback/local unlock; initial sync; note creation and title/body edit; cross-client Sync now; restart/local re-unlock; independent CLI decryption | [Results and qualifications](../evidence/current-2026-10-16/results.json), [CLI readback](../evidence/current-2026-10-16/current-ios-cli-readback.json) |
+
+The first CLI SSO attempt failed with “Refresh Access token error”; a new profile passed, and the cause remains unconfirmed. iOS consent needed reduced Safari page scale to reach approval. These qualifications remain open in the readiness assessment. This is successful functional acceptance with recorded workarounds, not a flawless or production-qualified run.
 
 Android **2026.9.1-bwpm** has implemented source-contract support, not installed-client acceptance. Physical iOS/Android devices, the signed App Store iOS distribution and Windows/Linux desktop remain unqualified. Periodic automatic-sync timing is source-confirmed, not measured by these runs. Prior CLI/extension trash/restore and native restart evidence remains in [the hardening report](../evidence/remaining-native-hardening.md).
 
@@ -23,7 +25,7 @@ Manifest-verified native deployment and full stopped-pier recovery passed on the
 |---|---|---|
 | Enrollment and connection setup | Owner UI completed legacy extension migration and enabled CLI, extension, desktop and mobile registrations | Fresh-account UI behavior is separate from each installed client’s SSO acceptance |
 | Enterprise SSO and local unlock | Passed in CLI, extension, signed macOS desktop and official-source iOS Simulator | Android/physical devices/other desktop OS unqualified; no new transmission audit |
-| Personal item create/edit/sync | Four types passed in CLI; extension password edit/autofill, desktop note edit, and iOS note creation/title edit passed with CLI readback | UI acceptance is limited to those demonstrated item actions |
+| Personal item create/edit/sync | Four types passed in CLI; extension password edit/autofill, desktop note edit, and iOS note creation/title/body edit passed with CLI readback | UI acceptance is limited to those demonstrated item actions |
 | Folders and personal import | Native API checks and official CLI folder/import round-trip passed, including preserved item associations | Other installed clients still need acceptance |
 | Trash/restore | Native lifecycle/capacity tests, official CLI and extension previously exercised | Automatic 30-day trash purge is not implemented |
 | Lock and local re-unlock | Official CLI passed; iOS Simulator restart/local re-unlock passed | Other app restart/unlock combinations not separately qualified |
@@ -81,7 +83,7 @@ The owner accepts retention of authorization tokens in journal history as a know
 
 Native Behn timers remove expired cached token responses from active application state; reload prunes expired/orphaned entries and re-arms valid timers. Five-second retry responses remain durable for quick restarts. Cleanup does not erase older journal events or snapshots. A stalled/stopped runtime cannot process a timer, and request handling still checks expiry before returning a cached response.
 
-Expanded client-action transmission checks and journal/security validation are deferred by request. Source compatibility and functional acceptance do not establish a new pre-transmission guarantee for unsupported actions. The two previously identified token-derivation repairs remain assigned to separate work and unchanged by this usability work.
+Expanded client-action transmission checks and journal/security validation are deferred by request. Source compatibility and functional acceptance do not establish a new pre-transmission guarantee for unsupported actions. The previously identified token-derivation repairs are present in the tested sources. Native cache/migration tests passed, but these functional workflows do not constitute expanded journal or adversarial validation.
 
 ## Verification commands
 

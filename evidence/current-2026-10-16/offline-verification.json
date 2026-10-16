@@ -1,0 +1,32 @@
+{
+  "date": "2026-10-16",
+  "checks": [
+    {
+      "name": "tooling",
+      "command": "python3 -m unittest discover -s tests/tooling -v",
+      "passed": true,
+      "cases": 10,
+      "skipped": 0,
+      "privateLogSHA256": "2532e1a6cc47a669890856098f65b12694f2e98a112fb8abfa48e244c367b51c"
+    },
+    {
+      "name": "operator-fixture-pinning-layout",
+      "command": "PYTHONPATH=scripts python3 -m unittest test_fixture test_start_ports test_fetch_clients test_repository_layout test_deployment test_backup -v",
+      "passed": true,
+      "cases": 45,
+      "skipped": 0,
+      "privateLogSHA256": "0ad618d4823c044076eead2fb4a371a55726704e892ae2832d66104fb114441b"
+    },
+    {
+      "name": "browser-onboarding-retry",
+      "command": "npm test",
+      "passed": true,
+      "cases": 14,
+      "skipped": 0,
+      "privateLogSHA256": "f0cff74180dc77016c7982270e54cd68d4e79779041f1fb5b38afb81b95e11d6"
+    }
+  ],
+  "genericContractAndSourceIndependence": true,
+  "deterministicBrowserAssets": true,
+  "note": "Only these explicit offline checks are counted. The invalid generic script discovery is disclosed in assessment.md."
+}

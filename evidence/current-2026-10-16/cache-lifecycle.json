@@ -1,0 +1,17 @@
+{
+  "execution": "stock Vere Hoon test thread; instantiated agent with inert dummy responses",
+  "passed": [
+    "/tests/bitwarden/cache/test-stale-wake-preserves-new-response",
+    "/tests/bitwarden/cache/test-public-jti-does-not-disclose-refresh-seed",
+    "/tests/bitwarden/cache/test-load-prunes-missing-session",
+    "/tests/bitwarden/cache/test-load-prunes-expired-response",
+    "/tests/bitwarden/cache/test-load-prunes-at-exact-deadline",
+    "/tests/bitwarden/cache/test-load-preserves-and-rearms-valid-response",
+    "/tests/bitwarden/cache/test-legacy-load-revokes-credentials-preserves-vault",
+    "/tests/bitwarden/cache/test-idle-wake-expires-only-response",
+    "/tests/bitwarden/cache/test-early-wake-preserves-response"
+  ],
+  "count": 9,
+  "live_credential_state_inspected": false,
+  "journal_inspected": false
+}

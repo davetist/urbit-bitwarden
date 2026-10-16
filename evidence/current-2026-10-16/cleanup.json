@@ -1,0 +1,12 @@
+{
+  "taskFakeShipStopped": true,
+  "originalStoppedRecoverySourcePreserved": true,
+  "taskClientAndFormPortsClosed": true,
+  "taskSimulatorAndItsTrustRemoved": true,
+  "desktopNativeHostManifestStateRestored": true,
+  "desktopURLHandlerMatchesPreTestValue": true,
+  "isolatedBrowserDeveloperModeRestoredOff": true,
+  "temporaryCLIPlaintextExportRemoved": true,
+  "privateProfilesBuildsAndStoppedFixturePreserved": true,
+  "unrelatedFixturesAndRealShipsNotStopped": true
+}

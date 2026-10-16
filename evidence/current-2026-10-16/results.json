@@ -1,0 +1,68 @@
+{
+  "date": "2026-10-16",
+  "cli": {
+    "freshSSO": true,
+    "firstSSOAttemptFailed": "Refresh Access token error; cause unconfirmed; second fresh profile passed",
+    "allFourPersonalTypes": true,
+    "folders": true,
+    "jsonExportDeleteImport": true,
+    "trashRestoreLocalReunlock": true
+  },
+  "extension": {
+    "freshSSO": true,
+    "localUnlock": true,
+    "createEdit": true,
+    "realToolbarAutofillInitialAndEdited": true,
+    "independentCLIReadback": true,
+    "explicitCrossClientSync": true,
+    "loginScreenObservedAfterRevocation": true,
+    "revocationObservation": "After owner revocation, the enabled extension displayed the login screen. Its isolated profile Developer mode was temporarily off and was re-enabled to inspect the UI; no claim of uninterrupted logout timing."
+  },
+  "desktop": {
+    "freshSSO": true,
+    "osCallback": true,
+    "localUnlock": true,
+    "initialSync": true,
+    "noteCreateEdit": true,
+    "independentCLIReadback": true
+  },
+  "ios": {
+    "sourceUnchangedOfficialRelease": "2026.9.1 (3533)",
+    "freshSSO": true,
+    "localUnlock": true,
+    "initialSync": true,
+    "mobileConsentPageScaleAdjusted": true,
+    "noteAndRestartPending": false,
+    "noteCreateEditCLIReadback": true,
+    "explicitCrossClientSync": true,
+    "restartLocalReunlock": true
+  },
+  "runtimeTests": {
+    "bitwardenNativeCacheAndMigration": 9
+  },
+  "journalValidation": "not run",
+  "toolingIncidents": [
+    "initial temporary control socket path too long; relocated task fixture",
+    "first iOS build missing Mint PATH; corrected and built",
+    "native UI app selection stalled; expired consents restarted",
+    "desktop Node inspector attach timed out; renderer-only automation used"
+  ],
+  "result": "Passed listed functional workflows with the recorded CLI retry and mobile consent workaround; synthetic-data preview only.",
+  "nativeRecovery": {
+    "passed": true,
+    "sourceStoppedBeforeCopy": true,
+    "sourcePreserved": true,
+    "simultaneousSourceAndRestore": false,
+    "archiveHashesVerified": true,
+    "restoredNativeBoot": true,
+    "officialCLIReunlockSyncDecrypt": true,
+    "crossClientRecordsCompared": 4,
+    "copiedFiles": 19,
+    "journalInspected": false
+  },
+  "offlineTests": {
+    "pythonTooling": 10,
+    "selectedPythonScriptTests": 45,
+    "onboardingBrowser": 14
+  }
+}

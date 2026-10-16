@@ -1,0 +1,22 @@
+{
+  "desktop": {
+    "version": "2026.9.1",
+    "release_tag": "desktop-v2026.9.1",
+    "release_url": "https://github.com/bitwarden/clients/releases/tag/desktop-v2026.9.1",
+    "asset_url": "https://github.com/bitwarden/clients/releases/download/desktop-v2026.9.1/Bitwarden-2026.9.1-universal-mac.zip",
+    "archive_sha256": "8cb6badb3a8af77cc3e4b060fa14858cd7fd74be7360b1b6e98dde1afed409d2",
+    "executable_sha256": "82d69c2434b5d5b2e88066163ec387f1e134d4b1728e720a00f0babb6abce809",
+    "app_asar_sha256": "4065adf060a72c66db5a300561eddb2e19a30a3242f7dd9da82d74986c4f951c",
+    "acceptanceArchiveAndAppHashesVerified": true,
+    "signatureReverified": true
+  },
+  "ios": {
+    "version": "2026.9.1",
+    "build": "3533",
+    "sourceCommit": "6b5abc1e7d96f49f50a74ffac6ad93061475bc3e",
+    "swiftApplicationSourceDiffEmpty": true,
+    "builtFor": "iOS 26.5 Simulator",
+    "distribution": "local build of official release source; not App Store binary",
+    "buildResourcePreparation": "Existing generated resources and dependency lock preparation preserved"
+  }
+}

@@ -1,5 +1,7 @@
 # Native Bitwarden usability verification
 
+**Historical 2026-10-15 record.** For the current standalone desk pair, use the [2026-10-16 rerun and readiness assessment](current-2026-10-16/assessment.md).
+
 Verified 2026-10-15 on the owned synthetic `review-fixes` ship with stock Vere 4.6. Connect remains the generic authorization service; the Bitwarden desk owns encrypted personal-vault storage and client protocol responses. No backend service, runtime patch or production library was added.
 
 ## Delivered behavior
