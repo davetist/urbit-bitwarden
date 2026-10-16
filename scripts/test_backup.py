@@ -9,6 +9,8 @@ import sys
 import tarfile
 import tempfile
 import unittest
+from unittest.mock import patch
+from types import SimpleNamespace
 
 import backup
 
@@ -105,6 +107,71 @@ class BackupTests(unittest.TestCase):
             target = root / 'restored'
             with self.assertRaisesRegex(ValueError, 'hash|size'): backup.restore_backup(bad, target)
             self.assertFalse(target.exists())
+
+    def test_archive_member_and_expanded_byte_limits_precede_restore(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory).resolve(); pier = self.pier(root); archive = root / 'backup.tgz'
+            backup.create_backup(pier, archive, '~zod')
+            for limits, message in [({'max_members': 3}, 'member limit'),
+                                    ({'max_bytes': 64}, 'expanded byte limit')]:
+                with self.subTest(limits=limits):
+                    target = root / 'restored'
+                    with self.assertRaisesRegex(ValueError, message):
+                        backup.verify_backup(archive, **limits)
+                    with self.assertRaisesRegex(ValueError, message):
+                        backup.restore_backup(archive, target, **limits)
+                    self.assertFalse(target.exists())
+            with self.assertRaisesRegex(ValueError, 'member limit'):
+                backup.create_backup(pier, root / 'too-small.tgz', '~zod', max_members=3)
+            self.assertFalse((root / 'too-small.tgz').exists())
+
+    def test_restore_refuses_archive_larger_than_free_space(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory).resolve(); pier = self.pier(root); archive = root / 'backup.tgz'
+            backup.create_backup(pier, archive, '~zod')
+            target = root / 'restored'
+            with patch('backup.shutil.disk_usage', return_value=SimpleNamespace(free=1)):
+                with self.assertRaisesRegex(ValueError, 'free space'):
+                    backup.restore_backup(archive, target)
+            self.assertFalse(target.exists())
+
+    def test_hidden_pax_metadata_cannot_bypass_expanded_limit(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory).resolve(); pier = self.pier(root); archive = root / 'backup.tgz'
+            backup.create_backup(pier, archive, '~zod')
+            decorated = root / 'pax.tgz'
+            with tarfile.open(archive) as source, tarfile.open(
+                    decorated, 'w:gz', pax_headers={'comment': 'x' * 100_000}) as destination:
+                for item in source:
+                    raw = source.extractfile(item).read() if item.isfile() else None
+                    destination.addfile(item, io.BytesIO(raw) if raw is not None else None)
+            with tarfile.open(archive) as source:
+                payload = sum(item.size for item in source)
+                members = len(source.getmembers())
+            with self.assertRaisesRegex(ValueError, 'expanded byte limit'):
+                backup.verify_backup(decorated, max_members=members, max_bytes=payload)
+            target = root / 'restored'
+            with self.assertRaisesRegex(ValueError, 'expanded byte limit'):
+                backup.restore_backup(decorated, target, max_members=members, max_bytes=payload)
+            self.assertFalse(target.exists())
+            with patch.object(backup, 'MAX_TAR_READ', 4096):
+                with self.assertRaisesRegex(ValueError, 'archive read limit'):
+                    backup.verify_backup(decorated)
+
+    def test_existing_tar_compression_formats_still_verify(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory).resolve(); pier = self.pier(root); archive = root / 'backup.tgz'
+            backup.create_backup(pier, archive, '~zod')
+            formats = [('w:', '.tar'), ('w:bz2', '.tar.bz2'), ('w:xz', '.tar.xz')]
+            if 'zst' in tarfile.TarFile.OPEN_METH: formats.append(('w:zst', '.tar.zst'))
+            for mode, suffix in formats:
+                with self.subTest(mode=mode):
+                    repacked = root / ('backup' + suffix)
+                    with tarfile.open(archive) as source, tarfile.open(repacked, mode) as destination:
+                        for item in source:
+                            raw = source.extractfile(item).read() if item.isfile() else None
+                            destination.addfile(item, io.BytesIO(raw) if raw is not None else None)
+                    self.assertEqual(backup.verify_backup(repacked)['ship'], '~zod')
 
     def test_destination_must_be_outside_source(self):
         with tempfile.TemporaryDirectory() as directory:

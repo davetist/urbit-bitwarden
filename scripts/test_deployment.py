@@ -3,6 +3,7 @@ import hashlib
 import json
 import contextlib
 import io
+import os
 from pathlib import Path
 import tempfile
 import unittest
@@ -50,6 +51,61 @@ class DeploymentTests(unittest.TestCase):
             source = root / 'dependencies/urbit-connect/desk/app/connect.hoon'; raw = source.read_bytes(); source.unlink()
             elsewhere = base / 'external.hoon'; elsewhere.write_bytes(raw); source.symlink_to(elsewhere)
             with self.assertRaisesRegex(ValueError, 'symlink'): deploy.load_source(alias)
+
+    def test_source_size_and_count_budgets_reject_untrusted_plan_inputs(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory).resolve(); self.source(root)
+            cases = [
+                ('MAX_MANIFEST_BYTES', 16, 'manifest.*limit'),
+                ('MAX_MANIFEST_ENTRIES', 2, 'manifest.*entry limit'),
+                ('MAX_SOURCE_PATHS', 2, 'path limit'),
+                ('MAX_SOURCE_FILES', 2, 'file limit'),
+                ('MAX_SOURCE_FILE_BYTES', 4, 'file.*byte limit'),
+                ('MAX_SOURCE_TOTAL_BYTES', 16, 'total.*byte limit'),
+            ]
+            for name, limit, message in cases:
+                with self.subTest(limit=name), patch.object(deploy, name, limit, create=True):
+                    with self.assertRaisesRegex(ValueError, message):
+                        deploy.load_source(root)
+
+    def test_source_exact_size_limits_preserve_normal_package(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory).resolve(); files = self.source(root)
+            manifest_size = (root / 'INTEGRATION-MANIFEST.json').stat().st_size
+            paths = sum(1 for desk in ('desk', 'dependencies/urbit-connect/desk')
+                        for _ in (root / desk).rglob('*'))
+            limits = {'MAX_MANIFEST_BYTES': manifest_size,
+                      'MAX_MANIFEST_ENTRIES': len(files), 'MAX_SOURCE_PATHS': paths,
+                      'MAX_SOURCE_FILES': len(files),
+                      'MAX_SOURCE_FILE_BYTES': max(map(len, files.values())),
+                      'MAX_SOURCE_TOTAL_BYTES': sum(map(len, files.values()))}
+            with contextlib.ExitStack() as stack:
+                for name, value in limits.items(): stack.enter_context(patch.object(deploy, name, value, create=True))
+                self.assertEqual(sum(map(len, deploy.load_source(root)['desks'].values())), len(files))
+
+    def test_wide_source_directory_stops_scanning_at_path_limit(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory).resolve(); self.source(root)
+            desk = root / 'dependencies/urbit-connect/desk'
+            for index in range(30): (desk / ('extra' + str(index))).mkdir()
+            scanned = 0
+            original = os.scandir
+
+            class CountingScan:
+                def __init__(self, path): self.iterator = original(path)
+                def __enter__(self): self.iterator.__enter__(); return self
+                def __exit__(self, *args): return self.iterator.__exit__(*args)
+                def __iter__(self): return self
+                def __next__(self):
+                    nonlocal scanned
+                    entry = next(self.iterator); scanned += 1
+                    return entry
+
+            with patch.object(deploy.os, 'scandir', CountingScan), \
+                    patch.object(deploy, 'MAX_SOURCE_PATHS', 3):
+                with self.assertRaisesRegex(ValueError, 'path limit'):
+                    deploy.load_source(root)
+            self.assertLessEqual(scanned, 4)
 
     def test_valid_pier_accepts_selected_runtime_symlink(self):
         with tempfile.TemporaryDirectory() as directory:

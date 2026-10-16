@@ -1,4 +1,6 @@
 """Private fixture API with redirects disabled and certificate verification."""
+if not __debug__:
+ raise RuntimeError('Fixture API requires assertions; run without optimized Python')
 import json,ssl,urllib.request,urllib.error,urllib.parse,secrets,hashlib,base64
 from install import ROOT,control
 from fixture import WORK, ORIGIN, EVIDENCE, BASE_PATH

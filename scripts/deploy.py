@@ -18,6 +18,12 @@ from noun import atom, cell, jam
 
 DESKS = {'connect': 'dependencies/urbit-connect/desk', 'bitwarden': 'desk'}
 ROUTES = {'/connect': 'connect', '/apps/connect': 'connect', '/apps/bitwarden': 'bitwarden'}
+MAX_MANIFEST_BYTES = 1024 * 1024
+MAX_MANIFEST_ENTRIES = 4096
+MAX_SOURCE_PATHS = 4096
+MAX_SOURCE_FILES = 256
+MAX_SOURCE_FILE_BYTES = 1024 * 1024
+MAX_SOURCE_TOTAL_BYTES = 8 * 1024 * 1024
 
 
 def no_symlinks(path):
@@ -69,6 +75,22 @@ def validate_pier(pier):
     return pier
 
 
+def read_limited(path, limit, label):
+    with path.open('rb') as stream: raw = stream.read(limit + 1)
+    if len(raw) > limit: raise ValueError(label + ' byte limit exceeded')
+    return raw
+
+
+def source_paths(directory):
+    pending = [directory]
+    while pending:
+        with os.scandir(pending.pop()) as children:
+            for child in children:
+                path = Path(child.path)
+                yield path
+                if child.is_dir(follow_symlinks=False): pending.append(path)
+
+
 def load_source(root):
     # The explicitly selected source directory can be an alias (including
     # macOS /tmp). Once canonicalized, every manifest/desk descendant is still
@@ -77,26 +99,33 @@ def load_source(root):
     manifest_path = no_symlinks(root / 'INTEGRATION-MANIFEST.json')
     if not manifest_path.is_file():
         raise ValueError('Extract a release source archive with INTEGRATION-MANIFEST.json first')
-    raw_manifest = manifest_path.read_bytes()
+    raw_manifest = read_limited(manifest_path, MAX_MANIFEST_BYTES, 'Source manifest')
     manifest = json.loads(raw_manifest)
     if not isinstance(manifest, dict): raise ValueError('Invalid source manifest')
+    if len(manifest) > MAX_MANIFEST_ENTRIES: raise ValueError('Source manifest entry limit exceeded')
     for name, digest in manifest.items():
         path = PurePosixPath(name)
         if (path.is_absolute() or '..' in path.parts or path.as_posix() != name or
                 not re.fullmatch('[0-9a-f]{64}', str(digest))):
             raise ValueError('Invalid source manifest entry')
-    desks = {}
+    desks = {}; path_count = 0; file_count = 0; total_bytes = 0
     for name, relative in DESKS.items():
         directory = no_symlinks(root / relative)
         if not directory.is_dir(): raise ValueError('Missing manifested desk: ' + name)
         entries = {}
-        for path in sorted(directory.rglob('*')):
+        for path in source_paths(directory):
+            path_count += 1
+            if path_count > MAX_SOURCE_PATHS: raise ValueError('Source path limit exceeded')
             no_symlinks(path)
             if path.is_dir(): continue
             if not path.is_file(): raise ValueError('Non-regular source file')
+            file_count += 1
+            if file_count > MAX_SOURCE_FILES: raise ValueError('Source file limit exceeded')
             key = path.relative_to(root).as_posix()
             if key not in manifest: raise ValueError('Source file missing from manifest: ' + key)
-            raw = path.read_bytes()
+            raw = read_limited(path, MAX_SOURCE_FILE_BYTES, 'Source file')
+            total_bytes += len(raw)
+            if total_bytes > MAX_SOURCE_TOTAL_BYTES: raise ValueError('Source total byte limit exceeded')
             if hashlib.sha256(raw).hexdigest() != manifest[key]:
                 raise ValueError('Source hash mismatch: ' + key)
             relative_name = path.relative_to(directory).as_posix()
