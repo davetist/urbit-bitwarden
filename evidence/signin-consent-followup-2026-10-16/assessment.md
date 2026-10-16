@@ -1,5 +1,7 @@
 # Sign-in and consent follow-up — 2026-10-16
 
+**Subsequently resolved:** the owner authorized the initial CLI exception, which is implemented and verified in the [CLI correction record](../cli-signin-fix-2026-10-16/assessment.md). The pending-decision statements below describe the earlier checkpoint.
+
 The iOS consent layout is fixed in the separate Connect desk. The unchanged official iOS 2026.9.1 (3533) source build completed actual SSO approval at default page scale, normal callback, local unlock and initial sync on a fresh iOS 26.5 iPhone 17 Pro Simulator. Both decisions stayed above the system-browser toolbar, and native touch scrolling revealed the complete retained permission explanation. [Native result](ios-results.json) and [Connect implementation/evidence](https://github.com/davetist/urbit-connect/blob/main/docs/consent-layout.md).
 
 The official CLI first-attempt issue is reproduced but **not fixed yet**. Eight new profiles each made one browser-approved sign-in attempt with the unmodified CLI 2026.9.1: seven passed and attempt five exited with the same `Refresh Access token error` as the earlier run. [Attempt results](baseline-results.json), [sanitized diagnosis](cli-diagnosis.json). The official archive/extracted-client and stock-runtime hashes were verified again. No prior authenticated profile counted as fresh acceptance.

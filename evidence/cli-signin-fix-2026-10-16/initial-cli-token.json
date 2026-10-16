@@ -1,0 +1,13 @@
+{
+  "initialCLISeconds": 360,
+  "initialCLIOutsideFiveMinuteWindow": true,
+  "immediateRetryResponseIdentical": true,
+  "otherClientSeconds": 60,
+  "otherClientExpiryEnforced": true,
+  "initialCLIAccessAfter60Seconds": true,
+  "renewedCLISeconds": 60,
+  "renewedCLIExpiryEnforced": true,
+  "refreshAfterExpiry": true,
+  "oldBearerReplacedOnRotation": true,
+  "ownerRevocationDeniesAccessAndRefresh": true
+}

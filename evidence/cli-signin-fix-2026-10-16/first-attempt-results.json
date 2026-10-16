@@ -1,0 +1,98 @@
+[
+  {
+    "attempt": 1,
+    "exitCode": 0,
+    "refreshAccessTokenError": false,
+    "seconds": 12.5
+  },
+  {
+    "attempt": 2,
+    "exitCode": 0,
+    "refreshAccessTokenError": false,
+    "seconds": 11.3
+  },
+  {
+    "attempt": 3,
+    "exitCode": 0,
+    "refreshAccessTokenError": false,
+    "seconds": 12.1
+  },
+  {
+    "attempt": 4,
+    "exitCode": 0,
+    "refreshAccessTokenError": false,
+    "seconds": 12.2
+  },
+  {
+    "attempt": 5,
+    "exitCode": 0,
+    "refreshAccessTokenError": false,
+    "seconds": 11.7
+  },
+  {
+    "attempt": 6,
+    "exitCode": 0,
+    "refreshAccessTokenError": false,
+    "seconds": 12.1
+  },
+  {
+    "attempt": 7,
+    "exitCode": 0,
+    "refreshAccessTokenError": false,
+    "seconds": 12.3
+  },
+  {
+    "attempt": 8,
+    "exitCode": 0,
+    "refreshAccessTokenError": false,
+    "seconds": 11.9
+  },
+  {
+    "attempt": 9,
+    "exitCode": 0,
+    "refreshAccessTokenError": false,
+    "seconds": 11.9
+  },
+  {
+    "attempt": 10,
+    "exitCode": 0,
+    "refreshAccessTokenError": false,
+    "seconds": 11.8
+  },
+  {
+    "attempt": 11,
+    "exitCode": 0,
+    "refreshAccessTokenError": false,
+    "seconds": 12.2
+  },
+  {
+    "attempt": 12,
+    "exitCode": 0,
+    "refreshAccessTokenError": false,
+    "seconds": 12.1
+  },
+  {
+    "attempt": 13,
+    "exitCode": 0,
+    "refreshAccessTokenError": false,
+    "seconds": 12
+  },
+  {
+    "attempt": 14,
+    "exitCode": 0,
+    "refreshAccessTokenError": false,
+    "seconds": 12.3
+  },
+  {
+    "attempt": 15,
+    "exitCode": 0,
+    "refreshAccessTokenError": false,
+    "seconds": 11.6
+  },
+  {
+    "attempt": 16,
+    "exitCode": 0,
+    "refreshAccessTokenError": false,
+    "seconds": 12.4
+  }
+]

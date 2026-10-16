@@ -35,7 +35,8 @@ claims=json.loads(base64.urlsafe_b64decode(b['access_token'].split('.')[1]+'==')
 assert A.call('/connect/owner/v1/revoke',{'sessionId':claims['sid']},owner=True)[0]==200
 assert sync(b)==401;assert refresh(a)[0]==400;assert refresh(b)[0]==400
 report_case('Connect revocation checked before grace response')
-a=login();expired=fresh();print('Waiting for real 60-second access/code expiry',flush=True);time.sleep(31);time.sleep(31)
+a=login();assert a['expires_in']==360;time.sleep(5.2);s,a,_=refresh(a);assert s==200 and a['expires_in']==60
+expired=fresh();print('Waiting for real 60-second refreshed-access/code expiry',flush=True);time.sleep(31);time.sleep(31)
 assert sync(a)==401;assert exchange(expired)[0]==400;s,b,_=refresh(a);assert s==200 and sync(b)==200
 report_case('actual access/code expiry and refresh recovery')
 # An unsigned or unrelated owner context cannot approve a pending request.

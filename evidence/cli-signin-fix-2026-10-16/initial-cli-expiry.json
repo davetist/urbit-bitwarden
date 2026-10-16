@@ -1,0 +1,8 @@
+{
+  "initialLifetimeSeconds": 360,
+  "acceptedBeforeDeadline": true,
+  "rejectedAfterDeadline": true,
+  "refreshAfterInitialExpiry": true,
+  "renewedLifetimeSeconds": 60,
+  "elapsedSeconds": 361.23
+}

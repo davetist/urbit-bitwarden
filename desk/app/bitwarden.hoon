@@ -162,7 +162,10 @@
     =.  sessions  (malt (skim ~(tap by sessions) |=([p=@t q=session] !=(~ (grant p)))))
     =.  cache.state  (malt (skim ~(tap by cache.state) |=([p=@t q=[old=@ux until=@da response=json]] &((~(has by sessions) p) (lth now.bowl until.q)))))
     =/  value  (~(got by sessions) sid)
-    =/  expiry  (add now.bowl ~s60)
+    ::  The official CLI refreshes below five minutes while persisting tokens.
+    ::  Only its first issuance needs headroom; rotated tokens retain 60 seconds.
+    =/  lifetime=@ud  ?:(&(=('cli' client.value) =(0 refresh.value)) 360 60)
+    =/  expiry  (add now.bowl (mul ~s1 lifetime))
     =/  claims
       %-  pairs:enjs:format
       :~  ['sub' s+'00000000-0000-4000-8000-000000000001']
@@ -184,7 +187,7 @@
     =/  response
       %-  pairs:enjs:format
       :~  ['access_token' s+token]  ['refresh_token' s+refresh]
-          ['expires_in' n+'60']  ['token_type' s+'Bearer']
+          ['expires_in' (numb:enjs:format lifetime)]  ['token_type' s+'Bearer']
           ['scope' s+'api offline_access']  ['Key' (opt:v account 'key')]
           ['PrivateKey' (opt:v account 'privateKey')]  ['AccountKeys' account-keys]
           ['Kdf' n+'0']  ['KdfIterations' n+'600000']

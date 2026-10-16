@@ -1,0 +1,9 @@
+{
+  "client": "unmodified official CLI 2026.9.1",
+  "encrypted_create": true,
+  "soft_delete_trash": true,
+  "restore": true,
+  "sync_and_decrypt": true,
+  "lock_and_local_reunlock": true,
+  "request_or_journal_inspection": false
+}

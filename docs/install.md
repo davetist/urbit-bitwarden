@@ -49,7 +49,7 @@ The command reports successful control requests, not a substitute for an end-use
 3. Configure an official client with the displayed server URL, choose single sign-on and follow the page's organization instructions.
 4. Unlock locally, create one synthetic login, sync it to a second official client, then delete/restore it. Confirm the original ship home page still opens.
 
-Updates preserve the existing session policy: 60-second access tokens, a 30-day absolute grant lifetime and a five-second retry grace. Application reloads may require an in-flight request to retry. The first upgrade from the vulnerable Bitwarden token format revokes existing Bitwarden sessions and requires a new SSO sign-in; encrypted account keys, ciphers and folders are preserved. Later reloads preserve current sessions and the five-second retry grace.
+The session policy uses a six-minute initial CLI SSO access token and 60-second access tokens for subsequent newly minted CLI tokens and all other clients. The 30-day absolute grant lifetime and five-second retry grace remain unchanged. Application reloads may require an in-flight request to retry. The first upgrade from the vulnerable Bitwarden token format revokes existing Bitwarden sessions and requires a new SSO sign-in; encrypted account keys, ciphers and folders are preserved. Later reloads preserve current sessions and the five-second retry grace.
 
 ## Native HTTPS and renewal
 

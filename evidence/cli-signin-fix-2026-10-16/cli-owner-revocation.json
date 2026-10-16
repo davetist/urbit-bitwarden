@@ -1,0 +1,6 @@
+{
+  "officialCLI": "2026.9.1",
+  "syncBeforeRevocation": true,
+  "ownerRevocation": true,
+  "syncDeniedAfterRevocation": true
+}

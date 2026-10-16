@@ -4,13 +4,16 @@
 
 Owner decision, 2026-10-14: retaining authorization tokens in Urbit history is an accepted known limitation; these tokens cannot decrypt the vault or reveal passwords. It is not a blocker for making the Bitwarden desk usable. Eliminating this retention is not a release prerequisite. The separate token-derivation issues are fixed in the current source. This decision does not mark restricted journal validation complete.
 
-Keep the current lifetimes unchanged:
+The 2026-10-16 CLI sign-in correction adds one owner-authorized compatibility exception: its initial SSO access token lasts six minutes, outside the official CLI’s five-minute early-refresh window. Access tokens newly minted by refresh and all other clients retain the 60-second access lifetime. The original retention decision remains unchanged.
 
 | Control | Current behavior retained |
 |---|---|
-| Bitwarden access token | 60 seconds |
+| Initial CLI SSO access token | Six minutes |
+| Other Bitwarden access tokens | 60 seconds, including newly minted CLI refresh responses |
 | Connect authorization grant | 30-day absolute lifetime; refresh does not extend it |
 | Identical refresh-response retry | Five-second grace, with native active-state cleanup |
+
+During the existing five-second retry grace, an identical cached response can still contain the initial six-minute token. JWT expiration, server expiry and `expires_in` agree. Owner revocation remains authoritative during the initial token lifetime.
 
 SSO separates vault decryption from backend authorization. In the supported SSO flow the master password and unwrapped vault keys stay in the client, while authorization codes, bearer/refresh tokens and owner cookies can enter event history. A still-valid copied token may authorize operations on encrypted vault data; it does not itself decrypt passwords. This is the usual stolen-token consequence, with the Urbit-specific retention surface described here. Owner authority has its own scope and is not limited to a Bitwarden token.
 
@@ -22,7 +25,7 @@ Stock Vere already provides `roll` to start a new event-log epoch and `chop` to 
 
 This is history retention management, not a guarantee of secure erasure. Retained epochs, current snapshots/state, separate backups and filesystem snapshots are separate copies. `pack`/`meld` compact or deduplicate state rather than selectively removing journal credentials. Maintenance applies to the whole pier; the Bitwarden desk must not silently prune other apps' history. Any operator procedure needs its own explicit target, recovery boundary and verification. No journal maintenance was executed for this decision.
 
-This native maintenance route remains a follow-up opportunity, not a prerequisite for the desk's usability work. The current session lifetimes are not being shortened as a substitute.
+This native maintenance route remains a follow-up opportunity, not a prerequisite for the desk's usability work. Session lifetimes are not being shortened as a substitute. The initial CLI compatibility exception above is unrelated to retention maintenance.
 
 ## Separate outstanding work
 
