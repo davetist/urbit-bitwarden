@@ -1,0 +1,77 @@
+{
+  "client": "unmodified official CLI 2026.9.1",
+  "newProfileAttempts": [
+    {
+      "attempt": 1,
+      "exitCode": 0,
+      "refreshAccessTokenError": false,
+      "seconds": 12.4
+    },
+    {
+      "attempt": 2,
+      "exitCode": 0,
+      "refreshAccessTokenError": false,
+      "seconds": 11.7
+    },
+    {
+      "attempt": 3,
+      "exitCode": 0,
+      "refreshAccessTokenError": false,
+      "seconds": 12
+    },
+    {
+      "attempt": 4,
+      "exitCode": 0,
+      "refreshAccessTokenError": false,
+      "seconds": 12.2
+    },
+    {
+      "attempt": 5,
+      "exitCode": 1,
+      "refreshAccessTokenError": true,
+      "seconds": 11
+    },
+    {
+      "attempt": 6,
+      "exitCode": 0,
+      "refreshAccessTokenError": false,
+      "seconds": 11.7
+    },
+    {
+      "attempt": 7,
+      "exitCode": 0,
+      "refreshAccessTokenError": false,
+      "seconds": 11.9
+    },
+    {
+      "attempt": 8,
+      "exitCode": 0,
+      "refreshAccessTokenError": false,
+      "seconds": 12.3
+    }
+  ],
+  "failedAttempts": 1,
+  "passedAttempts": 7,
+  "failure": "Refresh Access token error",
+  "sourceTag": "cli-v2026.9.1",
+  "sourceSHA256": {
+    "api.service.ts": "968ce026d2d86f748535dd4f207f305a0f8b52dc180f6450dbf2b0928ec2372f",
+    "token.service.ts": "0cfe945e69a133a5981433d1f9e9f2346d033fac02102bc8808140f4a41e96da",
+    "login.command.ts": "b0c3f15f627105a1231b5a676743af51106f73c32564cb2152bbc398aa75e015",
+    "node-api.service.ts": "59cfd5daaff1d5a94891eea1fcb69fb404bed22c4f268d4ed69a52b3a77b1682"
+  },
+  "sourceFindings": [
+    "setTokens awaits access-token storage before refresh-token storage",
+    "tokenNeedsRefresh defaults to a five-minute threshold",
+    "internalRefreshToken calls the error callback when neither refresh token nor API credentials exist"
+  ],
+  "currentDeskAccessLifetimeSeconds": 60,
+  "proposedInitialCLISeconds": 360,
+  "policyChangeAuthorized": false,
+  "authenticationSourceModified": false,
+  "newerOfficialReleaseChecked": {
+    "tag": "cli-v2026.10.0",
+    "tokenServiceAndLoginCommandUnchanged": true,
+    "runtimeTested": false
+  }
+}

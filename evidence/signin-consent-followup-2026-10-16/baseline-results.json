@@ -1,0 +1,50 @@
+[
+  {
+    "attempt": 1,
+    "exitCode": 0,
+    "refreshAccessTokenError": false,
+    "seconds": 12.4
+  },
+  {
+    "attempt": 2,
+    "exitCode": 0,
+    "refreshAccessTokenError": false,
+    "seconds": 11.7
+  },
+  {
+    "attempt": 3,
+    "exitCode": 0,
+    "refreshAccessTokenError": false,
+    "seconds": 12
+  },
+  {
+    "attempt": 4,
+    "exitCode": 0,
+    "refreshAccessTokenError": false,
+    "seconds": 12.2
+  },
+  {
+    "attempt": 5,
+    "exitCode": 1,
+    "refreshAccessTokenError": true,
+    "seconds": 11
+  },
+  {
+    "attempt": 6,
+    "exitCode": 0,
+    "refreshAccessTokenError": false,
+    "seconds": 11.7
+  },
+  {
+    "attempt": 7,
+    "exitCode": 0,
+    "refreshAccessTokenError": false,
+    "seconds": 11.9
+  },
+  {
+    "attempt": 8,
+    "exitCode": 0,
+    "refreshAccessTokenError": false,
+    "seconds": 12.3
+  }
+]

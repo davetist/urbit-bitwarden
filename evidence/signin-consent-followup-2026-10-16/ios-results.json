@@ -1,0 +1,13 @@
+{
+  "officialSourceVersion": "2026.9.1 (3533)",
+  "simulator": "iOS 26.5, iPhone 17 Pro",
+  "freshSimulatorAndProfile": true,
+  "pageScaleChanged": false,
+  "decisionButtonsVisibleAboveBrowserToolbar": true,
+  "nativeTouchScrollShowsFinalPermissionParagraph": true,
+  "approveNativeCallback": true,
+  "localUnlock": true,
+  "automaticInitialSync": true,
+  "recordsVisible": 4,
+  "pushNotificationsEnabled": false
+}
