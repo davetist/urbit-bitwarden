@@ -112,10 +112,6 @@
   ?.  =(%handle-http-request mark)  (on-poke:def mark vase)
   =/  [rid=@ta req=inbound-request:eyre]  !<([@ta inbound-request:eyre] vase)
   ?>  (http-watch:ce sup.bowl src.bowl /http-response/[rid])
-  ::  Official clients import the encrypted personal vault in one request.
-  =/  request-path  (head (split:v '?' url.request.req))
-  =/  body-limit  ?:(=(request-path '/apps/bitwarden/api/ciphers/import') 6.291.456 262.144)
-  ?:  &(?=(^ body.request.req) (gth p.u.body.request.req body-limit))  (reply rid 413 ~)
   =/  attempt  (mule |.(!>((handle rid req))))
   ?:  ?=(%| -.attempt)  (reply rid 400 invalid)
   !<((quip card _this) p.attempt)
@@ -282,15 +278,6 @@
         ['MasterKeyWrappedUserKey' (opt:v account 'key')]
         ['Salt' (opt:v account 'email')]
     ==
-  ::  The 64 KiB / 4 MiB record budget excludes the deletion timestamp.
-  ::  A server-owned ISO timestamp replaces null with 22 additional bytes.
-  ::  Reserve at most 22 bytes per retained item: 65,558 per record and
-  ::  4,216,304 total serialized bytes at the existing 1,000-item cap.
-  ::  Normalizing only deletedDate preserves every previously accepted item.
-  ++  cipher-size
-    |=  value=json
-    ^-  @ud
-    (met 3 (en:json:html (put:v value 'deletedDate' ~)))
   ++  set-deleted
     |=  [rid=@ta id=@t method=@tas deleted=?]
     ^-  (quip card _this)
@@ -303,12 +290,7 @@
     =/  stamp=json  s+(iso:v next)
     =/  stored=json  (put:v u.old 'deletedDate' ?:(deleted stamp ~))
     =.  stored  (put:v stored 'revisionDate' stamp)
-    ::  Hard serialized bounds include the reserved lifecycle metadata.
-    ?:  (gth (met 3 (en:json:html stored)) 65.558)  (reply rid 413 ~)
-    =/  updated  (~(put by ciphers) id stored)
-    =/  size  (roll ~(val by updated) |=([value=json total=@ud] (add total (met 3 (en:json:html value)))))
-    ?:  (gth size 4.216.304)  (reply rid 413 ~)
-    =.  ciphers  updated
+    =.  ciphers  (~(put by ciphers) id stored)
     =.  revision.state  next
     (reply rid 200 ?:(deleted ~ stored))
   ++  cipher-record
@@ -341,12 +323,7 @@
     =/  next=@da  (next-time:v now.bowl revision.state)
     =/  stamp=json  s+(iso:v next)
     =/  stored=json  (cipher-record id data old stamp)
-    ?:  (gth (cipher-size stored) 65.536)  (reply rid 413 ~)
-    ?:  &(=(~ old) (gte (lent ~(tap by ciphers)) 1.000))  (reply rid 429 ~)
-    =/  updated  (~(put by ciphers) id stored)
-    =/  size  (roll ~(val by updated) |=([value=json total=@ud] (add total (cipher-size value))))
-    ?:  (gth size 4.194.304)  (reply rid 413 ~)
-    =.  ciphers  updated
+    =.  ciphers  (~(put by ciphers) id stored)
     =.  revision.state  next
     (reply rid 200 stored)
   ++  fresh-id
@@ -362,10 +339,6 @@
     |=  [id=@t name=json stamp=json]
     ^-  json
     (pairs:enjs:format ~[['object' s+'folder'] ['id' s+id] ['name' name] ['revisionDate' stamp]])
-  ++  folder-bytes
-    |=  values=(map @t json)
-    ^-  @ud
-    (roll ~(val by values) |=([value=json total=@ud] (add total (met 3 (en:json:html value)))))
   ++  save-folder
     |=  [rid=@ta id=@t data=json]
     ^-  (quip card _this)
@@ -373,11 +346,7 @@
     ?.  ?=([%s *] name)  (reply rid 400 ~)
     =/  next=@da  (next-time:v now.bowl revision.state)
     =/  stored  (folder-record id name s+(iso:v next))
-    ?:  (gth (met 3 (en:json:html stored)) 65.536)  (reply rid 413 ~)
-    =/  updated  (~(put by folders) id stored)
-    ?:  (gth (lent ~(tap by updated)) 1.000)  (reply rid 429 ~)
-    ?:  (gth (folder-bytes updated) 1.048.576)  (reply rid 413 ~)
-    =.  folders  updated
+    =.  folders  (~(put by folders) id stored)
     =.  revision.state  next
     (reply rid 200 stored)
   ++  remove-folders
@@ -412,8 +381,6 @@
     =?  directories  =(directories ~)  a+~
     =?  links  =(links ~)  a+~
     ?.  &(?=([%a *] directories) ?=([%a *] links))  (reply rid 400 ~)
-    ?:  (gth (add (lent p.incoming) (lent ~(tap by ciphers))) 1.000)  (reply rid 429 ~)
-    ?:  (gth (lent p.directories) 1.000)  (reply rid 429 ~)
     =/  next=@da  (next-time:v now.bowl revision.state)
     =/  stamp=json  s+(iso:v next)
     ::  All changes stay in local candidates until the whole import succeeds.
@@ -435,10 +402,7 @@
         $(directory-list t.directory-list, directory-index +(directory-index), indices (~(put by indices) directory-index hint))
       =^  id=@t  number  (fresh-id number vault dirs)
       =/  stored=json  (folder-record id name stamp)
-      ?:  (gth (met 3 (en:json:html stored)) 65.536)  [413 dirs number indices]
       =.  dirs  (~(put by dirs) id stored)
-      ?:  (gth (lent ~(tap by dirs)) 1.000)  [429 dirs number indices]
-      ?:  (gth (folder-bytes dirs) 1.048.576)  [413 dirs number indices]
       $(directory-list t.directory-list, directory-index +(directory-index), indices (~(put by indices) directory-index id))
     ?.  =(200 status.prepared)  (reply rid status.prepared ~)
     =.  dirs  dirs.prepared
@@ -465,7 +429,6 @@
     =.  relations  u.mapped
     =/  cipher-list=(list json)  p.incoming
     =/  cipher-index=@ud  0
-    =/  bytes=@ud  (roll ~(val by vault) |=([value=json total=@ud] (add total (cipher-size value))))
     =/  imported=[status=@ud vault=(map @t json) number=@ud]
       |-
       ?~  cipher-list  [200 vault number]
@@ -479,10 +442,6 @@
       ?:  &(!=(~ folder) !(~(has by dirs) (str:v folder)))  [400 vault number]
       =^  id=@t  number  (fresh-id number vault dirs)
       =/  stored=json  (cipher-record id linked ~ stamp)
-      =/  size=@ud  (cipher-size stored)
-      ?:  (gth size 65.536)  [413 vault number]
-      =.  bytes  (add bytes size)
-      ?:  (gth bytes 4.194.304)  [413 vault number]
       $(cipher-list t.cipher-list, cipher-index +(cipher-index), vault (~(put by vault) id stored))
     ?.  =(200 status.imported)  (reply rid status.imported ~)
     =.  folders  dirs

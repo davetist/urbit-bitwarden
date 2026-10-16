@@ -1,5 +1,7 @@
 # Known limitations and accepted scope
 
+The [development policy](readiness-policy.md) removes synthetic/soak/trial qualification gates. Actual unsupported features and remaining technical controls are recorded separately in [the feature scope](vaultwarden-parity.md) and [resource controls](resource-controls.md).
+
 ## Retained authorization tokens cannot decrypt or read passwords
 
 Owner decision, 2026-10-14: retaining authorization tokens in Urbit history is an accepted known limitation; these tokens cannot decrypt the vault or reveal passwords. It is not a blocker for making the Bitwarden desk usable. Eliminating this retention is not a release prerequisite. The separate token-derivation issues are fixed in the current source. This decision does not mark restricted journal validation complete.

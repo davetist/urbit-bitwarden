@@ -101,15 +101,6 @@ def main():
             ('duplicate relationship', {'folders': [{'name': '2.must-not-persist'}],
                                         'ciphers': [valid],
                                         'folderRelationships': [{'key': 0, 'value': 0}] * 2}, 400),
-            ('item size bound', {'folders': [{'name': '2.must-not-persist'}],
-                                 'ciphers': [valid, dict(valid, notes='x' * 65536)]}, 413),
-            ('cipher count bound', {'folders': [], 'ciphers': [valid] * 1001}, 429),
-            ('folder count bound', {'folders': [{'name': '2.bounded'}] * 1001,
-                                    'ciphers': []}, 429),
-            ('folder aggregate bound', {'folders': [{'name': '2.' + 'x' * 64000}] * 17,
-                                        'ciphers': []}, 413),
-            ('cipher aggregate bound', {'folders': [{'name': '2.must-not-persist'}],
-                                        'ciphers': [dict(valid, notes='x' * 64000)] * 66}, 413),
         ]
         for label, payload, expected in rejected:
             before = snapshot()

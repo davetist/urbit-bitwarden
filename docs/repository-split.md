@@ -31,7 +31,7 @@ The original evidence files and screenshots are unchanged historical records. Th
 
 Private piers, credentials, client profiles, downloads and build products were intentionally left in the original checkout, outside Git. They are not silently adopted or rebound by this split. Fresh setup creates an owned fixture beneath this repository's `.work/`; any separate migration of an existing fixture must preserve its ownership and stopped-copy boundary.
 
-The split is not new security validation. The subsequent token fixes are now present in both tested repositories; restricted credential-state, journal and adversarial checks remain deferred. Historical authorization-token retention remains an accepted limitation: those tokens cannot decrypt the vault or read passwords. The existing client/platform qualification limits remain in [client support](client-support.md).
+The split is not new security validation. The subsequent token fixes are now present in both tested repositories; restricted credential-state, journal and adversarial checks remain deferred. Historical authorization-token retention remains an accepted limitation: those tokens cannot decrypt the vault or read passwords. Historical client/platform observations remain in [client support](client-support.md); they are not mandatory qualification gates.
 
 ## Separation checks
 
