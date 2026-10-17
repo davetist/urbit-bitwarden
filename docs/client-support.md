@@ -1,10 +1,12 @@
 # Official-client support
 
-The [current development policy](readiness-policy.md) supersedes old qualification gates. The [personal Vaultwarden parity scope](vaultwarden-parity.md) defines the requested target; the tables below describe existing implementation and historical observations, not prerequisites for daily use.
+The [current development policy](readiness-policy.md) supersedes old qualification gates. The [personal Vaultwarden parity scope](vaultwarden-parity.md) defines the requested target; the tables below record historical observations, not prerequisites for daily use.
 
 The Bitwarden desk is an Urbit-native personal-vault backend. Connect owns generic authorization; the Bitwarden desk owns encrypted vault storage and Bitwarden protocol behavior. Stock Vere/Gall/Eyre serve the backend. Official distribution clients are unmodified; the iOS Simulator build uses unchanged official release source.
 
 ## Versions and evidence boundary
+
+The subsequent [personal-vault implementation](personal-vault-api.md) changes these sources. Its new bulk/archive, attachment, domain and account-management contracts have not been exercised in the historical runs below.
 
 The **2026-10-16 rerun** exercised both then-current standalone desks together on a fresh owned fake ship. It includes the JWT/session-identifier repairs and the repository split. [Readiness assessment](../evidence/current-2026-10-16/assessment.md), [actual results](../evidence/current-2026-10-16/results.json), and [tested source hashes](../evidence/current-2026-10-16/source-pair.json) replace the older run as the evidence for these workflows. Commit fields identify starting HEADs; file hashes identify the tested working trees. They are provenance, not compatibility pins.
 
@@ -23,23 +25,23 @@ The owner UI completed legacy extension migration and enabled all four client re
 
 Manifest-verified native deployment and full stopped-pier recovery passed on the owned fake ship. The restored runtime booted and official CLI locally unlocked/synchronized/decrypted a known item; the original stopped copy was preserved and never ran concurrently. This does not qualify networked real-ship migration or public certificate renewal. [Deployment evidence](../evidence/review-fixes/native-packaged-deploy.json), [recovery evidence](../evidence/review-fixes/native-recovery-functional.json).
 
-| Action | Implementation and current evidence | Validation boundary |
+| Action in the historical run | Implementation at that time and observed evidence | Historical validation boundary |
 |---|---|---|
 | Enrollment and connection setup | Owner UI completed legacy extension migration and enabled CLI, extension, desktop and mobile registrations | Fresh-account UI behavior is separate from each installed client’s SSO acceptance |
 | Enterprise SSO and local unlock | Passed in CLI, extension, signed macOS desktop and official-source iOS Simulator | Android/physical devices/other desktop OS not exercised; no new transmission audit |
 | Personal item create/edit/sync | Four types passed in CLI; extension password edit/autofill, desktop note edit, and iOS note creation/title/body edit passed with CLI readback | UI acceptance is limited to those demonstrated item actions |
 | Folders and personal import | Native API checks and official CLI folder/import round-trip passed, including preserved item associations | Other installed clients still need acceptance |
-| Trash/restore | Native lifecycle/capacity tests, official CLI and extension previously exercised | Automatic 30-day trash purge is not implemented |
+| Trash/restore | Native lifecycle/capacity tests, official CLI and extension previously exercised | Automatic purge was not implemented in that run |
 | Lock and local re-unlock | Official CLI passed; iOS Simulator restart/local re-unlock passed | Other app restart/unlock combinations not separately exercised |
 | Automatic refresh | Initial automatic sync demonstrated in extension, macOS desktop and iOS Simulator; explicit cross-client sync also passed | Long-interval fallback timing remains source-only; immediate push unsupported |
 | Personal export | Official CLI local JSON export → delete → import recovered all four personal types and folder relationships | Password-protected JSON remains source-confirmed, not runtime-observed |
 | Native installation and account recovery | Manifested two-desk deployment and full stopped-pier restore passed; restored native runtime and official CLI unlock/sync/decrypt passed | Owned fake-ship rehearsal; no networked real-ship migration or public certificate renewal claimed |
 | Ordinary password sign-in | Server rejects prelogin with `sso_required`; prior CLI rejection evidence retained | Fresh pre-transmission verification deferred |
 | Master-password re-prompt | Action-specific behavior; export's upstream default confirms the password locally | Other prompts and expanded transmission checks remain outside this qualification |
-| Password change, account deletion, account recovery service | Unsupported by the desk | Restoring an intact backup is separate from recovering a forgotten password |
-| API keys, organizations, attachments, Sends, passkeys, immediate push | Outside this personal-vault version | No client-compatibility claim |
+| Password change, account deletion, account recovery service | Unsupported in that source version | Restoring an intact backup is separate from recovering a forgotten password |
+| API keys, organizations, attachments, Sends, passkeys, immediate push | Outside that source version | No client-compatibility claim |
 
-The stock client may display a 30-day bin-expiry message. This desk supports explicit restore and permanent deletion, not automatic expiry.
+The stock client may display a 30-day bin-expiry message. Current source supports explicit restore/permanent deletion and optional operator-configured automatic expiry, disabled by default. See the [current implementation](personal-vault-api.md).
 
 ## Server URL and native clients
 
@@ -87,9 +89,9 @@ Native Behn timers remove expired cached token responses from active application
 
 Expanded client-action transmission checks and journal/security validation are deferred by request. Source compatibility and functional acceptance do not establish a new pre-transmission guarantee for unsupported actions. The previously identified token-derivation repairs are present in the tested sources. Native cache/migration tests passed, but these functional workflows do not constitute expanded journal or adversarial validation.
 
-## Verification commands
+## Historical verification commands
 
-Use the owned review fixture and its matching enrollment/client profiles. Do not run parallel CLI processes against one profile. These are functional/correctness commands, not a record that every command has passed the current changes:
+These commands are retained as historical reference and are not authorization to run tests under the current no-synthetic/no-soak direction. Use the owned review fixture and its matching enrollment/client profiles. Do not run parallel CLI processes against one profile. These are functional/correctness commands, not a record that every command has passed the current changes:
 
 ```sh
 CONNECT_BW_FIXTURE=review-fixes python3 scripts/test_fixture.py
@@ -105,4 +107,4 @@ CONNECT_BW_FIXTURE=review-fixes python3 scripts/test_official_usability.py
 CONNECT_BW_FIXTURE=review-fixes node scripts/browser.mjs --functional-only
 ```
 
-The browser's functional-only mode disables request/key capture. Existing mixed authorization/replay suites and journal audit remain available as historical tooling, but are outside this execution and must not be reported as newly passing. Password-protected export, Android installed-client behavior, physical devices and other desktop operating systems have not been exercised here. Current native deployment/recovery, official-client workflows and CLI JSON export/import results are linked above. No CORS workaround or desktop sandbox change was needed for the tested default signed macOS client.
+The browser's functional-only mode disables request/key capture. Existing mixed authorization/replay suites and journal audit remain available as historical tooling, but are outside this execution and must not be reported as newly passing. Password-protected export, Android installed-client behavior, physical devices and other desktop operating systems have not been exercised here. Historical native deployment/recovery, official-client workflows and CLI JSON export/import results are linked above. No CORS workaround or desktop sandbox change was needed for the tested default signed macOS client.

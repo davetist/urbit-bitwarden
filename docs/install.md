@@ -71,3 +71,5 @@ Omit `--apply --apply-tls` to inspect that certificate replacement plan. For man
 ## Known limitation, with precise scope
 
 Urbit journal history may retain **access/refresh authorization tokens. These tokens cannot decrypt the vault or read its passwords.** A still-valid stolen token can authorize access to the encrypted vault, subject to its permissions; it is not the master password or unwrapped vault key. This is an accepted known limitation, not a deployment blocker. Session lifetimes remain unchanged. See [known limitations](known-limitations.md) and [backup/recovery](backup.md).
+
+Official-client password/KDF/key-management and some purge/delete requests can also leave password-derived verification hashes in history and backups. This approved management payload boundary is separate from authorization tokens; see [account-management request history](known-limitations.md#account-management-request-history).

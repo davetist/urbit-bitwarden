@@ -21,6 +21,12 @@ SSO separates vault decryption from backend authorization. In the supported SSO 
 
 For ordinary Bitwarden HTTP routes, Vere constructs an event input containing the original request headers and body. Gall-side hashing, route rejection and cache expiry do not redact that original input. This does not mean that the disk write always occurs before Gall evaluation, or that every native HTTP path becomes an event. Read-only runtime scry/cache exceptions do not implement the full Bitwarden API. See [request construction](https://github.com/urbit/vere/blob/vere-v4.6/pkg/vere/io/http.c#L1518-L1540) and [completed-event persistence](https://github.com/urbit/vere/blob/vere-v4.6/pkg/vere/mars.c#L235-L250).
 
+## Account-management request history
+
+Owner decision, 2026-10-17: support official-client password/KDF/key changes, purge and account deletion after disclosure of their request payloads. Some of these requests carry password-derived verification hashes. They can remain in Urbit event history and full-pier backups even though the desk discards them from active account state. These hashes are distinct from authorization tokens and are not covered by the token-only limitation above.
+
+Connect remains the sole backend login and authorization authority. The desk neither stores a password verifier in active state nor uses the transmitted hashes to authorize operations. Plaintext vault passwords and unwrapped keys remain client-held. Logical account/item deletion does not erase past events or backup copies. The [account-management notes](personal-vault-api.md#account-encryption-management) describe the supported contracts and client UI boundaries.
+
 ## Existing native history-retention tools
 
 Stock Vere already provides `roll` to start a new event-log epoch and `chop` to remove epochs older than the newest two. These are existing runtime maintenance tools, require a stopped ship, and do not change application session lifetimes. They offer a practical way to reduce accumulated historical copies without a runtime patch or another service. See the [official roll and chop documentation](https://docs.urbit.org/user-manual/running/vere#chop).

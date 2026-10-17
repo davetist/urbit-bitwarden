@@ -1,0 +1,114 @@
+{
+  "compiled": true,
+  "validation": "production source compilation only; no agent events or test inputs",
+  "environment": "upstream double-compilation of actual Hoon, Arvo, Lull and Zuse sources before the desk",
+  "command": [
+    "vere-v4.6",
+    "eval"
+  ],
+  "compiler_sha256": "1794e75c15162298d43c1e5e2e4f643e989caf04360562af170050a0d919f1ce",
+  "adapter_sha256": "41261607d325893ae9e715c68fb90a81b05799065ebdadb495129ab71b138f92",
+  "compiler_input_sha256": "a4d80aee7e0a4d5786c0ba1fc732543f9416cec4c5736181dd83f619be698122",
+  "expected_zuse": 408,
+  "actual_zuse": 408,
+  "source_hashes_unchanged": true,
+  "sources": [
+    {
+      "path": "urbit/pkg/arvo/sys/hoon.hoon",
+      "sha256": "6d9e2e85aac5c01374d51fe93ac25d8c2aaf387b0401159384637f7cc7fa94a8"
+    },
+    {
+      "path": "urbit/pkg/arvo/sys/arvo.hoon",
+      "sha256": "1aea3ec9e9a9324b6247695503c90c0de1e6f73dde70b4bf5b7d134c7823fdc6"
+    },
+    {
+      "path": "urbit/pkg/arvo/sys/lull.hoon",
+      "sha256": "98b9c80b7722df1fbb54357d200577c045705198b2fa5df998fd32cd1dacfef3"
+    },
+    {
+      "path": "urbit/pkg/arvo/sys/zuse.hoon",
+      "sha256": "eeb392d750757ec91aa3848d5a35ad4ba20557be85e62293fc63f72933343d73"
+    },
+    {
+      "path": "desk/sur/connect.hoon",
+      "sha256": "840ed5911b92828c1ab4bf1161a0380db419bc3723a49d285f29db9a44ccedcd"
+    },
+    {
+      "path": "urbit/pkg/base-dev/lib/skeleton.hoon",
+      "sha256": "c7c654a91c5dc1a535d4a76b019ec175955e52961b1ddff70ad49121208d20f5"
+    },
+    {
+      "path": "urbit/pkg/base-dev/lib/default-agent.hoon",
+      "sha256": "70a8af06601e8d1b75b261b2ac8b2cb06d5622baa1d1b1f8fec9236ce167d113"
+    },
+    {
+      "path": "urbit/pkg/base-dev/lib/server.hoon",
+      "sha256": "d0a566085300a6deae334b98c4844dc11e90f0315015a91e97c2fbb61db31d68"
+    },
+    {
+      "path": "urbit/pkg/base-dev/lib/primitive-rsa.hoon",
+      "sha256": "d3371143e1aedf5266474084c18652eeb1b6d2011449d078f90de4b2e8f7a01b"
+    },
+    {
+      "path": "urbit/pkg/base-dev/sur/asn1.hoon",
+      "sha256": "f67a4ced252b4b7ba04c31ef7da3555cd18e3a9036e59eb76fb71c3a989e3997"
+    },
+    {
+      "path": "urbit/pkg/base-dev/lib/der.hoon",
+      "sha256": "5cf9be31ddc14326ac861d31eb8048abea3a185680e4ca050086684ea5755d98"
+    },
+    {
+      "path": "urbit/pkg/base-dev/lib/pkcs.hoon",
+      "sha256": "fdf2814d2a8529e1fe449aba33d90dd4c0d661d6bcee899d86ffc6375ae692b7"
+    },
+    {
+      "path": "urbit/pkg/base-dev/lib/jose.hoon",
+      "sha256": "c4d59c7b0c1c86a6c215a6b732a7ed69db1c5e7331f4c02f5b8e6ac99cd43320"
+    },
+    {
+      "path": "desk/lib/vault-json.hoon",
+      "sha256": "6b5695a015735f187200b27e3de8a30005c3caa7ddc297304952e98be665f30f"
+    },
+    {
+      "path": "desk/lib/connect-entry.hoon",
+      "sha256": "5b8b640431030691c9e1d4c1a604f5d22fcd04066a480749dd3b60dfede3e7f4"
+    },
+    {
+      "path": "desk/lib/vault-assets.hoon",
+      "sha256": "25b71e5b5e69ff003a7ab63ff87a9614c00038e4ee20a538dc6f672eaac0f3b5"
+    },
+    {
+      "path": "desk/lib/vault-attachments.hoon",
+      "sha256": "5665b284f45ea33db1e01e2e70e0fd1bc7615cc9566ed14a853c3447b92833e8"
+    },
+    {
+      "path": "desk/lib/vault-domains.hoon",
+      "sha256": "3bf31d2ffa2cdf213de9d47dffbe7cf113f975f271d085f82282955f0a92559a"
+    },
+    {
+      "path": "desk/lib/vault-keys.hoon",
+      "sha256": "f055d341d753da0370ec5262ba03bf4bd0d3d9fc4a9ab51c1459b88e09be5d4f"
+    },
+    {
+      "path": "desk/app/bitwarden.hoon",
+      "sha256": "0f7c21e9e76e35be58f94b533128635b42e02c758231de7dcb3066d0cb675f8c"
+    },
+    {
+      "path": "desk/sys.kelvin",
+      "sha256": "0a66fa5dec5893d2e3a8e854c4d6c81d62882863e4c8574ce18da9daea5a7cc4"
+    }
+  ],
+  "returncode": 0,
+  "stdout": "stdout.log",
+  "stderr": {
+    "sha256": "8a63047b90df3d3771a362f4c543bc7a216c29ef02e965b4cbd1eefdb6fcf154",
+    "note": "Local full compiler log retained in the build output; bootstrap jet-registration diagnostics are not packaged."
+  },
+  "kernel_source": {
+    "repository": "https://github.com/urbit/urbit",
+    "commit": "5a187fededc4582a34fcd6055c67bb63e0917b94",
+    "verification": "All four kernel layers and all eight external imports matched upstream bytes."
+  },
+  "result": "[%compiled 408 2.025.734.632 737.012.529]",
+  "path_note": "Repository paths are relative; urbit/ prefixes identify the pinned upstream checkout. Executable path normalized; its SHA256 is preserved."
+}

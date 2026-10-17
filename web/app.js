@@ -29,9 +29,18 @@ function failed(error,retry=false){
  document.querySelector('#legacy-connection').hidden=!error.legacyBrowser;
  document.querySelector('#retry').hidden=!retry;
 }
+function renderSummary(summary){
+ const fields=['items','archived','trashed','folders','attachments','attachmentBytes'];
+ const available=summary&&fields.every(field=>Number.isSafeInteger(summary[field])&&summary[field]>=0);
+ document.querySelector('#vault-summary').hidden=!available;
+ if(!available)return;
+ const format=new Intl.NumberFormat();
+ for(const field of fields)document.querySelector('#summary-'+field).textContent=format.format(summary[field])+(field==='attachmentBytes'?' bytes':'');
+}
 function ready(boot){
  if(!boot.enrolled){show('setup');status.textContent='';return;}
  show('enrolled');
+ renderSummary(boot.summary);
  document.querySelector('#account-email').textContent=boot.email||'Your enrolled account';
  document.querySelector('#server-url').textContent=baseURL;
  document.querySelector('#api-url').textContent=baseURL+'/api';
@@ -42,7 +51,8 @@ function ready(boot){
 }
 async function load(){
  show(null);status.textContent='Loading your vault…';
- try{ready(await api(basePath+'/vault/bootstrap'));}catch(error){failed(error,true);}
+ const refresh=document.querySelector('#refresh-summary');refresh.disabled=true;
+ try{ready(await api(basePath+'/vault/bootstrap'));}catch(error){failed(error,true);}finally{refresh.disabled=false;}
 }
 const clientRegistrations=()=>{
  const loopback=Array.from({length:6},(_,i)=>'http://localhost:'+(8065+i));
@@ -120,6 +130,7 @@ async function enroll(event){
  }
 }
 document.querySelector('#retry').addEventListener('click',load);
+document.querySelector('#refresh-summary').addEventListener('click',load);
 document.querySelector('#enroll').addEventListener('submit',enroll);
 async function setupClients(event,updateLegacy=false){
  const button=event.currentTarget;button.disabled=true;status.textContent='Checking official client registrations…';

@@ -54,3 +54,5 @@ For a functional rehearsal, use a dedicated fake-ship fixture with synthetic vau
 ## Client exports
 
 A verified official-client export is a useful additional vault-only recovery format, but does not replace a full ship backup. Use only an export mode demonstrated by the current client-support report. A plaintext client export contains readable passwords: keep it private and do not include it in evidence, source packages or Git. This is separate from authorization tokens, which cannot decrypt passwords. The backup utility never performs a client export or asks for a master password.
+
+Official-client password/KDF/key-management and some purge/delete requests can also leave password-derived verification hashes in history and backups. This approved management payload boundary is separate from authorization tokens; see [account-management request history](known-limitations.md#account-management-request-history).
