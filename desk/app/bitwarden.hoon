@@ -314,6 +314,17 @@
     ^-  (quip card _this)
     :_  this
     (give-simple-payload:app:server rid [[302 ~[['location' to] ['cache-control' 'no-store'] ['referrer-policy' 'no-referrer']]] ~])
+  ++  login-redirect
+    |=  rid=@ta
+    ^-  (quip card _this)
+    ::  Browser-only SSO fragments must survive the native login form.
+    ::  This fixed script is the only content allowed by the CSP hash below.
+    =/  script  (crip "location.replace('/~/login?redirect='+encodeURIComponent(location.pathname+location.search+location.hash));")
+    =/  txt  (cat 3 '<!doctype html><meta charset="utf-8"><script>' (cat 3 script '</script><noscript><meta http-equiv="refresh" content="0;url=/~/login"></noscript>'))
+    :_  this
+    %+  give-simple-payload:app:server  rid
+    :-  [200 ~[['content-type' 'text/html; charset=utf-8'] ['cache-control' 'no-store'] ['x-content-type-options' 'nosniff'] ['referrer-policy' 'no-referrer'] ['x-frame-options' 'DENY'] ['content-security-policy' (crip "default-src 'none'; script-src 'sha256-ukhDgfIs0bp4r5mcgYSBAGLCBP2vmInfdryuQIx3zxA='; frame-ancestors 'none'; base-uri 'none'; form-action 'none'")]]]
+    `[p=(met 3 txt) q=txt]
   ++  form
     |=  raw=@t
     ^-  (map @t @t)
@@ -943,7 +954,7 @@
     ?.  |(=(original '/apps/bitwarden') =('/apps/bitwarden/' (crip (scag 16 (trip original)))))
       (reply rid 404 ~)
     =/  local-url  (crip (slag 15 (trip url.request.req)))
-    =.  req  req(url.request ?:(=(local-url '') '/' local-url))
+    =.  req  req(url.request ?:(=('' (head (split:v '?' local-url))) (cat 3 '/' local-url) local-url))
     =/  url  (head (split:v '?' url.request.req))
     =/  method  method.request.req
     =/  headers  header-list.request.req
@@ -955,6 +966,9 @@
     =/  asset  (~(get by assets:assets) url)
     ?:  ?=(^ asset)
       ?.  =(method %'GET')  (reply rid 405 ~)
+      ?.  &(authenticated.req =(src.bowl our.bowl))
+        ?:  =('text/html; charset=utf-8' mime.u.asset)  (login-redirect rid)
+        (reply rid 401 ~)
       (raw rid 200 mime.u.asset body.u.asset)
     ?:  |(=('/vault/bootstrap' url) =('/vault/enroll' url))
       ?.  &(authenticated.req =(src.bowl our.bowl))  (reply rid 401 ~)
