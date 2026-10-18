@@ -10,11 +10,10 @@
 <header><p class="eyebrow">YOUR SHIP / YOUR VAULT</p><h1>Keep the key with you.</h1><p id="intro">Authorize with your ship. Unlock locally in Bitwarden.</p></header>
 <p id="status" role="status" aria-live="polite">Loading your vault…</p>
 <button id="retry" class="secondary" hidden>Try again</button>
-<div id="legacy-connection" hidden><p>The old extension connection must be replaced for this server address. This signs out existing extension connections. It does not delete your encrypted vault.</p><button id="update-legacy" class="secondary">Update legacy Bitwarden connection</button></div>
 <section id="owner-required" hidden>
 <h2>Open your ship first.</h2>
 <p>Only the ship owner can create this vault or enable its Bitwarden clients.</p>
-<a class="button" href="/~/login?redirect=%2Fapps%2Fbitwarden%2F">Log in as the ship owner</a>
+<a id="ship-login" class="button" href="/~/login?redirect=%2Fapps%2Fbitwarden%2F">Log in as the ship owner</a>
 </section>
 <section id="setup" hidden>
 <h2>Create your encrypted vault.</h2>
@@ -50,10 +49,10 @@
 <li>Enter organization identifier <code>urbit-vault</code>.</li>
 <li>Approve the connection in Connect on your ship, then return to Bitwarden and unlock with your <strong>local vault password</strong>.</li>
 </ol>
+<p class="hint">Each client appears in Connect when you first start its sign-in. Creating a vault does not register clients you have not used.</p>
 <p class="hint">Use SSO to sign in; your local vault password is for unlocking. View and manage vault content in the official clients. This ship page provides setup, connection instructions and a summary.</p>
 <details><summary>Custom environment URLs</summary><p>Most apps fill these automatically from the server URL. If your client asks for individual URLs, use:</p><dl class="connection"><div><dt>API URL</dt><dd id="api-url"></dd></div><div><dt>Identity URL</dt><dd id="identity-url"></dd></div><div><dt>Web vault URL</dt><dd id="webvault-url"></dd></div></dl><p class="hint">This web address opens setup and SSO. View and edit your passwords in the official Bitwarden apps.</p></details>
 <details><summary>Command line</summary><p>Set the server, sign in through SSO, then unlock your vault locally:</p><pre><code id="cli-server"></code><code>bw login --sso</code><code>bw unlock</code></pre><p>When prompted, use organization identifier <code>urbit-vault</code>.</p></details>
-<details><summary>Enable clients after an update</summary><p>This checks the CLI, extension, desktop and mobile registrations in Connect. Matching disabled clients will be enabled; missing clients will be added. Conflicting registrations need your review in Connect.</p><button id="enable-clients" class="secondary">Enable official clients</button></details>
 </section>
 <footer>
 <p class="limitation"><strong>Personal vault.</strong> Manage your content in the official Bitwarden apps. Connect authorizes access; your local vault password unlocks encryption. Sign in with Enterprise SSO.</p>

@@ -20,6 +20,11 @@
       attachments=store:va  trash-next=(unit @da)
   ==
 +$  vault-state  [%2 vault-data]
+++  connect-client
+  |=  client=@t
+  ^-  @t
+  ?>  (~(has in (silt ~['cli' 'browser' 'desktop' 'mobile'])) client)
+  (cat 3 'bitwarden-' client)
 ++  revoke-card
   |=  [ship=@p sid=@t]
   ^-  card
@@ -381,7 +386,7 @@
       ?:  =(account ~)  (reply rid 400 invalid)
       ?:  (gte (lent ~(tap by pending)) 32)  (reply rid 429 ~)
       =/  request  (scot %uv (shas %exchange eny.bowl))
-      =/  data=exchange-request:c  [request client (~(got by fields) 'code') (~(got by fields) 'redirect_uri') (~(got by fields) 'code_verifier')]
+      =/  data=exchange-request:c  [request (connect-client client) (~(got by fields) 'code') (~(got by fields) 'redirect_uri') (~(got by fields) 'code_verifier')]
       =.  pending  (~(put by pending) request [rid client (~(gut by fields) 'deviceIdentifier' 'native') (add now.bowl ~s30)])
       :_  this
       :~  [%pass /exchange/[request] %agent [our.bowl %connect] %poke %connect-exchange !>(data)]
@@ -996,6 +1001,7 @@
       =/  args  (form ?~(t.pieces '' i.t.pieces))
       ?>  (levy ~(tap in ~(key by args)) |=(key=@t (~(has in (silt ~['client_id' 'redirect_uri' 'response_type' 'scope' 'state' 'code_challenge' 'code_challenge_method' 'response_mode' 'domain_hint' 'ssoToken'])) key)))
       ?>  &(=('urbit-vault' (~(got by args) 'domain_hint')) =('urbit-vault' (~(got by args) 'ssoToken')) =('query' (~(got by args) 'response_mode')) =('api offline_access' (~(got by args) 'scope')))
+      ?>  (~(has in (silt ~['cli' 'browser' 'desktop' 'mobile'])) (~(got by args) 'client_id'))
       =/  keys  ~['client_id' 'redirect_uri' 'response_type' 'scope' 'state' 'code_challenge' 'code_challenge_method']
       =/  query
         %-  crip
@@ -1004,7 +1010,9 @@
         %+  turn  keys
         |=  key=@t
         "{(trip key)}={(en-urlt:html (trip (~(got by args) key)))}"
-      (redirect rid (cat 3 '/connect/oauth/authorize?' query))
+      ::  Owner-authenticated browser setup registers only the requested client,
+      ::  then starts Connect consent with its namespaced registration ID.
+      (redirect rid (cat 3 '/apps/bitwarden/#/connect?' query))
     ?:  =('/identity/connect/revocation' url)
       ?.  =(method %'POST')  (reply rid 405 ~)
       =/  fields  (form payload)

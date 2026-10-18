@@ -45,7 +45,7 @@ If either selected desk already exists, inspect it first and explicitly add `--u
 The command reports successful control requests, not a substitute for an end-user acceptance check. After installation:
 
 1. Open the displayed Bitwarden URL with normal HTTPS validation, log in to the ship if requested, and complete the owner setup/enrollment there.
-2. Confirm Connect is configured for the same exact HTTPS origin. Owner authorization remains in Connect; the vault password is used locally to wrap/unlock the account key.
+2. Confirm Connect is configured for the same exact HTTPS origin. Enrollment creates no client registrations. Each official client is registered under its `bitwarden-` ID when its first valid SSO attempt reaches the authenticated owner browser. Owner authorization remains in Connect; the vault password is used locally to wrap/unlock the account key.
 3. Configure an official client with the displayed server URL, choose single sign-on and follow the page's organization instructions.
 4. Unlock locally, create one synthetic login, sync it to a second official client, then delete/restore it. Confirm the original ship home page still opens.
 

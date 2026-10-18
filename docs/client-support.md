@@ -45,6 +45,10 @@ The stock client may display a 30-day bin-expiry message. Current source support
 
 ## Server URL and native clients
 
+Connect registrations are created on the first valid SSO attempt for each client, after ship-owner authentication. The adapter translates the official wire IDs in the table below to `bitwarden-cli`, `bitwarden-browser`, `bitwarden-desktop` and `bitwarden-mobile`. Enrollment and ordinary page loads do not create registrations. Callback validation and consent remain specific to each client. A disabled registration is not automatically re-enabled.
+
+Matching legacy registrations are renamed on use through Connect’s owner-authorized rename endpoint, preserving sessions and namespaces. A mismatched old callback policy requires review in Connect. Historical evidence below may describe the former bulk registration UI; it does not establish validation of this new flow.
+
 Enter `https://your-ship/apps/bitwarden` as the self-hosted server URL. Its API is `/apps/bitwarden/api`, identity service `/apps/bitwarden/identity`, and setup/SSO page `/apps/bitwarden`. Connect consent remains at the ship origin's `/connect` routes. The desk leaves the origin root and unrelated applications available. See [installation and HTTPS renewal](install.md) and [backup/recovery](backup.md).
 
 The client derives its service URLs from its configured base URL. Returning `environment.vault` in `/api/config` does not replace the desktop/extension/CLI's configured web-vault URL. An explicit advanced URL takes precedence over the base URL. [Official URL resolution](https://github.com/bitwarden/clients/blob/desktop-v2026.9.1/libs/common/src/platform/services/default-environment.service.ts#L405-L410), [precedence](https://github.com/bitwarden/clients/blob/desktop-v2026.9.1/libs/common/src/platform/services/default-environment.service.ts#L469-L490).

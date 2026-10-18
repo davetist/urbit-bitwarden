@@ -15,18 +15,20 @@ async function wrap(key,plain){
 }
 async function api(path,data,headers={}){
  const r=await fetch(path,{method:data===undefined?'GET':'POST',credentials:'same-origin',headers:{'Content-Type':'application/json',...headers},body:data===undefined?undefined:JSON.stringify(data)});
- if(!r.ok){const error=new Error(`Request failed (${r.status}). Try again, or check that the Bitwarden desk and Connect are running.`);error.status=r.status;throw error;}
+ if(!r.ok){const error=new Error(`Request failed (${r.status}). Try again, or check that the Bitwarden desk and Connect are running.`);error.status=r.status;error.code=(await r.json().catch(()=>null))?.error?.code;throw error;}
  return r.json();
 }
 function show(section){
  for(const id of sections)document.querySelector('#'+id).hidden=id!==section;
  document.querySelector('#retry').hidden=true;
- document.querySelector('#legacy-connection').hidden=true;
 }
 function failed(error,retry=false){
- if(error.status===401){show('owner-required');status.textContent='Log in to your ship to manage this vault.';return;}
+ if(error.status===401){
+  show('owner-required');status.textContent='Log in to your ship to continue.';
+  document.querySelector('#ship-login').href='/~/login?redirect='+encodeURIComponent(location.pathname+location.search+location.hash);
+  return;
+ }
  status.textContent=error.message;
- document.querySelector('#legacy-connection').hidden=!error.legacyBrowser;
  document.querySelector('#retry').hidden=!retry;
 }
 function renderSummary(summary){
@@ -64,31 +66,65 @@ const clientRegistrations=()=>{
  ];
 };
 const sameSet=(a,b)=>Array.isArray(a)&&a.length===b.length&&[...a].sort().every((x,i)=>x===[...b].sort()[i]);
-async function enableClients(updateLegacy=false){
+async function ownerPost(path,data,headers){
+ try{return await api(path,data,headers);}catch(error){
+  // Another owner tab can replace this cookie's CSRF token. That rejection
+  // happens before mutation, so reacquire it and retry this same request once.
+  if(error.status!==403||error.code!=='csrf_failed')throw error;
+  const bootstrap=await api('/connect/owner/v1/bootstrap');
+  if(bootstrap.configured&&bootstrap.account?.issuer!==location.origin+'/connect')throw new Error('Connect is configured for a different server URL.');
+  headers['X-Connect-CSRF']=bootstrap.csrf;
+  return api(path,data,headers);
+ }
+}
+async function connectOwner(){
  const bootstrap=await api('/connect/owner/v1/bootstrap');
  const issuer=location.origin+'/connect';
  if(bootstrap.configured&&bootstrap.account?.issuer!==issuer)throw new Error('Connect is configured for a different server URL. Open Connect to review the deployment before continuing.');
  const headers={'X-Connect-CSRF':bootstrap.csrf};
+ if(!bootstrap.configured)await ownerPost('/connect/owner/v1/configure',{issuer},headers);
+ return headers;
+}
+async function ensureClient(client){
+ const registration=clientRegistrations().find(([type])=>type===client);
+ if(!registration)throw new Error('Unsupported Bitwarden client. Start single sign-on again from your Bitwarden app.');
+ const [,name,redirects]=registration,id='bitwarden-'+client;
+ const headers=await connectOwner();
  const existing=(await api('/connect/owner/v1/clients')).clients;
- const registrations=clientRegistrations();
- let legacyBrowser=null;
- // Check every existing registration before adding or enabling any client.
- for(const [id,,redirects] of registrations){
-  const found=existing.find(c=>c.id===id);
-  if(!found)continue;
-  const policyMatches=found.integration?.agent==='bitwarden'&&sameSet(found.integration.scopes,['api','offline_access']);
-  const legacyCallback=location.origin+'/sso-connector.html';
-  if(id==='browser'&&policyMatches&&found.redirectURI===legacyCallback&&sameSet(found.integration.redirectURIs,[legacyCallback])){legacyBrowser=found;continue;}
-  if(!policyMatches||found.redirectURI!==redirects[0]||!sameSet(found.integration.redirectURIs,redirects))throw new Error(`Existing ${id} registration differs. Review it in Connect before enabling Bitwarden clients.`);
+ const matches=app=>app?.integration?.agent==='bitwarden'&&sameSet(app.integration.scopes,['api','offline_access'])&&app.redirectURI===redirects[0]&&sameSet(app.integration.redirectURIs,redirects);
+ const validate=app=>{
+  if(!matches(app))throw new Error(`Existing ${id} registration differs. Review it in Connect before connecting this client.`);
+  if(!app.enabled)throw new Error(`${name} is disabled in Connect. Enable it there before starting single sign-on again.`);
+ };
+ const found=existing.find(app=>app.id===id);
+ if(found){validate(found);return id;}
+ const legacy=existing.find(app=>app.id===client&&app.integration?.agent==='bitwarden');
+ if(legacy&&!matches(legacy))throw new Error(`The old ${name} registration uses different callback settings. Review it in Connect before connecting this client.`);
+ if(legacy)validate(legacy);
+ try{
+  if(legacy)await ownerPost('/connect/owner/v1/clients/'+client+'/rename',{id,confirmClientId:client,confirmNamespace:legacy.namespace},headers);
+  else await ownerPost('/connect/owner/v1/clients',{id,name,redirectURI:redirects[0],integration:{agent:'bitwarden',scopes:['api','offline_access'],redirectURIs:redirects}},headers);
+ }catch(error){
+  // A simultaneous sign-in may have completed the same registration first.
+  if(error.status!==409&&!(legacy&&error.status===404))throw error;
+  const current=(await api('/connect/owner/v1/clients')).clients.find(app=>app.id===id);
+  validate(current);
+  if(legacy&&current.namespace!==legacy.namespace)throw new Error(`The ${id} registration conflicts with the old connection. Review both in Connect.`);
  }
- if(legacyBrowser&&!updateLegacy){const error=new Error('The extension is still registered to the old Bitwarden address. Update its connection below to use this desk.');error.legacyBrowser=true;throw error;}
- if(!bootstrap.configured)await api('/connect/owner/v1/configure',{issuer},headers);
- if(legacyBrowser)await api('/connect/owner/v1/clients/browser/remove',{confirmClientId:legacyBrowser.id,confirmNamespace:legacyBrowser.namespace},headers);
- for(const [id,name,redirects] of registrations){
-  const found=id==='browser'&&legacyBrowser?undefined:existing.find(c=>c.id===id);
-  if(!found)await api('/connect/owner/v1/clients',{id,name,redirectURI:redirects[0],integration:{agent:'bitwarden',scopes:['api','offline_access'],redirectURIs:redirects}},headers);
-  else if(!found.enabled)await api('/connect/owner/v1/clients/'+id,{enabled:true},headers);
+ return id;
+}
+async function authorizeConnect(){
+ show(null);status.textContent='Preparing this Bitwarden client in Connect…';
+ const q=new URLSearchParams(location.hash.slice('#/connect?'.length));
+ const keys=['client_id','redirect_uri','response_type','scope','state','code_challenge','code_challenge_method'];
+ const actual=[...q.keys()];
+ const registration=clientRegistrations().find(([client])=>client===q.get('client_id'));
+ if(!sameSet(actual,keys)||!registration||!registration[2].includes(q.get('redirect_uri'))||q.get('response_type')!=='code'||q.get('scope')!=='api offline_access'||q.get('code_challenge_method')!=='S256'||!/^[A-Za-z0-9_-]{43}$/.test(q.get('code_challenge')||'')||!q.get('state')||bytes(q.get('state')).length>128){
+  throw new Error('The sign-in request is invalid. Start single sign-on again from your Bitwarden app.');
  }
+ const id=await ensureClient(q.get('client_id'));
+ q.set('client_id',id);
+ location.replace('/connect/oauth/authorize?'+q);
 }
 async function sso(){
  show(null);status.textContent='Preparing ship-owner approval…';
@@ -108,8 +144,8 @@ async function enroll(event){
  try{
   const boot=await api(basePath+'/vault/bootstrap');
   if(boot.enrolled){ready(boot);return;}
-  status.textContent='Enabling official Bitwarden clients in Connect…';
-  await enableClients();
+  status.textContent='Preparing Connect…';
+  await connectOwner();
   status.textContent='Encrypting account keys in your browser…';
   const email=document.querySelector('#email').value.trim().toLowerCase();
   const material=await crypto.subtle.importKey('raw',bytes(password.value),'PBKDF2',false,['deriveBits']);
@@ -129,15 +165,9 @@ async function enroll(event){
   password.value='';confirmation.value='';button.disabled=false;
  }
 }
-document.querySelector('#retry').addEventListener('click',load);
+document.querySelector('#retry').addEventListener('click',route);
 document.querySelector('#refresh-summary').addEventListener('click',load);
 document.querySelector('#enroll').addEventListener('submit',enroll);
-async function setupClients(event,updateLegacy=false){
- const button=event.currentTarget;button.disabled=true;status.textContent='Checking official client registrations…';
- try{await enableClients(updateLegacy);document.querySelector('#legacy-connection').hidden=true;status.textContent='Official clients are ready. Sign in with SSO, then unlock locally in Bitwarden.';}catch(error){failed(error);}finally{button.disabled=false;}
-}
-document.querySelector('#enable-clients').addEventListener('click',event=>setupClients(event));
-document.querySelector('#update-legacy').addEventListener('click',event=>setupClients(event,true));
 function route(){
  if(location.pathname===basePath+'/sso-connector.html'){
   show(null);
@@ -146,7 +176,8 @@ function route(){
    window.postMessage({command:'authResult',code,state,lastpass:false},location.origin);
    status.textContent='Authorization returned to Bitwarden. Unlock your vault in the extension.';
   }else status.textContent='The callback is invalid. Start again in Bitwarden.';
- }else if(location.hash.startsWith('#/sso?'))sso().catch(error=>failed(error));
+ }else if(location.hash.startsWith('#/connect?'))authorizeConnect().catch(error=>failed(error,true));
+ else if(location.hash.startsWith('#/sso?'))sso().catch(error=>failed(error,true));
  else load();
 }
 window.addEventListener('hashchange',route);
