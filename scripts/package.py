@@ -11,7 +11,7 @@ from connect_dependency import ROOT, CONNECT_ROOT, REPOSITORY, ensure_connect
 
 EXCLUDED = {'.work', '.git', '.build', 'node_modules', 'dist', 'DerivedData',
             'xcuserdata', '__pycache__', '.DS_Store', 'test-results', 'playwright-report'}
-SOURCE_GROUPS = ['desk', 'web', 'scripts', 'tests', 'docs', 'evidence', 'README.md',
+SOURCE_GROUPS = ['desk', 'web', 'scripts', 'tests', 'docs', 'evidence', 'third_party', 'README.md',
                  'LICENSE', '.gitignore', 'artifacts.json', 'toolchain.json',
                  'package.json', 'package-lock.json']
 # The complete generic source supports the inherited regression helpers too.

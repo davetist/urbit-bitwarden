@@ -1,0 +1,38 @@
+{
+  "source": "Landscape 1.32.0 exported from the pinned official Vere 4.6 bootstrap pill",
+  "pillSHA256": "f8b08c53dd6d0aa9c4f7654f0a7bcd11e94089222888a3c99c0a10eedcbb377b",
+  "files": {
+    "mar/docket-0.hoon": "4b3e47032694e121e73ec341b388b94c43580f2002086b3c006b62d00debd5cc",
+    "lib/docket.hoon": "031be1e2e944835a3d11a90f26c6c61f9bbd40123d2dd249ff7b728acbb1d025",
+    "sur/docket.hoon": "dd930bf411fa129551bf78496b23a96e19743ec4534f4a08bfa37c92c71fc029"
+  },
+  "licensedEquivalent": {
+    "repository": "urbit/urbit",
+    "commit": "d6ec15fbcb5675af6ac722e6f512f399a5fdbaef",
+    "files": {
+      "lib/docket.hoon": {
+        "path": "pkg/landscape/lib/docket.hoon",
+        "copiedSHA256": "031be1e2e944835a3d11a90f26c6c61f9bbd40123d2dd249ff7b728acbb1d025",
+        "upstreamSHA256": "031be1e2e944835a3d11a90f26c6c61f9bbd40123d2dd249ff7b728acbb1d025",
+        "byteIdentical": true,
+        "onlyTrailingWhitespaceDiffers": false
+      },
+      "sur/docket.hoon": {
+        "path": "pkg/landscape/sur/docket.hoon",
+        "copiedSHA256": "dd930bf411fa129551bf78496b23a96e19743ec4534f4a08bfa37c92c71fc029",
+        "upstreamSHA256": "dd930bf411fa129551bf78496b23a96e19743ec4534f4a08bfa37c92c71fc029",
+        "byteIdentical": true,
+        "onlyTrailingWhitespaceDiffers": false
+      },
+      "mar/docket-0.hoon": {
+        "path": "pkg/landscape/mar/docket-0.hoon",
+        "copiedSHA256": "4b3e47032694e121e73ec341b388b94c43580f2002086b3c006b62d00debd5cc",
+        "upstreamSHA256": "a0e69786863df79ad837211a44216efa49401b98a1800a86c647639025a9d028",
+        "byteIdentical": false,
+        "onlyTrailingWhitespaceDiffers": true
+      }
+    },
+    "licensePath": "LICENSE.txt",
+    "licenseSHA256": "b5d62c0a6f6b17ff490de29606527bf77b6509998ef07048488d659e2b719e52"
+  }
+}

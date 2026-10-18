@@ -1,0 +1,11 @@
+:~
+  title+'Bitwarden'
+  info+'Your personal encrypted vault, with access managed by Urbit Connect.'
+  color+0x5a.88b9
+  site+/apps/bitwarden
+  image+'/apps/bitwarden/vault/tile.png'
+  base+'bitwarden'
+  version+[0 1 0]
+  website+'https://github.com/davetist/urbit-bitwarden'
+  license+'MIT'
+==

@@ -28,6 +28,8 @@ python3 /path/to/source/scripts/deploy.py \
 
 Replace both example identity and paths with your exact selection. This default is a plan: it checks the live ship identity, the two desk names, route ownership, and every source file in the selected desks against `INTEGRATION-MANIFEST.json`. It does not import files or change certificates. The explicitly selected source directory may be a filesystem alias and is resolved once; paths inside its manifest and desks may not be symlinks. Missing, altered or unlisted desk source is refused. The source root is the extracted directory containing `INTEGRATION-MANIFEST.json`, independent of the current working directory or where this helper is launched. Source validation accepts at most a 1 MiB manifest with 4,096 entries, 4,096 desk paths, 256 desk files, 1 MiB per desk file and 8 MiB of desk file content in total; oversized input is rejected before import. No owner code, cookie or Bitwarden token is needed by the installer.
 
+The installed desk appears as a **Bitwarden** tile in Landscape. Its bundled shield image is served by the ship at `/apps/bitwarden/vault/tile.png`, with the same ship-login requirement as the other UI assets. Clicking the tile opens the owner page. Existing installs receive the tile when updated with this desk source.
+
 The owner page and **self-hosted server URL for official clients** are:
 
 ```text
