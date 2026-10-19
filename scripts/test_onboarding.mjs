@@ -14,7 +14,7 @@ before(async()=>{browser=await chromium.launch({headless:true,executablePath:pro
 after(async()=>{await browser?.close();});
 const registration=(id,redirects)=>({id,name:'Existing '+id,namespace:{cli:'app-21',browser:'app-47',desktop:'app-52',mobile:'app-63'}[id],enabled:true,redirectURI:redirects[0],integration:{agent:'urbitwarden',scopes:['api','offline_access'],redirectURIs:redirects}});
 const cliRedirects=Array.from({length:6},(_,i)=>'http://localhost:'+(8065+i));
-const clients=()=>[registration('cli',cliRedirects),registration('browser',[base+'/sso-connector.html',origin+'/apps/bitwarden/sso-connector.html']),registration('desktop',['bitwarden://sso-callback',...cliRedirects]),registration('mobile',['bitwarden://sso-callback'])];
+const clients=()=>[registration('cli',cliRedirects),registration('browser',[base+'/sso-connector.html']),registration('desktop',['bitwarden://sso-callback',...cliRedirects]),registration('mobile',['bitwarden://sso-callback'])];
 async function fixture(options={}){
  const context=await browser.newContext({viewport:options.viewport||{width:1000,height:900}}),page=await context.newPage();
  page.setDefaultTimeout(4000);

@@ -17,7 +17,7 @@ import urllib.parse
 from noun import atom, cell, jam
 
 DESKS = {'connect': 'dependencies/urbit-connect/desk', 'urbitwarden': 'desk'}
-ROUTES = {'/connect': 'connect', '/apps/connect': 'connect', '/apps/urbitwarden': 'urbitwarden', '/apps/bitwarden': 'urbitwarden'}
+ROUTES = {'/connect': 'connect', '/apps/connect': 'connect', '/apps/urbitwarden': 'urbitwarden'}
 MAX_MANIFEST_BYTES = 1024 * 1024
 MAX_MANIFEST_ENTRIES = 4096
 MAX_SOURCE_PATHS = 4096

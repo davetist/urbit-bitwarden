@@ -49,7 +49,7 @@ assert.match(retry.elements['#status'].textContent,/503/);
 assert.equal(retry.state.configureWrites,1);
 const expectedCallbacks={
  cli:['http://localhost:8065','http://localhost:8066','http://localhost:8067','http://localhost:8068','http://localhost:8069','http://localhost:8070'],
- browser:['https://fixture.invalid/apps/urbitwarden/sso-connector.html','https://fixture.invalid/apps/bitwarden/sso-connector.html'],
+ browser:['https://fixture.invalid/apps/urbitwarden/sso-connector.html'],
  desktop:['bitwarden://sso-callback','http://localhost:8065','http://localhost:8066','http://localhost:8067','http://localhost:8068','http://localhost:8069','http://localhost:8070'],
  mobile:['bitwarden://sso-callback']
 };

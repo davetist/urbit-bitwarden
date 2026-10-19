@@ -60,7 +60,7 @@ const clientRegistrations=()=>{
  const loopback=Array.from({length:6},(_,i)=>'http://localhost:'+(8065+i));
  return[
   ['cli','Urbitwarden CLI',loopback],
-  ['browser','Urbitwarden browser extension',[baseURL+'/sso-connector.html',location.origin+'/apps/bitwarden/sso-connector.html']],
+  ['browser','Urbitwarden browser extension',[baseURL+'/sso-connector.html']],
   ['desktop','Urbitwarden desktop',['bitwarden://sso-callback',...loopback]],
   ['mobile','Urbitwarden mobile',['bitwarden://sso-callback']]
  ];
@@ -169,7 +169,7 @@ document.querySelector('#retry').addEventListener('click',route);
 document.querySelector('#refresh-summary').addEventListener('click',load);
 document.querySelector('#enroll').addEventListener('submit',enroll);
 function route(){
- if([basePath+'/sso-connector.html','/apps/bitwarden/sso-connector.html'].includes(location.pathname)){
+ if(location.pathname===basePath+'/sso-connector.html'){
   show(null);
   const p=new URLSearchParams(location.search),code=p.get('code'),state=p.get('state');
   if(code&&state?.includes(':clientId=browser')){

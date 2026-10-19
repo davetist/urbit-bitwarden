@@ -16,7 +16,11 @@ OLD = 'bitwarden'
 NEW = 'urbitwarden'
 VAULT_INIT = '''  =/  egg  .^(egg-any:gall %gv /(scot %p our.bowl)/bitwarden/(scot %da now.bowl)/(scot %tas %$))
   ?>  ?=([%20 %live *] egg)
-  (on-load +.old-state.egg)'''
+  =/  saved  +.old-state.egg
+  =/  prior  !<(vault-state saved)
+  =/  old-base  '/apps/bitwarden'
+  ?>  &((gte (met 3 origin.prior) (met 3 old-base)) =(old-base (crip (slag (sub (met 3 origin.prior) (met 3 old-base)) (trip origin.prior)))))
+  (on-load !>(prior(origin (cat 3 (crip (scag (sub (met 3 origin.prior) (met 3 old-base)) (trip origin.prior))) '/apps/urbitwarden'))))'''
 CONNECT_MIGRATION = '''  =/  migrated  (load:ct old)
   =.  state.migrated
     =/  work  state.migrated
@@ -35,7 +39,7 @@ CONNECT_MIGRATION = '''  =/  migrated  (load:ct old)
     =/  redirects  redirects.policy
     =/  redirect  redirect.app
     =?  redirects  =('browser' kind)
-      (~(put in redirects) (cat 3 (crip (scag (sub (met 3 issuer.work) 8) (trip issuer.work))) '/apps/urbitwarden/sso-connector.html'))
+      (silt ~[(cat 3 (crip (scag (sub (met 3 issuer.work) 8) (trip issuer.work))) '/apps/urbitwarden/sso-connector.html')])
     =?  redirect  =('browser' kind)
       (cat 3 (crip (scag (sub (met 3 issuer.work) 8) (trip issuer.work))) '/apps/urbitwarden/sso-connector.html')
     =.  auth.work  (rename-client:ca auth.work id new)

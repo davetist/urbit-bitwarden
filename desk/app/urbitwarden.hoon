@@ -38,11 +38,8 @@
   ^-  @t
   ?:  =(value '')  ''
   =/  current  '/apps/urbitwarden'
-  =/  legacy  '/apps/bitwarden'
   ?:  &((gte (met 3 value) (met 3 current)) =(current (crip (slag (sub (met 3 value) (met 3 current)) (trip value)))))
     value
-  ?:  &((gte (met 3 value) (met 3 legacy)) =(legacy (crip (slag (sub (met 3 value) (met 3 legacy)) (trip value)))))
-    (cat 3 (crip (scag (sub (met 3 value) (met 3 legacy)) (trip value))) current)
   (cat 3 value current)
 ++  route-cards
   ^-  (list card)
@@ -51,8 +48,8 @@
       [%pass /bind/api %arvo %e %disconnect `/api]
       [%pass /bind/identity %arvo %e %disconnect `/identity]
       [%pass /bind/vault %arvo %e %connect `/apps/urbitwarden %urbitwarden]
-      ::  Keep already-configured official clients working after the rename.
-      [%pass /bind/legacy %arvo %e %connect `/apps/bitwarden %urbitwarden]
+      ::  Remove the route owned by the previous compatibility release.
+      [%pass /bind/legacy %arvo %e %disconnect `/apps/bitwarden]
   ==
 ++  unavailable
   |=  rid=@ta
@@ -955,10 +952,7 @@
     |=  [rid=@ta req=inbound-request:eyre]
     ^-  (quip card _this)
     =/  original  (head (split:v '?' url.request.req))
-    =/  prefix
-      ?:  |(=(original '/apps/urbitwarden') =('/apps/urbitwarden/' (crip (scag 18 (trip original)))))
-        '/apps/urbitwarden'
-      '/apps/bitwarden'
+    =/  prefix  '/apps/urbitwarden'
     ?.  |(=(original prefix) =((cat 3 prefix '/') (crip (scag +((met 3 prefix)) (trip original)))))
       (reply rid 404 ~)
     =/  local-url  (crip (slag (met 3 prefix) (trip url.request.req)))
