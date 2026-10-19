@@ -1,5 +1,5 @@
 'use strict';
-const basePath='/apps/bitwarden';
+const basePath='/apps/urbitwarden';
 const baseURL=location.origin+basePath;
 const status=document.querySelector('#status');
 const sections=['setup','enrolled','owner-required'];
@@ -15,7 +15,7 @@ async function wrap(key,plain){
 }
 async function api(path,data,headers={}){
  const r=await fetch(path,{method:data===undefined?'GET':'POST',credentials:'same-origin',headers:{'Content-Type':'application/json',...headers},body:data===undefined?undefined:JSON.stringify(data)});
- if(!r.ok){const error=new Error(`Request failed (${r.status}). Try again, or check that the Bitwarden desk and Connect are running.`);error.status=r.status;error.code=(await r.json().catch(()=>null))?.error?.code;throw error;}
+ if(!r.ok){const error=new Error(`Request failed (${r.status}). Try again, or check that the Urbitwarden desk and Connect are running.`);error.status=r.status;error.code=(await r.json().catch(()=>null))?.error?.code;throw error;}
  return r.json();
 }
 function show(section){
@@ -59,10 +59,10 @@ async function load(){
 const clientRegistrations=()=>{
  const loopback=Array.from({length:6},(_,i)=>'http://localhost:'+(8065+i));
  return[
-  ['cli','Bitwarden CLI',loopback],
-  ['browser','Bitwarden browser extension',[baseURL+'/sso-connector.html']],
-  ['desktop','Bitwarden desktop',['bitwarden://sso-callback',...loopback]],
-  ['mobile','Bitwarden mobile',['bitwarden://sso-callback']]
+  ['cli','Urbitwarden CLI',loopback],
+  ['browser','Urbitwarden browser extension',[baseURL+'/sso-connector.html',location.origin+'/apps/bitwarden/sso-connector.html']],
+  ['desktop','Urbitwarden desktop',['bitwarden://sso-callback',...loopback]],
+  ['mobile','Urbitwarden mobile',['bitwarden://sso-callback']]
  ];
 };
 const sameSet=(a,b)=>Array.isArray(a)&&a.length===b.length&&[...a].sort().every((x,i)=>x===[...b].sort()[i]);
@@ -88,22 +88,22 @@ async function connectOwner(){
 async function ensureClient(client){
  const registration=clientRegistrations().find(([type])=>type===client);
  if(!registration)throw new Error('Unsupported Bitwarden client. Start single sign-on again from your Bitwarden app.');
- const [,name,redirects]=registration,id='bitwarden-'+client;
+ const [,name,redirects]=registration,id='urbitwarden-'+client;
  const headers=await connectOwner();
  const existing=(await api('/connect/owner/v1/clients')).clients;
- const matches=app=>app?.integration?.agent==='bitwarden'&&sameSet(app.integration.scopes,['api','offline_access'])&&app.redirectURI===redirects[0]&&sameSet(app.integration.redirectURIs,redirects);
+ const matches=app=>app?.integration?.agent==='urbitwarden'&&sameSet(app.integration.scopes,['api','offline_access'])&&app.redirectURI===redirects[0]&&sameSet(app.integration.redirectURIs,redirects);
  const validate=app=>{
   if(!matches(app))throw new Error(`Existing ${id} registration differs. Review it in Connect before connecting this client.`);
   if(!app.enabled)throw new Error(`${name} is disabled in Connect. Enable it there before starting single sign-on again.`);
  };
  const found=existing.find(app=>app.id===id);
  if(found){validate(found);return id;}
- const legacy=existing.find(app=>app.id===client&&app.integration?.agent==='bitwarden');
+ const legacy=existing.find(app=>app.id===client&&app.integration?.agent==='urbitwarden');
  if(legacy&&!matches(legacy))throw new Error(`The old ${name} registration uses different callback settings. Review it in Connect before connecting this client.`);
  if(legacy)validate(legacy);
  try{
   if(legacy)await ownerPost('/connect/owner/v1/clients/'+client+'/rename',{id,confirmClientId:client,confirmNamespace:legacy.namespace},headers);
-  else await ownerPost('/connect/owner/v1/clients',{id,name,redirectURI:redirects[0],integration:{agent:'bitwarden',scopes:['api','offline_access'],redirectURIs:redirects}},headers);
+  else await ownerPost('/connect/owner/v1/clients',{id,name,redirectURI:redirects[0],integration:{agent:'urbitwarden',scopes:['api','offline_access'],redirectURIs:redirects}},headers);
  }catch(error){
   // A simultaneous sign-in may have completed the same registration first.
   if(error.status!==409&&!(legacy&&error.status===404))throw error;
@@ -169,7 +169,7 @@ document.querySelector('#retry').addEventListener('click',route);
 document.querySelector('#refresh-summary').addEventListener('click',load);
 document.querySelector('#enroll').addEventListener('submit',enroll);
 function route(){
- if(location.pathname===basePath+'/sso-connector.html'){
+ if([basePath+'/sso-connector.html','/apps/bitwarden/sso-connector.html'].includes(location.pathname)){
   show(null);
   const p=new URLSearchParams(location.search),code=p.get('code'),state=p.get('state');
   if(code&&state?.includes(':clientId=browser')){

@@ -2,18 +2,18 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Bitwarden · Your Urbit vault</title>
-<link rel="stylesheet" href="/apps/bitwarden/vault/style.css">
-<script defer src="/apps/bitwarden/vault/app.js"></script>
+<title>Urbitwarden · Your Urbit vault</title>
+<link rel="stylesheet" href="/apps/urbitwarden/vault/style.css">
+<script defer src="/apps/urbitwarden/vault/app.js"></script>
 </head>
 <body><main>
-<header><p class="eyebrow">YOUR SHIP / YOUR VAULT</p><h1>Keep the key with you.</h1><p id="intro">Authorize with your ship. Unlock locally in Bitwarden.</p></header>
+<header><p class="eyebrow">URBITWARDEN / YOUR SHIP / YOUR VAULT</p><h1>Keep the key with you.</h1><p id="intro">Authorize with your ship. Unlock locally in Bitwarden.</p></header>
 <p id="status" role="status" aria-live="polite">Loading your vault…</p>
 <button id="retry" class="secondary" hidden>Try again</button>
 <section id="owner-required" hidden>
 <h2>Open your ship first.</h2>
 <p>Only the ship owner can create this vault or enable its Bitwarden clients.</p>
-<a id="ship-login" class="button" href="/~/login?redirect=%2Fapps%2Fbitwarden%2F">Log in as the ship owner</a>
+<a id="ship-login" class="button" href="/~/login?redirect=%2Fapps%2Furbitwarden%2F">Log in as the ship owner</a>
 </section>
 <section id="setup" hidden>
 <h2>Create your encrypted vault.</h2>
@@ -55,7 +55,7 @@
 <details><summary>Command line</summary><p>Set the server, sign in through SSO, then unlock your vault locally:</p><pre><code id="cli-server"></code><code>bw login --sso</code><code>bw unlock</code></pre><p>When prompted, use organization identifier <code>urbit-vault</code>.</p></details>
 </section>
 <footer>
-<p class="limitation"><strong>Personal vault.</strong> Manage your content in the official Bitwarden apps. Connect authorizes access; your local vault password unlocks encryption. Sign in with Enterprise SSO.</p>
+<p class="limitation"><strong>Urbitwarden is an independent project, not affiliated with or endorsed by Bitwarden.</strong> Personal vault. Manage your content in the official Bitwarden apps. Connect authorizes access; your local vault password unlocks encryption. Sign in with Enterprise SSO.</p>
 <p>Urbit history can retain <strong>authorization tokens, not plaintext vault passwords</strong>. These tokens can access encrypted vault data while valid. <strong>They cannot decrypt or read your passwords.</strong></p>
 <p>Password and key-management requests from official clients can also leave password-derived verification hashes in ship history. Connect remains the authorization authority; unwrapped vault keys stay in your clients.</p>
 <a href="/apps/connect/">Manage approvals and revoke access in Connect <span aria-hidden="true">↗</span></a>
