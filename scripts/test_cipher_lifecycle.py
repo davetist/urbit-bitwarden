@@ -6,7 +6,7 @@ from api import API, WORK, json
 
 def fixture_only():
     assert os.environ.get('CONNECT_BW_FIXTURE') == 'review-fixes', 'Use the isolated review-fixes fixture'
-    assert WORK.name == 'bitwarden-review-fixes', 'Refusing to modify the demo fixture'
+    assert WORK.name == 'urbitwarden-review-fixes', 'Refusing to modify the demo fixture'
 
 
 class Session:

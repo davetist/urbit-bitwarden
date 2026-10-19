@@ -1,6 +1,6 @@
 # Repository separation
 
-The Bitwarden backend now lives in [urbit-bitwarden](https://github.com/davetist/urbit-bitwarden). [urbit-connect](https://github.com/davetist/urbit-connect) retains reusable authorization, owner consent, local-resource grants, exact registered callback handling, document APIs, SDKs and its unrelated `grant-probe` consumer. Connect does not own the Bitwarden vault, client IDs, protocol behavior or release tooling.
+The Urbitwarden backend lives in [urbit-bitwarden](https://github.com/davetist/urbit-bitwarden). [urbit-connect](https://github.com/davetist/urbit-connect) retains reusable authorization, owner consent, local-resource grants, exact registered callback handling, document APIs, SDKs and its unrelated `grant-probe` consumer. Connect does not own the Bitwarden vault, client IDs, protocol behavior or release tooling.
 
 ## Source history and layout
 
@@ -21,9 +21,9 @@ The split preserves the native Bitwarden desk and browser setup source; tooling 
 
 ## Latest Connect dependency
 
-Bitwarden targets the latest Connect desk installed on the same ship. There is no submodule, vendored Connect source tree or compatibility pin in this repository. Development/setup tooling obtains the latest Connect `main` under ignored `.work/dependencies/urbit-connect`. `URBIT_CONNECT_ROOT` selects an existing checkout for local development.
+Urbitwarden targets the latest Connect desk installed on the same ship. There is no submodule, vendored Connect source tree or compatibility pin in this repository. Development/setup tooling obtains the latest Connect `main` under ignored `.work/dependencies/urbit-connect`. `URBIT_CONNECT_ROOT` selects an existing checkout for local development.
 
-Source packages include the selected Connect desk and record its source commit for reproducibility. That identifies the bytes in that package; it does not require future Bitwarden installations to remain on that Connect commit. Packaging is a local preparation step. The deployed backend remains native Gall/Hoon/Eyre and requires no external authorization service.
+Source packages include the selected Connect desk and record its source commit for reproducibility. That identifies the bytes in that package; it does not require future Urbitwarden installations to remain on that Connect commit. Packaging is a local preparation step. The deployed backend remains native Gall/Hoon/Eyre and requires no external authorization service.
 
 ## Evidence and private fixtures
 

@@ -1,4 +1,4 @@
-::  Urbit-native Bitwarden backend. Connect remains the authorization authority.
+::  Urbitwarden backend. Connect remains the authorization authority.
 /-  c=connect
 /+  default-agent, server, v=vault-json, ce=connect-entry, assets=vault-assets, va=vault-attachments, vd=vault-domains, vk=vault-keys
 |%
@@ -24,11 +24,11 @@
   |=  client=@t
   ^-  @t
   ?>  (~(has in (silt ~['cli' 'browser' 'desktop' 'mobile'])) client)
-  (cat 3 'bitwarden-' client)
+  (cat 3 'urbitwarden-' client)
 ++  revoke-card
   |=  [ship=@p sid=@t]
   ^-  card
-  [%pass /revoke %agent [ship %connect] %poke %connect-revoke !>(`revoke-request:c`[%bitwarden sid])]
+  [%pass /revoke %agent [ship %connect] %poke %connect-revoke !>(`revoke-request:c`[%urbitwarden sid])]
 ++  cache-wait
   |=  [sid=@t until=@da]
   ^-  card
@@ -37,18 +37,22 @@
   |=  value=@t
   ^-  @t
   ?:  =(value '')  ''
-  ?:  ?&  (gte (met 3 value) 15)
-          =('/apps/bitwarden' (crip (slag (sub (met 3 value) 15) (trip value))))
-      ==
+  =/  current  '/apps/urbitwarden'
+  =/  legacy  '/apps/bitwarden'
+  ?:  &((gte (met 3 value) (met 3 current)) =(current (crip (slag (sub (met 3 value) (met 3 current)) (trip value)))))
     value
-  (cat 3 value '/apps/bitwarden')
+  ?:  &((gte (met 3 value) (met 3 legacy)) =(legacy (crip (slag (sub (met 3 value) (met 3 legacy)) (trip value)))))
+    (cat 3 (crip (scag (sub (met 3 value) (met 3 legacy)) (trip value))) current)
+  (cat 3 value current)
 ++  route-cards
   ^-  (list card)
   ::  Eyre only disconnects a binding owned by the same original duct.
   :~  [%pass /bind/root %arvo %e %disconnect `/]
       [%pass /bind/api %arvo %e %disconnect `/api]
       [%pass /bind/identity %arvo %e %disconnect `/identity]
-      [%pass /bind/vault %arvo %e %connect `/apps/bitwarden %bitwarden]
+      [%pass /bind/vault %arvo %e %connect `/apps/urbitwarden %urbitwarden]
+      ::  Keep already-configured official clients working after the rename.
+      [%pass /bind/legacy %arvo %e %connect `/apps/bitwarden %urbitwarden]
   ==
 ++  unavailable
   |=  rid=@ta
@@ -173,7 +177,7 @@
   ++  grant
     |=  sid=@t
     ^-  json
-    =/  value  .^(json %gx /(scot %p our.bowl)/connect/(scot %da now.bowl)/integration/bitwarden/[sid]/json)
+    =/  value  .^(json %gx /(scot %p our.bowl)/connect/(scot %da now.bowl)/integration/urbitwarden/[sid]/json)
     ?~  value  ~
     =/  scopes  (get:v value 'scopes')
     ?>  ?=([%a *] scopes)
@@ -951,9 +955,13 @@
     |=  [rid=@ta req=inbound-request:eyre]
     ^-  (quip card _this)
     =/  original  (head (split:v '?' url.request.req))
-    ?.  |(=(original '/apps/bitwarden') =('/apps/bitwarden/' (crip (scag 16 (trip original)))))
+    =/  prefix
+      ?:  |(=(original '/apps/urbitwarden') =('/apps/urbitwarden/' (crip (scag 18 (trip original)))))
+        '/apps/urbitwarden'
+      '/apps/bitwarden'
+    ?.  |(=(original prefix) =((cat 3 prefix '/') (crip (scag +((met 3 prefix)) (trip original)))))
       (reply rid 404 ~)
-    =/  local-url  (crip (slag 15 (trip url.request.req)))
+    =/  local-url  (crip (slag (met 3 prefix) (trip url.request.req)))
     =.  req  req(url.request ?:(=('' (head (split:v '?' local-url))) (cat 3 '/' local-url) local-url))
     =/  url  (head (split:v '?' url.request.req))
     =/  method  method.request.req
@@ -1026,7 +1034,7 @@
         "{(trip key)}={(en-urlt:html (trip (~(got by args) key)))}"
       ::  Owner-authenticated browser setup registers only the requested client,
       ::  then starts Connect consent with its namespaced registration ID.
-      (redirect rid (cat 3 '/apps/bitwarden/#/connect?' query))
+      (redirect rid (cat 3 '/apps/urbitwarden/#/connect?' query))
     ?:  =('/identity/connect/revocation' url)
       ?.  =(method %'POST')  (reply rid 405 ~)
       =/  fields  (form payload)
@@ -1039,7 +1047,7 @@
     ?:  =('/api/config' url)
       =/  base  (service-origin ?:(=(origin.state '') (cat 3 'https://' (fall (get-header:http 'host' headers) '')) origin.state))
       =/  env  (pairs:enjs:format ~[['vault' s+base] ['api' s+(cat 3 base '/api')] ['identity' s+(cat 3 base '/identity')] ['notifications' s+(cat 3 base '/notifications')] ['icons' s+(cat 3 base '/icons')] ['sso' s+(cat 3 base '/identity')] ['cloudRegion' ~]])
-      (reply rid 200 (pairs:enjs:format ~[['object' s+'config'] ['version' s+'2026.6.0'] ['server' (pairs:enjs:format ~[['name' s+'Urbit-native Bitwarden backend'] ['url' s+base]])] ['environment' env] ['featureStates' (pairs:enjs:format ~[['pm-19148-innovation-archive' b+%.y]])] ['settings' (pairs:enjs:format ~[['disableUserRegistration' b+%.y]])]]))
+      (reply rid 200 (pairs:enjs:format ~[['object' s+'config'] ['version' s+'2026.6.0'] ['server' (pairs:enjs:format ~[['name' s+'Urbitwarden backend'] ['url' s+base]])] ['environment' env] ['featureStates' (pairs:enjs:format ~[['pm-19148-innovation-archive' b+%.y]])] ['settings' (pairs:enjs:format ~[['disableUserRegistration' b+%.y]])]]))
     ?:  =('/api/devices/knowndevice' url)  (reply rid 200 b+%.n)
     ?:  =('/api/organizations/domain/sso/details' url)
       (reply rid 200 (pairs:enjs:format ~[['object' s+'list'] ['data' a+~] ['continuationToken' ~]]))

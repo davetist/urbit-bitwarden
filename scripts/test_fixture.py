@@ -14,7 +14,7 @@ SCRIPTS = Path(__file__).resolve().parent
 
 class FixtureTests(unittest.TestCase):
     def test_selection_routes_all_shared_paths(self):
-        for name, directory, port in [('sso', 'bitwarden-sso', 19681), ('review-fixes', 'bitwarden-review-fixes', 19781)]:
+        for name, directory, port in [('sso', 'urbitwarden-sso', 19681), ('review-fixes', 'urbitwarden-review-fixes', 19781)]:
             with self.subTest(fixture=name):
                 result = subprocess.run([sys.executable, '-c',
                     'from fixture import WORK,ORIGIN,EVIDENCE; import json; print(json.dumps([str(WORK),ORIGIN,str(EVIDENCE)]))'],
@@ -38,7 +38,7 @@ class FixtureTests(unittest.TestCase):
                    'test_adapter.py', 'test_restart.py', 'test_official_negative.py',
                    'test_native_revoke.py', 'test_hardening.py', 'test_pending.py',
                    'probe_sso.py', 'test_native_crypto.py']
-        forbidden = ['.work/bitwarden-sso', 'https://localhost:19681', 'evidence/']
+        forbidden = ['.work/urbitwarden-sso', 'https://localhost:19681', 'evidence/']
         for name in helpers:
             with self.subTest(helper=name):
                 tree = ast.parse((SCRIPTS / name).read_text())

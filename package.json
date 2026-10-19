@@ -1,5 +1,5 @@
 {
-  "name": "urbit-bitwarden",
+  "name": "urbitwarden",
   "private": true,
   "type": "module",
   "scripts": {

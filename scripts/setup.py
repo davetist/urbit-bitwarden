@@ -1,4 +1,4 @@
-"""Prepare the selected synthetic Bitwarden desk fixture; never real ships."""
+"""Prepare the selected synthetic Urbitwarden desk fixture; never real ships."""
 from pathlib import Path
 import hashlib
 import json
@@ -68,14 +68,14 @@ def main():
         run('start.py')
         started = True
         for script in ('tls.py', 'owner.py', 'bundle.py'): run(script)
-        for desk in ('connect', 'bitwarden', 'grant-probe'): run('install.py', desk)
+        for desk in ('connect', 'urbitwarden', 'grant-probe'): run('install.py', desk)
     except BaseException:
         if started:
             try: run('stop.py')
             except BaseException as cleanup:
                 raise RuntimeError('Setup failed and fixture shutdown also failed; preserve the fixture and inspect its process identity') from cleanup
         raise
-    print('Bitwarden desk fixture ready at ' + ORIGIN + '. Start browser.mjs --enroll.')
+    print('Urbitwarden desk fixture ready at ' + ORIGIN + '. Start browser.mjs --enroll.')
 
 
 if __name__ == '__main__': main()

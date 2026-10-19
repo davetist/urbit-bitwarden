@@ -44,7 +44,7 @@ def start(timeout=300):
     owned(create=True)
     pier = WORK / 'pier'
     if running_process() is not None:
-        raise RuntimeError('Bitwarden desk fixture is already running')
+        raise RuntimeError('Urbitwarden desk fixture is already running')
     if (pier / '.urb/conn.sock').exists():
         raise RuntimeError('Fixture has a control socket; inspect it before restarting')
     # Catch conflicts before creating a process that cannot become ready.
@@ -70,7 +70,7 @@ def start(timeout=300):
                 if settled is None or settled['started'] != identity['started']:
                     raise RuntimeError('Fixture exited during readiness')
                 (WORK / 'runtime-process.json').write_text(json.dumps(settled))
-                print('Bitwarden desk fixture ready; PID', proc.pid)
+                print('Urbitwarden desk fixture ready; PID', proc.pid)
                 return proc.pid
             time.sleep(.1)
         raise RuntimeError('Fixture did not become ready; inspect private runtime.log')

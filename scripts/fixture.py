@@ -9,17 +9,17 @@ from connect_dependency import CONNECT_ROOT
 ROOT = Path(__file__).resolve().parents[1]
 NAME = os.environ.get('CONNECT_BW_FIXTURE', 'sso')
 if NAME == 'sso':
-    WORK = ROOT / '.work/bitwarden-sso'
+    WORK = ROOT / '.work/urbitwarden-sso'
     HTTP_PORT, HTTPS_PORT, AMES_PORT = 19680, 19681, 19682
-    FIXTURE_ID = 'native-bitwarden-sso-v1'
+    FIXTURE_ID = 'native-urbitwarden-sso-v1'
 elif NAME == 'review-fixes':
-    WORK = ROOT / '.work/bitwarden-review-fixes'
+    WORK = ROOT / '.work/urbitwarden-review-fixes'
     HTTP_PORT, HTTPS_PORT, AMES_PORT = 19780, 19781, 19782
-    FIXTURE_ID = 'native-bitwarden-review-fixes-v1'
+    FIXTURE_ID = 'native-urbitwarden-review-fixes-v1'
 else:
     raise ValueError('Unknown CONNECT_BW_FIXTURE; use sso or review-fixes')
 ORIGIN = f'https://localhost:{HTTPS_PORT}'
-BASE_PATH = '/apps/bitwarden'
+BASE_PATH = '/apps/urbitwarden'
 SERVER_URL = ORIGIN + BASE_PATH
 EXPECTED = {'project': str(ROOT), 'fixture': FIXTURE_ID}
 EVIDENCE = ROOT / 'evidence'

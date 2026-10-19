@@ -1,6 +1,6 @@
 ::  Pure agent lifecycle tests: dummy responses only, no live credentials.
 /+  *test, v=vault-json
-/=  vault  /app/bitwarden
+/=  vault  /app/urbitwarden
 |%
 ++  test-public-jti-does-not-disclose-refresh-seed
   =/  seed=@  33
@@ -88,7 +88,7 @@
   =/  until  ~2026.10.14..12.00.05
   =/  old  (fixture until &)
   =.  old
-    old(account (pairs:enjs:format ~[['key' s+'opaque-envelope'] ['creationDate' s+'created']]), signing-key 42, origin 'https://ship.example/apps/bitwarden', ciphers (~(put by ciphers.old) 'item' s+'opaque-cipher'), folders (~(put by folders.old) 'folder' s+'opaque-folder'), serial 7, revision until, csrf (~(put by csrf.old) 0x1 [0x2 until]))
+    old(account (pairs:enjs:format ~[['key' s+'opaque-envelope'] ['creationDate' s+'created']]), signing-key 42, origin 'https://ship.example/apps/urbitwarden', ciphers (~(put by ciphers.old) 'item' s+'opaque-cipher'), folders (~(put by folders.old) 'folder' s+'opaque-folder'), serial 7, revision until, csrf (~(put by csrf.old) 0x1 [0x2 until]))
   =/  agent  ~(. vault (clock ~2026.10.14..12.00.00))
   =/  result  (on-load:agent !>([%0 +.old]))
   =/  next  +.result

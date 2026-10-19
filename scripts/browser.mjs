@@ -5,7 +5,7 @@ const functionalOnly=process.argv.includes('--functional-only');
 if(functionalOnly&&process.argv.includes('--enroll'))throw Error('Functional mode uses an already-enrolled fixture; it does not capture enrollment keys.');
 const selected=process.env.CONNECT_BW_FIXTURE||'sso';
 if(!['sso','review-fixes'].includes(selected))throw Error('Unknown fixture');
-const work=path.join(root,selected==='sso'?'.work/bitwarden-sso':'.work/bitwarden-review-fixes');
+const work=path.join(root,selected==='sso'?'.work/urbitwarden-sso':'.work/urbitwarden-review-fixes');
 const origin=selected==='sso'?'https://localhost:19681':'https://localhost:19781';
 const evidence=path.join(root,'evidence',selected==='sso'?'':'review-fixes');fs.mkdirSync(evidence,{recursive:true});
 const vendor=path.join(work,'vendor');
@@ -22,7 +22,7 @@ process.on('SIGTERM',async()=>{save();await context.close();process.exit(0);});
 const cookie=JSON.parse(fs.readFileSync(work+'/owner.json')).cookie;
 await context.addCookies(cookie.split('; ').map(c=>{const i=c.indexOf('=');return{name:c.slice(0,i),value:c.slice(i+1),url:origin,httpOnly:true,secure:true,sameSite:'Lax'};}));
 const page=await context.newPage();
-await page.goto(origin+'/apps/bitwarden/');
+await page.goto(origin+'/apps/urbitwarden/');
 if(process.argv.includes('--enroll')){
  const fixturePath=work+'/fixture.json';
  if(fs.existsSync(fixturePath))throw new Error('Fixture already exists; refusing reenrollment');

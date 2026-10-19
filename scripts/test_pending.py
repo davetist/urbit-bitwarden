@@ -17,12 +17,12 @@ for mode in ['timeout','reload']:
    time.sleep(.5);assert not wait.done()
    if mode=='reload':
     source=WORK/'pending-reload-desk';shutil.copytree(ROOT/'desk',source,dirs_exist_ok=True)
-    p=source/'app/bitwarden.hoon';p.write_text(':: Pending response regression.\n'+p.read_text());install('bitwarden',source)
+    p=source/'app/urbitwarden.hoon';p.write_text(':: Pending response regression.\n'+p.read_text());install('urbitwarden',source)
    s,b,_=wait.result(timeout=34);assert s==503 and b['error']=='temporarily_unavailable',(mode,s)
  finally:hood('kiln-revive','%connect')
  time.sleep(1)
  assert sessions()==before,'orphan exchange leaked a Connect grant'
  passed.append(mode+' completes HTTP with 503 and cleans late grant')
-install('bitwarden',ROOT/'desk')
+install('urbitwarden',ROOT/'desk')
 print('\n'.join('PASS '+x for x in passed))
 (EVIDENCE/'pending.json').write_text(json.dumps({'passed':passed},indent=2)+'\n')

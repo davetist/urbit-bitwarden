@@ -17,8 +17,8 @@ class DeploymentTests(unittest.TestCase):
     def source(self, root):
         files = {'dependencies/urbit-connect/desk/app/connect.hoon': b'connect source',
                  'dependencies/urbit-connect/desk/desk.bill': b'~[%connect]',
-                 'desk/app/bitwarden.hoon': b'vault source',
-                 'desk/desk.bill': b'~[%bitwarden]'}
+                 'desk/app/urbitwarden.hoon': b'vault source',
+                 'desk/desk.bill': b'~[%urbitwarden]'}
         for name, value in files.items():
             path = root / name; path.parent.mkdir(parents=True, exist_ok=True); path.write_bytes(value)
         (root / 'INTEGRATION-MANIFEST.json').write_text(json.dumps({
@@ -29,7 +29,7 @@ class DeploymentTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory).resolve(); files = self.source(root)
             release = deploy.load_source(root)
-            self.assertEqual(set(release['desks']), {'connect', 'bitwarden'})
+            self.assertEqual(set(release['desks']), {'connect', 'urbitwarden'})
             self.assertEqual(sum(len(entries) for entries in release['desks'].values()), len(files))
             (root / 'dependencies/urbit-connect/desk/app/connect.hoon').write_text('changed')
             with self.assertRaisesRegex(ValueError, 'hash'): deploy.load_source(root)
@@ -126,10 +126,10 @@ class DeploymentTests(unittest.TestCase):
         harmless = [{'path': '/', 'site': None, 'app': 'landscape'},
                     {'path': '/apps/notes', 'site': None, 'app': 'notes'}]
         deploy.check_routes(harmless, 'https://ship.example')
-        for path in ['/apps/bitwarden', '/apps/bitwarden/api', '/connect', '/apps/connect']:
+        for path in ['/apps/urbitwarden', '/apps/urbitwarden/api', '/connect', '/apps/connect']:
             with self.subTest(path=path), self.assertRaisesRegex(ValueError, 'route'):
                 deploy.check_routes(harmless + [{'path': path, 'site': None, 'app': 'other'}], 'https://ship.example')
-        deploy.check_routes([{'path': '/apps/bitwarden', 'site': None, 'app': 'bitwarden'}], 'https://ship.example')
+        deploy.check_routes([{'path': '/apps/urbitwarden', 'site': None, 'app': 'urbitwarden'}], 'https://ship.example')
 
     def test_existing_desks_require_exact_update_selection(self):
         status = {'ship': '~sampel-palnet', 'desks': ['connect'], 'routes': []}
@@ -145,12 +145,12 @@ class DeploymentTests(unittest.TestCase):
             release = deploy.load_source(root)
             control = Mock(); control.inspect.return_value = {'ship': '~sampel-palnet', 'desks': [], 'routes': []}
             result = deploy.deploy(control, release, '~sampel-palnet', 'https://ship.example', apply=False)
-            self.assertEqual(result['bitwardenURL'], 'https://ship.example/apps/bitwarden')
+            self.assertEqual(result['urbitwardenURL'], 'https://ship.example/apps/urbitwarden')
             control.run.assert_not_called()
             deploy.deploy(control, release, '~sampel-palnet', 'https://ship.example', apply=True)
             expressions = [call.args[0] for call in control.run.call_args_list]
             self.assertTrue(any('%kiln-install' in text and '%connect' in text for text in expressions))
-            self.assertTrue(any('%kiln-install' in text and '%bitwarden' in text for text in expressions))
+            self.assertTrue(any('%kiln-install' in text and '%urbitwarden' in text for text in expressions))
             self.assertTrue(all('~zod' not in text for text in expressions))
 
     def test_control_decode_returns_only_success_payload(self):

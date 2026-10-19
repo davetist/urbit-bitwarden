@@ -15,16 +15,16 @@ def main():
     start = log.stat().st_size
     expression = ('=/  m  (strand ,vase)  ;<  now=@da  bind:m  get-time  '
                   ';<  result=thread-result  bind:m  '
-                  '(await-thread %test !>([~ /~zod/bitwarden/(scot %da now)/tests/bitwarden/cache]))  '
+                  '(await-thread %test !>([~ /~zod/urbitwarden/(scot %da now)/tests/urbitwarden/cache]))  '
                   '?>  ?=(%& -.result)  (pure:m p.result)')
     result = subprocess.run([sys.executable, str(Path(__file__).with_name('control.py')), '--khan', expression],
                             capture_output=True, text=True, timeout=180)
     with log.open('rb') as source:
         source.seek(start)
         output = source.read().decode(errors='replace')
-    passed = re.findall(r'OK\s+(/tests/bitwarden/cache/[^\s]+)', output)
+    passed = re.findall(r'OK\s+(/tests/urbitwarden/cache/[^\s]+)', output)
     for line in output.splitlines():
-        if '/tests/bitwarden/cache/' in line or line.startswith(('expected', 'actual', 'syntax error', '-find', '-nest')):
+        if '/tests/urbitwarden/cache/' in line or line.startswith(('expected', 'actual', 'syntax error', '-find', '-nest')):
             print(line)
     if result.returncode or result.stdout.strip() != '[0 %avow 0 %noun 0]' or len(passed) != 9:
         raise SystemExit('Native cache lifecycle tests failed or did not execute all 9 cases.')

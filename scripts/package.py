@@ -77,7 +77,7 @@ def main():
     if data != build(entries):
         raise AssertionError('Non-deterministic source archive')
     output = ROOT / 'dist'; output.mkdir(exist_ok=True)
-    target = output / 'urbit-bitwarden-source.tgz'; target.write_bytes(data)
+    target = output / 'urbitwarden-source.tgz'; target.write_bytes(data)
     with tarfile.open(target) as package:
         for name, digest in manifest.items():
             if hashlib.sha256(package.extractfile(name).read()).hexdigest() != digest:

@@ -16,8 +16,8 @@ import urllib.parse
 
 from noun import atom, cell, jam
 
-DESKS = {'connect': 'dependencies/urbit-connect/desk', 'bitwarden': 'desk'}
-ROUTES = {'/connect': 'connect', '/apps/connect': 'connect', '/apps/bitwarden': 'bitwarden'}
+DESKS = {'connect': 'dependencies/urbit-connect/desk', 'urbitwarden': 'desk'}
+ROUTES = {'/connect': 'connect', '/apps/connect': 'connect', '/apps/urbitwarden': 'urbitwarden', '/apps/bitwarden': 'urbitwarden'}
 MAX_MANIFEST_BYTES = 1024 * 1024
 MAX_MANIFEST_ENTRIES = 4096
 MAX_SOURCE_PATHS = 4096
@@ -226,17 +226,17 @@ class Control:
             '=/  desks  .^((set desk) %cd /(scot %p our)//(scot %da now))  '
             '=/  bound  .^((list [binding=binding:eyre duct=duct action=action:eyre]) %e /(scot %p our)/bindings/(scot %da now))  '
             '=/  routes  (turn bound |=(entry=[binding=binding:eyre duct=duct action=action:eyre] [binding.entry action.entry]))  '
-            '(pure:m !>([(scot %p our) (~(has in desks) %connect) (~(has in desks) %bitwarden) routes]))')
+            '(pure:m !>([(scot %p our) (~(has in desks) %connect) (~(has in desks) %urbitwarden) (~(has in desks) %bitwarden) routes]))')
         raw = self.run(expression)
-        ship_atom, rest = raw; has_connect, rest = rest; has_bitwarden, bindings = rest
+        ship_atom, rest = raw; has_connect, rest = rest; has_urbitwarden, rest = rest; has_legacy, bindings = rest
         routes = []
         for binding, action in noun_list(bindings):
             site, path = binding
             routes.append({'site': None if site == 0 else cord(site[1]),
                            'path': '/' + '/'.join(cord(part) for part in noun_list(path)),
                            'app': cord(action[1]) if action[0] == atom('app') else None})
-        return {'ship': cord(ship_atom),
-                'desks': [name for name, found in [('connect', has_connect), ('bitwarden', has_bitwarden)] if found == 0],
+        return {'ship': cord(ship_atom), 'legacyDesk': has_legacy == 0,
+                'desks': [name for name, found in [('connect', has_connect), ('urbitwarden', has_urbitwarden)] if found == 0],
                 'routes': routes}
 
 
@@ -286,8 +286,10 @@ def import_expressions(ship, desk, entries):
 def deploy(control, release, ship, origin, apply=False, update_existing=False):
     ship = validate_ship(ship); origin = validate_origin(origin)
     status = control.inspect(ship)
+    if status.get('legacyDesk') and 'urbitwarden' not in status['desks']:
+        raise ValueError('Existing %bitwarden vault: use scripts/migrate_urbitwarden.py to preserve its state and Connect grants')
     check_target(status, ship, origin, update_existing)
-    result = {'ship': ship, 'origin': origin, 'bitwardenURL': origin + '/apps/bitwarden',
+    result = {'ship': ship, 'origin': origin, 'urbitwardenURL': origin + '/apps/urbitwarden',
               'manifestSHA256': release['manifestSHA256'], 'desks': list(DESKS),
               'existingDesks': status['desks'], 'applied': apply}
     if apply:
@@ -317,11 +319,11 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--pier', required=True, type=Path)
     parser.add_argument('--ship', required=True)
-    parser.add_argument('--origin', required=True, help='HTTPS origin; the client URL adds /apps/bitwarden')
+    parser.add_argument('--origin', required=True, help='HTTPS origin; the client URL adds /apps/urbitwarden')
     parser.add_argument('--source', type=Path, help='Extracted source archive containing INTEGRATION-MANIFEST.json')
     parser.add_argument('--tls-only', action='store_true', help='Inspect or replace only the chosen Eyre certificate; do not import desks')
     parser.add_argument('--apply', action='store_true')
-    parser.add_argument('--update-existing', action='store_true', help='Authorize updating the selected Connect and Bitwarden desks')
+    parser.add_argument('--update-existing', action='store_true', help='Authorize updating the selected Connect and Urbitwarden desks')
     parser.add_argument('--cert', type=Path); parser.add_argument('--key', type=Path)
     parser.add_argument('--apply-tls', action='store_true', help='Explicitly replace Eyre TLS with the supplied certificate/key')
     args = parser.parse_args()

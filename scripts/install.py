@@ -12,7 +12,7 @@ def control(expr):
     return r.stdout
 
 def install(name, source):
-    if name not in ('connect','bitwarden','grant-probe'): raise ValueError('Unexpected fixture desk')
+    if name not in ('connect','urbitwarden','grant-probe'): raise ValueError('Unexpected fixture desk')
     control(f'=/  m  (strand ,vase)  ;<  now=@da  bind:m  get-time  ?:  (~(has in .^((set desk) %cd /~zod//(scot %da now))) %{name})  (pure:m !>(~))  ;<  ~  bind:m  (poke-our %hood %kiln-merge !>([%{name} ~zod %base da+now %init]))  ;<  ~  bind:m  (sleep ~s1)  (pure:m !>(~))')
     for hoon_phase in (True,False):
         prefix='=/  m  (strand ,vase)  ;<  now=@da  bind:m  get-time  '
@@ -30,7 +30,7 @@ def install(name, source):
     print('Imported',name,'desk; compilation must be verified separately.')
 if __name__=='__main__':
     name=sys.argv[1] if len(sys.argv)>1 else 'connect'
-    if name not in ('connect','bitwarden','grant-probe'): raise ValueError('Unexpected fixture desk')
-    if name!='bitwarden': ensure_connect()
-    source={'bitwarden':ROOT/'desk','connect':CONNECT_ROOT/'desk','grant-probe':CONNECT_ROOT/'integrations/grant-probe/desk'}[name]
+    if name not in ('connect','urbitwarden','grant-probe'): raise ValueError('Unexpected fixture desk')
+    if name!='urbitwarden': ensure_connect()
+    source={'urbitwarden':ROOT/'desk','connect':CONNECT_ROOT/'desk','grant-probe':CONNECT_ROOT/'integrations/grant-probe/desk'}[name]
     install(name,source)

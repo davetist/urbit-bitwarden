@@ -100,7 +100,7 @@ def compile_source(desk: Path, arvo: Path) -> tuple[str, list[dict[str, str]]]:
         data = source.read_bytes()
         system_nodes.append(f"=/  {layer}-src  {source_cord(data)}")
         sources.append({"path": str(source), "sha256": hashlib.sha256(data).hexdigest()})
-    result = visit("app/bitwarden.hoon")
+    result = visit("app/urbitwarden.hoon")
     prelude = """=/  base=vase  !>(.)
 =/  join
   |=  [dep=vase name=(unit @tas) tail=vase]
@@ -151,7 +151,7 @@ def main() -> int:
     expected_kelvin = int(kelvin_match.group(1))
     script, sources = compile_source(desk, args.arvo_root)
     sources.append({"path": str(kelvin_file), "sha256": digest(kelvin_file)})
-    output = args.output_dir.resolve() if args.output_dir else Path(tempfile.mkdtemp(prefix="bitwarden-compile-"))
+    output = args.output_dir.resolve() if args.output_dir else Path(tempfile.mkdtemp(prefix="urbitwarden-compile-"))
     output.mkdir(parents=True, exist_ok=True)
     request = output / "compile.hoon"
     request.write_text(script)

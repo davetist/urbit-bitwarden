@@ -7,7 +7,7 @@ import json
 from api import API
 from fixture import NAME, EVIDENCE
 
-BASE = '/apps/bitwarden'
+BASE = '/apps/urbitwarden'
 
 
 def main():

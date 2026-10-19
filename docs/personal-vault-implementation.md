@@ -1,7 +1,7 @@
 # Personal vault implementation plan
 
 **Goal:** Implement the agreed personal-vault content and management scope through official clients, with Connect as the sole authorization authority.
-**Architecture:** Keep the native Bitwarden agent responsible for encrypted vault state and Bitwarden wire contracts. Extend its versioned state with encrypted attachment octets; retain generic Connect unchanged unless a concrete generic dependency requires a fix. Use separate pure helpers for attachment wire parsing.
+**Architecture:** Keep the Urbitwarden agent responsible for encrypted vault state and Bitwarden wire contracts. Extend its versioned state with encrypted attachment octets; retain generic Connect unchanged unless a concrete generic dependency requires a fix. Use separate pure helpers for attachment wire parsing.
 **Spec:** [Agreed scope](vaultwarden-parity.md).
 
 ## Constraints

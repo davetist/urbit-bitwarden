@@ -1,6 +1,6 @@
 # Personal vault API implementation — 2026-10-17
 
-This implementation extends the native Bitwarden desk. Connect remains the only backend authorization authority. The separate Connect desk needs no protocol change. No shared vaults, Sends, breach-database service, extra login mechanism or full browser vault is added.
+This implementation extends the Urbitwarden desk. Connect remains the only backend authorization authority. The separate Connect desk needs no protocol change. No shared vaults, Sends, breach-database service, extra login mechanism or full browser vault is added.
 
 State migrates `%0` and `%1` into `%2` by preserving their existing account, signing key, sessions, ciphers, folders, IDs, revisions, retry cache and CSRF data, then adding empty attachment storage and trash scheduling. The existing security migration still revokes `%0` sessions/cache/CSRF; `%1` sessions remain valid. Temporary download tickets are cleared on reload.
 

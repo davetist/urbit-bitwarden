@@ -18,7 +18,7 @@ import tempfile
 
 from deploy import no_symlinks, runtime_binary, source_paths, validate_pier, validate_ship
 
-MANIFEST = 'BITWARDEN-PIER-BACKUP.json'
+MANIFEST = 'BITWARDEN-PIER-BACKUP.json'  # Existing archive format, retained for restore compatibility.
 FORMAT = 'urbit-connect-stopped-pier-v1'
 MAX_ARCHIVE_MEMBERS = 10_000
 MAX_ARCHIVE_BYTES = 8 * 1024 ** 3

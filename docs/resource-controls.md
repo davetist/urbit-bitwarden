@@ -2,7 +2,7 @@
 
 ## Removed product quotas
 
-The Bitwarden desk no longer rejects retained content because of any of these former ceilings:
+The Urbitwarden desk no longer rejects retained content because of any of these former ceilings:
 
 - 1,000 ciphers, including trash, or 1,000 folders.
 - 64 KiB per cipher or folder.

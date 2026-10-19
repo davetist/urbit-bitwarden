@@ -22,7 +22,7 @@ def cue(data):
   if not stack:return v
   stack[-1][1]=v
 # Connect's response is [0 %avow 0 %noun vault-state].
-n=cue((WORK/'state-bitwarden.jam').read_bytes())
+n=cue((WORK/'state-urbitwarden.jam').read_bytes())
 for _ in range(4):n=n[1]
 state=n
 assert state[0]==1

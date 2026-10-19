@@ -1,4 +1,4 @@
-# Back up and restore the native Bitwarden desk
+# Back up and restore the Urbitwarden desk
 
 A full stopped-pier backup preserves the Bitwarden account's wrapped key, encrypted vault, Connect authorization/configuration and all other ship state together. This avoids a partial application export that loses enrollment or key metadata. The backup utility copies files as opaque bytes: it does not inspect or decode journals, Gall state, credentials or vault contents. It runs on macOS/Linux with Python's standard library and stock Vere; no backup server or runtime change is added.
 
@@ -45,7 +45,7 @@ For an orderly migration, stop the source, create the final backup, keep the sou
 For a functional rehearsal, use a dedicated fake-ship fixture with synthetic vault data, stop its source, restore to a separate owned directory, and boot the restored fixture on explicitly selected loopback ports. Do not use a real identity or expose a fake ship to the Internet. This is the appropriate place to demonstrate:
 
 - The selected source was stopped and remains unchanged.
-- The restored ship starts and serves the Bitwarden and Connect desks.
+- The restored ship starts and serves the Urbitwarden and Connect desks.
 - An official client can sign in, locally unlock the restored wrapped account key, and read a known synthetic login after sync.
 - The original source and restored copy are not running together.
 

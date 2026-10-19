@@ -7,14 +7,14 @@ import os from 'node:os';
 import path from 'node:path';
 import {chromium} from 'playwright';
 const root=path.resolve(import.meta.dirname,'..');
-const origin='https://fixture.invalid',base=origin+'/apps/bitwarden';
+const origin='https://fixture.invalid',base=origin+'/apps/urbitwarden';
 const web=path.join(root,'web');
 let browser;
 before(async()=>{browser=await chromium.launch({headless:true,executablePath:process.env.BW_BROWSER_EXECUTABLE||path.join(os.homedir(),'Library/Caches/ms-playwright/chromium-1234/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing')});});
 after(async()=>{await browser?.close();});
-const registration=(id,redirects)=>({id,name:'Existing '+id,namespace:{cli:'app-21',browser:'app-47',desktop:'app-52',mobile:'app-63'}[id],enabled:true,redirectURI:redirects[0],integration:{agent:'bitwarden',scopes:['api','offline_access'],redirectURIs:redirects}});
+const registration=(id,redirects)=>({id,name:'Existing '+id,namespace:{cli:'app-21',browser:'app-47',desktop:'app-52',mobile:'app-63'}[id],enabled:true,redirectURI:redirects[0],integration:{agent:'urbitwarden',scopes:['api','offline_access'],redirectURIs:redirects}});
 const cliRedirects=Array.from({length:6},(_,i)=>'http://localhost:'+(8065+i));
-const clients=()=>[registration('cli',cliRedirects),registration('browser',[base+'/sso-connector.html']),registration('desktop',['bitwarden://sso-callback',...cliRedirects]),registration('mobile',['bitwarden://sso-callback'])];
+const clients=()=>[registration('cli',cliRedirects),registration('browser',[base+'/sso-connector.html',origin+'/apps/bitwarden/sso-connector.html']),registration('desktop',['bitwarden://sso-callback',...cliRedirects]),registration('mobile',['bitwarden://sso-callback'])];
 async function fixture(options={}){
  const context=await browser.newContext({viewport:options.viewport||{width:1000,height:900}}),page=await context.newPage();
  page.setDefaultTimeout(4000);
@@ -22,9 +22,9 @@ async function fixture(options={}){
  await page.route('**/*',async route=>{
   const request=route.request(),url=new URL(request.url()),pathname=url.pathname;
   const fulfill=(status,body)=>route.fulfill({status,contentType:'application/json',body:JSON.stringify(body)});
-  if(pathname==='/apps/bitwarden/'||pathname==='/apps/bitwarden/sso-connector.html')return route.fulfill({contentType:'text/html',body:fs.readFileSync(web+'/index.html','utf8')});
+  if(pathname==='/apps/urbitwarden/'||pathname==='/apps/urbitwarden/sso-connector.html')return route.fulfill({contentType:'text/html',body:fs.readFileSync(web+'/index.html','utf8')});
   if(pathname.endsWith('/vault/app.js')||pathname.endsWith('/vault/style.css'))return route.fulfill({contentType:pathname.endsWith('.js')?'application/javascript':'text/css',body:fs.readFileSync(web+(pathname.endsWith('.js')?'/app.js':'/style.css'),'utf8')});
-  if(pathname==='/apps/bitwarden/vault/bootstrap'){
+  if(pathname==='/apps/urbitwarden/vault/bootstrap'){
    state.bootstrapCalls++;
    if(state.ownerRequired)return fulfill(401,{error:'owner_required'});
    if(state.failBootstrap){state.failBootstrap=false;return fulfill(503,{error:'unavailable'});}
@@ -47,12 +47,12 @@ async function fixture(options={}){
   if(pathname.startsWith('/connect/owner/v1/clients/')){
    const id=pathname.split('/').pop(),client=state.clients.find(c=>c.id===id);assert(client);Object.assign(client,request.postDataJSON());state.clientWrites.push(id);return fulfill(200,client);
   }
-  if(pathname==='/apps/bitwarden/vault/enroll'){
+  if(pathname==='/apps/urbitwarden/vault/enroll'){
    state.enrollAttempts++;if(state.failEnrollment&&state.enrollAttempts===1)return fulfill(503,{error:'unavailable'});
    state.enrolled=true;return fulfill(200,{enrolled:true});
   }
-  if(pathname==='/apps/bitwarden/identity/sso/prevalidate')return fulfill(200,{token:'fixture-prevalidation'});
-  if(pathname==='/apps/bitwarden/identity/connect/authorize')return route.fulfill({contentType:'text/html',body:'<p>Authorization destination</p>'});
+  if(pathname==='/apps/urbitwarden/identity/sso/prevalidate')return fulfill(200,{token:'fixture-prevalidation'});
+  if(pathname==='/apps/urbitwarden/identity/connect/authorize')return route.fulfill({contentType:'text/html',body:'<p>Authorization destination</p>'});
   return fulfill(404,{error:'fixture_route_missing'});
  });
  await page.goto(base+'/'+(options.hash||''));
@@ -68,10 +68,10 @@ async function enrollment(page,password='synthetic-only-onboarding-password'){
  await page.getByLabel('Confirm local vault password',{exact:true}).fill(password);
  await page.getByRole('button',{name:'Create encrypted vault',exact:true}).click();
 }
-test('an owner login failure hides enrollment and links back to the Bitwarden desk',async()=>{
+test('an owner login failure hides enrollment and links back to the Urbitwarden desk',async()=>{
  const f=await fixture({ownerRequired:true});try{
   const link=f.page.getByRole('link',{name:'Log in as the ship owner',exact:true});await link.waitFor();
-  assert.equal(await link.getAttribute('href'),'/~/login?redirect=%2Fapps%2Fbitwarden%2F');
+  assert.equal(await link.getAttribute('href'),'/~/login?redirect=%2Fapps%2Furbitwarden%2F');
   assert.equal(await f.page.getByRole('button',{name:'Create encrypted vault',exact:true}).isVisible(),false);
  }finally{await f.close();}
 });

@@ -52,7 +52,7 @@ for file in (WORK/'pier/.urb/log').glob('*/data.mdb'):
    except Exception as err:failures.append({'event':event,'error':str(err)})
  e.close()
 active={}
-for agent in ['connect','bitwarden']:
+for agent in ['connect','urbitwarden']:
  path=WORK/('state-'+agent+'.jam')
  matches={k:0 for k in secrets}
  def state_visit(n):

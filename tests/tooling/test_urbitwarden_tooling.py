@@ -14,7 +14,7 @@ ROOT = Path(__file__).resolve().parents[2]
 SCRIPTS = ROOT / 'scripts'
 
 
-class BitwardenToolingTests(unittest.TestCase):
+class UrbitwardenToolingTests(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory(prefix='bw-', dir='/private/tmp')
         self.addCleanup(self.temp.cleanup)
@@ -23,10 +23,10 @@ class BitwardenToolingTests(unittest.TestCase):
         self.scripts.mkdir(parents=True)
         for name in ('connect_dependency', 'fixture', 'install', 'start', 'stop', 'setup', 'cli_sso'):
             shutil.copyfile(SCRIPTS / (name + '.py'), self.scripts / (name + '.py'))
-        self.work = self.root / '.work/bitwarden-sso'
+        self.work = self.root / '.work/urbitwarden-sso'
         self.work.mkdir(parents=True)
         (self.work / '.owned-fixture.json').write_text(json.dumps({
-            'project': str(self.root), 'fixture': 'native-bitwarden-sso-v1'}))
+            'project': str(self.root), 'fixture': 'native-urbitwarden-sso-v1'}))
         self.env = {**os.environ, 'CONNECT_BW_FIXTURE': 'sso'}
         self.vere = self.root / '.work/toolchains/vere-4.6/vere-v4.6-macos-aarch64'
         self.vere.parent.mkdir(parents=True)
@@ -79,8 +79,8 @@ HTTPServer(('127.0.0.1', int(sys.argv[sys.argv.index('--http-port')+1])), Handle
         r = self.run_code('from fixture import *; print(WORK.name, ORIGIN, HTTP_PORT, AMES_PORT)',
                           CONNECT_BW_FIXTURE='review-fixes')
         self.assertEqual(r.returncode, 0, r.stderr)
-        self.assertEqual(r.stdout.strip(), 'bitwarden-review-fixes https://localhost:19781 19780 19782')
-        r = self.run_code('import fixture', CONNECT_BW_FIXTURE='../bitwarden-sso')
+        self.assertEqual(r.stdout.strip(), 'urbitwarden-review-fixes https://localhost:19781 19780 19782')
+        r = self.run_code('import fixture', CONNECT_BW_FIXTURE='../urbitwarden-sso')
         self.assertNotEqual(r.returncode, 0)
 
     def test_start_waits_for_service_and_stop_terminates_without_socket(self):
@@ -160,7 +160,7 @@ import install
 from pathlib import Path
 requests = []
 install.control = requests.append
-install.install('bitwarden', Path('../source').resolve())
+install.install('urbitwarden', Path('../source').resolve())
 assert len(requests) == 4
 assert '/main/hoon %ins %hoon val' in requests[1]
 assert '/text/plain [1.234 0x' in requests[1]

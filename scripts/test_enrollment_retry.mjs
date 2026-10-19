@@ -6,7 +6,7 @@ import assert from 'node:assert/strict';
 import {webcrypto} from 'node:crypto';
 const code=fs.readFileSync(new URL('../web/app.js',import.meta.url),'utf8');
 const html=fs.readFileSync(new URL('../web/index.html',import.meta.url),'utf8');
-const origin='https://fixture.invalid',base='/apps/bitwarden';
+const origin='https://fixture.invalid',base='/apps/urbitwarden';
 async function fixture({registrations=[],failEnrollment=false}={}){
  const state={registrations,registrationWrites:0,enrollAttempts:0,configureWrites:0,configured:false,enrolled:false};
  const elements=Object.fromEntries([...html.matchAll(/\bid="([^"]+)"/g)].map(([,id])=>['#'+id,{hidden:false,value:'',handlers:{},addEventListener(type,handler){this.handlers[type]=handler;},focus(){}}]));
@@ -49,7 +49,7 @@ assert.match(retry.elements['#status'].textContent,/503/);
 assert.equal(retry.state.configureWrites,1);
 const expectedCallbacks={
  cli:['http://localhost:8065','http://localhost:8066','http://localhost:8067','http://localhost:8068','http://localhost:8069','http://localhost:8070'],
- browser:['https://fixture.invalid/apps/bitwarden/sso-connector.html'],
+ browser:['https://fixture.invalid/apps/urbitwarden/sso-connector.html','https://fixture.invalid/apps/bitwarden/sso-connector.html'],
  desktop:['bitwarden://sso-callback','http://localhost:8065','http://localhost:8066','http://localhost:8067','http://localhost:8068','http://localhost:8069','http://localhost:8070'],
  mobile:['bitwarden://sso-callback']
 };
@@ -57,7 +57,7 @@ for(const client of retry.state.registrations){
  assert.deepEqual(client.integration.redirectURIs,expectedCallbacks[client.id]);
  assert.equal(client.redirectURI,expectedCallbacks[client.id][0]);
  assert.deepEqual(client.integration.scopes,['api','offline_access']);
- assert.equal(client.integration.agent,'bitwarden');
+ assert.equal(client.integration.agent,'urbitwarden');
 }
 await retry.submit();
 assert.equal(retry.state.enrollAttempts,2);

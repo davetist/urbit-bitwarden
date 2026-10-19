@@ -7,7 +7,7 @@ for altered in [('wrong-client',code,redirect,verifier),('notes-native',code,red
  result=exchange_probe(*altered);assert isinstance(result,str) or result['status']==400
 result=exchange_probe('notes-native',code,redirect,verifier);assert result['status']==200,('exchange',result.get('status'))
 sid=result['grant']['sessionId'];assert scry('grant-probe','notes/'+sid) is not None
-assert scry('connect','integration/bitwarden/'+sid) is None
+assert scry('connect','integration/urbitwarden/'+sid) is None
 assert exchange_probe('notes-native',code,redirect,verifier)['status']==400
 for callback in [redirect+'/',redirect.replace('18065','18066'),'http://evil.example:18065/callback']:
  assert api.begin('notes-native',callback,'notes:read')[0][0]==400

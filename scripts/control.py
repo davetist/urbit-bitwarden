@@ -6,7 +6,7 @@ parser=argparse.ArgumentParser()
 parser.add_argument('expression')
 parser.add_argument('--card',action='store_true')
 parser.add_argument('--khan',action='store_true')
-parser.add_argument('--save-jam',choices=['connect','bitwarden'])
+parser.add_argument('--save-jam',choices=['connect','urbitwarden'])
 args=parser.parse_args()
 expr=args.expression.replace('\\','\\\\').replace("'","\\'")
 thread='khan-eval' if args.khan else 'eval'

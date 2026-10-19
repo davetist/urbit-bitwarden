@@ -4,7 +4,7 @@ The [development policy](readiness-policy.md) removes synthetic/soak/trial quali
 
 ## Retained authorization tokens cannot decrypt or read passwords
 
-Owner decision, 2026-10-14: retaining authorization tokens in Urbit history is an accepted known limitation; these tokens cannot decrypt the vault or reveal passwords. It is not a blocker for making the Bitwarden desk usable. Eliminating this retention is not a release prerequisite. The separate token-derivation issues are fixed in the current source. This decision does not mark restricted journal validation complete.
+Owner decision, 2026-10-14: retaining authorization tokens in Urbit history is an accepted known limitation; these tokens cannot decrypt the vault or reveal passwords. It is not a blocker for making the Urbitwarden desk usable. Eliminating this retention is not a release prerequisite. The separate token-derivation issues are fixed in the current source. This decision does not mark restricted journal validation complete.
 
 The 2026-10-16 CLI sign-in correction adds one owner-authorized compatibility exception: its initial SSO access token lasts six minutes, outside the official CLI’s five-minute early-refresh window. Access tokens newly minted by refresh and all other clients retain the 60-second access lifetime. The original retention decision remains unchanged.
 
@@ -31,7 +31,7 @@ Connect remains the sole backend login and authorization authority. The desk nei
 
 Stock Vere already provides `roll` to start a new event-log epoch and `chop` to remove epochs older than the newest two. These are existing runtime maintenance tools, require a stopped ship, and do not change application session lifetimes. They offer a practical way to reduce accumulated historical copies without a runtime patch or another service. See the [official roll and chop documentation](https://docs.urbit.org/user-manual/running/vere#chop).
 
-This is history retention management, not a guarantee of secure erasure. Retained epochs, current snapshots/state, separate backups and filesystem snapshots are separate copies. `pack`/`meld` compact or deduplicate state rather than selectively removing journal credentials. Maintenance applies to the whole pier; the Bitwarden desk must not silently prune other apps' history. Any operator procedure needs its own explicit target, recovery boundary and verification. No journal maintenance was executed for this decision.
+This is history retention management, not a guarantee of secure erasure. Retained epochs, current snapshots/state, separate backups and filesystem snapshots are separate copies. `pack`/`meld` compact or deduplicate state rather than selectively removing journal credentials. Maintenance applies to the whole pier; the Urbitwarden desk must not silently prune other apps' history. Any operator procedure needs its own explicit target, recovery boundary and verification. No journal maintenance was executed for this decision.
 
 This native maintenance route remains a follow-up opportunity, not a prerequisite for the desk's usability work. Session lifetimes are not being shortened as a substitute. The initial CLI compatibility exception above is unrelated to retention maintenance.
 

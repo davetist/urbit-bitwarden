@@ -2,7 +2,7 @@
 from pathlib import Path
 import json,ssl,urllib.request,urllib.error
 from install import ROOT
-WORK=ROOT/'.work/bitwarden-sso';origin='https://localhost:19681'
+WORK=ROOT/'.work/urbitwarden-sso';origin='https://localhost:19681'
 auth=json.loads((WORK/'owner.json').read_text())
 ctx=ssl.create_default_context(cafile=WORK/'tls/cert.pem')
 csrf=None

@@ -6,9 +6,9 @@ def login():
  st,q,v=A.begin('cli','http://localhost:8065','api offline_access');cb=A.approve(st)
  s,b,_=A.call('/identity/connect/token',{'grant_type':'authorization_code','client_id':'cli','code':cb['code'][0],'code_verifier':v,'redirect_uri':'http://localhost:8065'},form=True);assert s==200;return b
 b=login();sid=json.loads(base64.urlsafe_b64decode(b['access_token'].split('.')[1]+'=='))['sid']
-assert scry('connect','integration/bitwarden/'+sid)
+assert scry('connect','integration/urbitwarden/'+sid)
 assert A.call('/identity/connect/revocation',{'token':b['refresh_token']},form=True)[0]==200
-assert scry('connect','integration/bitwarden/'+sid) is None
+assert scry('connect','integration/urbitwarden/'+sid) is None
 passed.append('adapter logout releases underlying Connect grant')
 b=login();started=time.monotonic()
 def call(path,data=None,method=None):

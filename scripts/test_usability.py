@@ -4,7 +4,7 @@ import time
 from api import API
 from fixture import NAME,EVIDENCE
 
-BASE='/apps/bitwarden'
+BASE='/apps/urbitwarden'
 
 def main():
     assert NAME=='review-fixes','Use the owned review fixture'

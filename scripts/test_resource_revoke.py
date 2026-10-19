@@ -8,8 +8,8 @@ def login(client,redirect,scope):
 def revoke(resource,sid):
  control(f'=/  m  (strand ,vase)  ;<  ~  bind:m  (poke-our %grant-probe %connect-revoke !>([%{resource} {hoon_text(sid)}]))  ;<  ~  bind:m  (sleep ~s1)  (pure:m !>(~))')
 sid=login('cli','http://localhost:8065','api offline_access')
-revoke('bitwarden',sid);assert scry('connect','integration/bitwarden/'+sid)
-revoke('grant-probe',sid);assert scry('connect','integration/bitwarden/'+sid)
+revoke('urbitwarden',sid);assert scry('connect','integration/urbitwarden/'+sid)
+revoke('grant-probe',sid);assert scry('connect','integration/urbitwarden/'+sid)
 assert A.call('/connect/owner/v1/revoke',{'sessionId':sid},owner=True)[0]==200
 sid=login('notes-native','http://localhost:18065/callback','notes:read');revoke('grant-probe',sid);assert scry('connect','integration/grant-probe/'+sid)is None
 revoke('grant-probe',sid)

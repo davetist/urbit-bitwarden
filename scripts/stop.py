@@ -46,7 +46,7 @@ def stop(timeout=30):
                 if not wait_stopped(5): raise RuntimeError('Owned fixture process did not terminate')
         control_socket.unlink(missing_ok=True)
     for name in ('runtime.pid', 'runtime-process.json'): (WORK / name).unlink(missing_ok=True)
-    print('Bitwarden desk fixture stopped; process termination verified.')
+    print('Urbitwarden desk fixture stopped; process termination verified.')
 
 
 if __name__ == '__main__': stop()
