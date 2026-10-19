@@ -19,7 +19,7 @@ SOURCE_GROUPS = ['desk', 'web', 'scripts', 'tests', 'docs', 'evidence', 'third_p
 CONNECT_GROUPS = ['desk', 'web', 'scripts', 'tests', 'protocol', 'docs', 'third_party',
                   'integrations/grant-probe', 'sdk/swift', 'examples/ios-todo',
                   'Package.swift', 'toolchain.json', 'release/version.json', 'release/ownership.json',
-                  'release/manifest.schema.json', 'release/README.md', 'README.md', 'LICENSE', '.gitignore']
+                  'release/manifest.schema.json', 'release/source-files.json', 'release/README.md', 'README.md', 'LICENSE', '.gitignore']
 
 
 def sources(root, groups):
