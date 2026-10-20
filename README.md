@@ -32,9 +32,9 @@ In Bitwarden, select **Self-hosted**, enter the displayed server URL and enrolle
 
 ## Backups and migration tools
 
-The [backup and recovery guide](docs/backup.md) covers live age-encrypted vault snapshots, separate recovery-key custody, a twice-daily opt-in Pi schedule, single-latest local/S3 retention, pause/retarget steps and restoration into a fresh vault. Recovery requires the separate recovery identity and the original local vault password. Scheduling requires an explicit installation step; installing the source does not enable it.
+The [backup and recovery guide](docs/backup.md) covers live age-encrypted vault snapshots, separate recovery-key custody, a twice-daily opt-in systemd schedule, single-latest local/S3 retention, pause/retarget steps and restoration into a fresh vault. Recovery requires the separate recovery identity and the original local vault password. Scheduling requires an explicit installation step; installing the source does not enable it.
 
-The [1Password migration guide](tools/migrate_1password/README.md) covers desktop 1PUX exports, the owner-initiated iOS passkey transfer, source review, resumable official-CLI writes and downloaded-content/file verification. Read its [validation record and remaining live-workflow requirements](tools/migrate_1password/VALIDATION.md) before using it. [Operator tools](tools/README.md) provides the entry points.
+The [1Password migration guide](tools/migrate_1password/README.md) covers desktop 1PUX exports, the owner-initiated iOS passkey transfer, source review, resumable official-CLI writes and downloaded-content/file verification. Read its [validation record and remaining live-workflow requirements](tools/migrate_1password/VALIDATION.md) before using it. Completing the documented source review and device checks is required for each migration. [Operator tools](tools/README.md) provides the entry points.
 
 ## Personal-vault scope
 

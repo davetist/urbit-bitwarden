@@ -1,6 +1,6 @@
 # Validation record — 2026-10-19
 
-The tool was developed without reading a real 1Password export, authenticating to either real vault, changing a ship, or moving the owner's credentials. This record describes software verification, not an executed personal migration.
+Validation used local fixtures without accessing production exports, authenticating to production vaults, changing a deployed ship, or transferring production credentials. This record describes software verification; it does not establish a completed migration.
 
 - **32/32 offline Python tests passed from the installed repository location**, using `python -m unittest discover -s tests -v`. They exercise archive integrity, account/vault/item identities, complete exported history, native credential conversion, SSH-key equivalence, files containing binary zeroes, passkey key-material comparison, multiple passkeys, account binding, concurrent content changes, corrupted/missing destination data, process-boundary stdin/binary handling, crash recovery and completion prerequisites.
 - The terminal workflow is exercised through a stateful CLI subprocess double, including an archived item. The double does not establish official-client encryption, live SSO, server storage, or phone behavior.
@@ -23,6 +23,6 @@ Existing JavaScript failures reproduced on unchanged `HEAD`:
 
 ## Still requires the actual source/device workflow
 
-The owner must produce the exports, perform the iOS CXP handoff and review source coverage. Real Connect SSO, attachment uploads/downloads against the selected moon, website passkey sign-ins and cross-client synchronization must be exercised during the actual migration. The tool's report separates those owner attestations from machine comparisons, and refuses completion while required observations or data are missing.
+The owner must produce the exports, perform the iOS CXP handoff and review source coverage. Real Connect SSO, attachment uploads/downloads against the selected destination, website passkey sign-ins and cross-client synchronization must be exercised during the actual migration. The tool's report separates those owner attestations from machine comparisons, and refuses completion while required observations or data are missing.
 
 Source scope and passkey completeness cannot be independently inferred from 1PUX or a destination-only catalog. Shared permissions, unexported server revision history and other 1Password product behavior are outside what this personal-vault content migration can reproduce. These limits are part of the review, not silently counted as transferred.

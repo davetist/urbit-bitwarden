@@ -4,9 +4,9 @@
 
 `scripts/vault_backup.py` captures the enrolled vault from a running ship using a single local Gall scry. It does not stop the ship or copy its Ames state. The portable snapshot contains the account's wrapped encryption keys and KDF settings, encrypted items (including stored passkeys), folders, attachment storage and ID counter. It excludes Connect grants, HTTP credentials, vault sessions and token-signing keys.
 
-The snapshot is encrypted with **age** in memory before an archive is published. The Pi needs only the public recipient; keep the private recovery identity on a separate trusted device and an offline copy. Recovery also needs the vault's original local master password. Neither the backup job nor the ship needs that password. A lost recovery identity or master password cannot be repaired by restoring the other one.
+The snapshot is encrypted with **age** in memory before an archive is published. The backup host needs only the public recipient; keep the private recovery identity on a separate trusted device and an offline copy. Recovery also needs the vault's original local master password. Neither the backup job nor the ship needs that password. A lost recovery identity or master password cannot be repaired by restoring the other one.
 
-Requirements: Python 3, age, the updated Urbitwarden desk, and the pier owner's access to stock Vere's local control socket. The current native baseline is Vere 4.6 / Zuse 408. Cloud uploads additionally use rclone with a dedicated storage credential. The Pi's schedule uses its existing user systemd manager and must have lingering enabled to run after logout. This is independent of the Codex app and the Mac's sleep state.
+Requirements: Python 3, age, the updated Urbitwarden desk, and the pier owner's access to stock Vere's local control socket. The current native baseline is Vere 4.6 / Zuse 408. Cloud uploads additionally use rclone with a dedicated storage credential. Automatic scheduling requires a Linux user systemd manager with lingering enabled to run after logout. Scheduled jobs run on the backup host and do not depend on a client computer staying awake.
 
 Create the recovery identity on the recovery computer, with private directory/file permissions:
 
@@ -16,7 +16,7 @@ age-keygen -o /private/recovery/recovery-key.txt
 age-keygen -y /private/recovery/recovery-key.txt
 ```
 
-Copy only the resulting **public recipient** to the Pi. Never put the private identity in the vault, on the Pi, or beside the cloud archives as its only copy.
+Copy only the resulting **public recipient** to the backup host. Never put the private identity in the vault, on the backup host, or beside the cloud archives as its only copy.
 
 Capture a manual snapshot as the pier owner:
 
@@ -42,7 +42,7 @@ For automatic capture, create a private configuration file containing these fiel
 }
 ```
 
-The remote must already be authorized. For AWS S3, create a dedicated private bucket with Block Public Access enabled, ACLs disabled, server-side AES256 encryption, and versioning disabled (or suspended on an existing bucket). Use a bucket policy requiring TLS. To migrate an existing bucket, an administrator must remove its old objects, versions and delete markers once; suspending versioning alone does not remove existing history. Give the Pi a separate IAM credential with list access to the `vault/` prefix and read/upload access to `vault/*.age`, including multipart upload support. Do not grant object deletion, bucket administration, access to other buckets, or console login. The storage credential cannot decrypt the age archives.
+The remote must already be authorized. For AWS S3, create a dedicated private bucket with Block Public Access enabled, ACLs disabled, server-side AES256 encryption, and versioning disabled (or suspended on an existing bucket). Use a bucket policy requiring TLS. To migrate an existing bucket, an administrator must remove its old objects, versions and delete markers once; suspending versioning alone does not remove existing history. Give the backup host a separate IAM credential with list access to the `vault/` prefix and read/upload access to `vault/*.age`, including multipart upload support. Do not grant object deletion, bucket administration, access to other buckets, or console login. The storage credential cannot decrypt the age archives.
 
 A private (0600) rclone configuration for that credential is:
 
@@ -57,7 +57,7 @@ region = us-east-1
 no_check_bucket = true
 ```
 
-`no_check_bucket` prevents rclone from attempting bucket creation with the restricted key. The bucket must already exist. See [rclone S3 configuration](https://rclone.org/s3/) and [AWS S3 permissions](https://docs.aws.amazon.com/AmazonS3/latest/userguide/using-with-s3-policy-actions.html). No browser session, Mac, master password, or private age identity is needed for scheduled uploads.
+`no_check_bucket` prevents rclone from attempting bucket creation with the restricted key. The bucket must already exist. See [rclone S3 configuration](https://rclone.org/s3/) and [AWS S3 permissions](https://docs.aws.amazon.com/AmazonS3/latest/userguide/using-with-s3-policy-actions.html). No browser session, recovery computer, master password, or private age identity is needed for scheduled uploads.
 
 ```sh
 python3 scripts/vault_backup.py run --config /private/config/vault-backup.json
@@ -67,7 +67,7 @@ python3 scripts/install_vault_backup.py --config /private/config/vault-backup.js
 
 The installer checks the exact live ship, completes a backup first, then enables a persistent timer at midnight and noon in Europe/Madrid, with up to 30 seconds of jitter. A lock prevents overlapping runs. The job keeps **one latest archive per destination**: local `latest.age` and remote `vault/latest.age`. Unchanged content reuses the verified local archive and its matching upload receipt. Changed content is encrypted to a temporary file, flushed, then atomically replaces the local archive; encryption failure leaves the previous archive intact. Legacy timestamp-named scheduler archives and their receipts are removed only after the new local archive is safely published. Unrelated files are left alone; use a dedicated output directory.
 
-Uploads replace the single remote key, then download it and compare its encrypted-file hash before recording success. An offline run keeps the latest local capture and retries it next time. If the vault changes again while offline, the new capture supersedes the unsent older one. Receipts are tied to the exact destination and encrypted-file hash. For S3, disabled/suspended versioning is required so overwriting `latest.age` does not keep hidden older copies. The Pi needs no delete or bucket-administration permission for this. This policy deliberately retains no automatic history; an unwanted vault change replaces the previous backup at the next successful changed capture.
+Uploads replace the single remote key, then download it and compare its encrypted-file hash before recording success. An offline run keeps the latest local capture and retries it next time. If the vault changes again while offline, the new capture supersedes the unsent older one. Receipts are tied to the exact destination and encrypted-file hash. For S3, disabled/suspended versioning is required so overwriting `latest.age` does not keep hidden older copies. The backup host needs no delete or bucket-administration permission for this. This policy deliberately retains no automatic history; an unwanted vault change replaces the previous backup at the next successful changed capture.
 
 Omit `remote` and `rcloneConfig` for local-only capture. `status.json` explicitly records whether cloud upload is configured; a local-only success does not mean an off-site backup exists. Inspect failures and the latest completion with:
 
@@ -76,7 +76,7 @@ systemctl --user status urbitwarden-backup.timer urbitwarden-backup.service
 journalctl --user -u urbitwarden-backup.service
 ```
 
-A timer is not a guarantee that the last backup succeeded. The status file records the last successful completed run; a stale timestamp or failed service requires attention. The Pi credential cannot delete objects, but it can overwrite the latest archive. An AWS account administrator can delete backups. Keep the separate local copy and recovery material.
+A timer is not a guarantee that the last backup succeeded. The status file records the last successful completed run; a stale timestamp or failed service requires attention. The backup credential cannot delete objects, but it can overwrite the latest archive. An AWS account administrator can delete backups. Keep the separate local copy and recovery material.
 
 ### Pause or retarget the scheduler
 
@@ -91,7 +91,6 @@ Keep the private configuration, public age recipient and separate recovery ident
 
 Run the installer without `--apply` to check the selected live target, then make a fresh manual `run --config ...`. Check its upload/readback result and independently verify the downloaded archive with the separate recovery identity. Enable scheduling with `install_vault_backup.py --config ... --apply` only after that verification; the installer itself requires another successful capture before enabling the timer.
 
-
 ### Restore into a fresh vault
 
 Install the updated desk and native HTTPS on a **fresh, unenrolled vault** on the destination ship. Do not enroll an empty account first. Download the `.age` archive to the recovery machine and verify it there:
@@ -101,7 +100,7 @@ python3 scripts/vault_backup.py verify \
   --archive /private/recovery/vault.age --identity /private/recovery/recovery-key.txt
 ```
 
-Run the restore where the destination's local control socket is accessible. The private recovery identity should remain on a trusted recovery host; for recovery onto another host, use a carefully scoped private operator channel rather than permanently installing that identity on the backup Pi.
+Run the restore where the destination's local control socket is accessible. The private recovery identity should remain on a trusted recovery host; for recovery onto another host, use a carefully scoped private operator channel rather than permanently installing that identity on the backup host.
 
 ```sh
 python3 scripts/vault_backup.py restore \
@@ -118,7 +117,7 @@ Only credentials present at capture time can be recovered. Device-bound passkeys
 
 ### Recovery verification
 
-`test_vault_backup.py` covers encryption round-trip, tampering/wrong-key rejection, private publication, manual overwrite refusal, latest-only replacement, failed-encryption preservation, unchanged captures, offline retries and legacy cleanup. `recovery_fixture.py` and `test_vault_recovery.mjs` are explicitly invoked, disposable native recovery tooling; they do not use the real vault. The test uses fresh client profiles and a separate destination ship, imports a password and browser-created passkey with the official CLI, captures/restores the encrypted snapshot, and verifies a fresh browser WebAuthn challenge using the restored key against the original registration public key. Its authenticator is Chromium's virtual authenticator; it is not a claim that a physical authenticator or mobile client was tested. Record the actual run result separately. The [2026-10-19 recovery record](../evidence/vault-backup-2026-10-19/README.md) distinguishes synthetic password/passkey proof from encrypted live-archive integrity and restore checks.
+`test_vault_backup.py` covers encryption round-trip, tampering/wrong-key rejection, private publication, manual overwrite refusal, latest-only replacement, failed-encryption preservation, unchanged captures, offline retries and legacy cleanup. `recovery_fixture.py` and `test_vault_recovery.mjs` are explicitly invoked, disposable native recovery tooling; they do not use the real vault. The test uses fresh client profiles and a separate destination ship, imports a password and browser-created passkey with the official CLI, captures/restores the encrypted snapshot, and verifies a fresh browser WebAuthn challenge using the restored key against the original registration public key. Its authenticator is Chromium's virtual authenticator; it is not a claim that a physical authenticator or mobile client was tested. Record the actual run result separately. The [historical recovery checks](../evidence/vault-backup-2026-10-19/README.md) record the tested native restore and virtual-authenticator behavior.
 
 ## Full stopped-pier backups
 
