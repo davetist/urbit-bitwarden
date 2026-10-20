@@ -13,7 +13,7 @@ EXCLUDED = {'.work', '.git', '.build', 'node_modules', 'dist', 'DerivedData',
             'xcuserdata', '__pycache__', '.DS_Store', 'test-results', 'playwright-report'}
 SOURCE_GROUPS = ['desk', 'web', 'scripts', 'tests', 'docs', 'evidence', 'third_party', 'README.md',
                  'LICENSE', '.gitignore', 'artifacts.json', 'toolchain.json',
-                 'package.json', 'package-lock.json']
+                 'package.json', 'package-lock.json', 'tools']
 # The complete generic source supports the inherited regression helpers too.
 # This is a bundled dependency, never copied into this repository's tracked tree.
 CONNECT_GROUPS = ['desk', 'web', 'scripts', 'tests', 'protocol', 'docs', 'third_party',
