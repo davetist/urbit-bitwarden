@@ -15,6 +15,10 @@ This local command-line tool combines a desktop **1PUX export** with **existing 
 
 No Bitwarden cloud account, API key, proxy, custom cryptography transport, or changes to the Urbitwarden server are required by this tool. The official CLI performs all vault encryption and authenticated server requests. The target's passkey, attachment and mobile behavior must still work on the actual installation; source compatibility is not evidence of a completed live migration.
 
+## Status and validation
+
+The source and offline checks are recorded in [VALIDATION.md](VALIDATION.md). They do not establish a completed migration into a live vault. Select and verify the destination installation before beginning. Source coverage, iOS passkey transfer, actual website sign-ins and cross-client sync remain part of the owner workflow below.
+
 ## Setup
 
 Run from this directory. Put the virtual environment outside the repository:

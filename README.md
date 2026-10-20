@@ -30,6 +30,12 @@ During enrollment, browser WebCrypto derives the local password key and encrypts
 
 In Bitwarden, select **Self-hosted**, enter the displayed server URL and enrolled email, then choose **Single sign-on** or **Enterprise SSO** with organization `urbit-vault`. Approve through Connect on the ship and unlock locally with the enrollment password. The official clients encrypt and decrypt vault items; Connect manages authorization only. The ship page is setup/SSO, not a replacement web vault.
 
+## Backups and migration tools
+
+The [backup and recovery guide](docs/backup.md) covers live age-encrypted vault snapshots, separate recovery-key custody, a twice-daily opt-in Pi schedule, single-latest local/S3 retention, pause/retarget steps and restoration into a fresh vault. Recovery requires the separate recovery identity and the original local vault password. Scheduling requires an explicit installation step; installing the source does not enable it.
+
+The [1Password migration guide](tools/migrate_1password/README.md) covers desktop 1PUX exports, the owner-initiated iOS passkey transfer, source review, resumable official-CLI writes and downloaded-content/file verification. Read its [validation record and remaining live-workflow requirements](tools/migrate_1password/VALIDATION.md) before using it. [Operator tools](tools/README.md) provides the entry points.
+
 ## Personal-vault scope
 
 The desk implements personal item create/edit/read, trash/restore, folders, and encrypted personal-vault import. Import preserves folder relationships and reuses existing destination folders when requested. Deleting a folder preserves its items. The historical official CLI 2026.9.1 run completed fresh SSO at the scoped URL and encrypted, synchronized and locally decrypted login, secure-note, card and identity records. Native folder/import checks and the official CLI folder/import round-trip passed. [Historical functional evidence](evidence/current-2026-10-16/official-cli-usability.json). See [client support](docs/client-support.md) for the distinction between implemented API behavior, source-confirmed client contracts and completed official-client checks.

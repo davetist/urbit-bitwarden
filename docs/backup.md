@@ -78,6 +78,20 @@ journalctl --user -u urbitwarden-backup.service
 
 A timer is not a guarantee that the last backup succeeded. The status file records the last successful completed run; a stale timestamp or failed service requires attention. The Pi credential cannot delete objects, but it can overwrite the latest archive. An AWS account administrator can delete backups. Keep the separate local copy and recovery material.
 
+### Pause or retarget the scheduler
+
+Pause the timer and stop any in-progress capture before changing the target:
+
+```sh
+systemctl --user disable --now urbitwarden-backup.timer
+systemctl --user stop urbitwarden-backup.service
+```
+
+Keep the private configuration, public age recipient and separate recovery identity. For a different enrolled vault, update the exact `ship` and `pier` in the private configuration and review `output` and `remote` deliberately: the single-latest policy replaces the previous vault's latest archive at those destinations. Preserve any previous archive you still need separately before the first changed capture. Reuse the existing encryption keys unless you deliberately rotate them.
+
+Run the installer without `--apply` to check the selected live target, then make a fresh manual `run --config ...`. Check its upload/readback result and independently verify the downloaded archive with the separate recovery identity. Enable scheduling with `install_vault_backup.py --config ... --apply` only after that verification; the installer itself requires another successful capture before enabling the timer.
+
+
 ### Restore into a fresh vault
 
 Install the updated desk and native HTTPS on a **fresh, unenrolled vault** on the destination ship. Do not enroll an empty account first. Download the `.age` archive to the recovery machine and verify it there:
