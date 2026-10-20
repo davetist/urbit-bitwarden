@@ -64,12 +64,13 @@ def runtime_binary(pier):
     return binary
 
 
-def validate_pier(pier):
+def validate_pier(pier, require_runtime=True):
     pier = no_symlinks(pier)
     if not pier.is_dir() or not (pier / '.urb').is_dir():
         raise ValueError('Selected path is not a docked Urbit pier')
     no_symlinks(pier / '.urb')
-    runtime_binary(pier)
+    if require_runtime:
+        runtime_binary(pier)
     if pier.stat().st_uid != os.getuid():
         raise ValueError('Run as the selected pier owner')
     return pier
@@ -193,14 +194,23 @@ def noun_list(value):
 
 
 class Control:
-    def __init__(self, pier):
-        self.pier = validate_pier(pier)
+    def __init__(self, pier, require_runtime=True):
+        self.pier = validate_pier(pier, require_runtime=require_runtime)
         self.socket = no_symlinks(self.pier / '.urb/conn.sock')
         if not self.socket.exists() or not stat.S_ISSOCK(self.socket.stat().st_mode):
             raise ValueError('Selected pier has no running stock local control socket')
 
-    def run(self, expression):
+    def run(self, expression, max_reply_bytes=4 * 1024 * 1024):
         payload = jam(cell(0, 'fyrd', 'base', 'khan-eval', 'noun', 'ted-eval', expression))
+        return control_result(self.request(payload, max_reply_bytes))
+
+    def peek(self, desk, path, max_reply_bytes=4 * 1024 * 1024):
+        spur = 0
+        for part in reversed(path): spur = cell(part, spur)
+        payload = jam(cell(0, 'peek', 1, 'once', 'gx', desk, spur))
+        return cue(self.request(payload, max_reply_bytes))
+
+    def request(self, payload, max_reply_bytes):
         def receive(connection, size):
             data = bytearray()
             while len(data) < size:
@@ -213,9 +223,9 @@ class Control:
             connection.sendall(b'\0' + len(payload).to_bytes(4, 'little') + payload)
             header = receive(connection, 5)
             size = int.from_bytes(header[1:], 'little')
-            if header[0] != 0 or size > 4 * 1024 * 1024:
+            if header[0] != 0 or (max_reply_bytes is not None and size > max_reply_bytes):
                 raise RuntimeError('Unexpected native control reply frame')
-            return control_result(receive(connection, size))
+            return receive(connection, size)
 
     def inspect(self, ship):
         validate_ship(ship)

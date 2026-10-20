@@ -1,5 +1,5 @@
 ::  Urbitwarden backend. Connect remains the authorization authority.
-/-  c=connect
+/-  c=connect, vb=vault-backup
 /+  default-agent, server, v=vault-json, ce=connect-entry, assets=vault-assets, va=vault-attachments, vd=vault-domains, vk=vault-keys
 |%
 +$  card  card:agent:gall
@@ -146,6 +146,22 @@
   |=  [=mark =vase]
   ^-  (quip card _this)
   |^
+  ?:  =(%urbitwarden-restore mark)
+    ::  Local operator control only; no remote or HTTP restore endpoint.
+    ?>  =(src.bowl our.bowl)
+    ?>  &(=(account ~) =(ciphers ~) =(folders ~) =(attachments.state ~))
+    =/  request  ;;(request:vb q.vase)
+    ?>  !=(account.data.request ~)
+    ?>  =('https://' (crip (scag 8 (trip origin.request))))
+    =/  restored  (put:v account.data.request 'securityStamp' s+(scot %uv (shas %vault-restore eny.bowl)))
+    ::  Retain recovered trash until the owner deliberately enables expiry.
+    =.  restored  (put:v restored 'trashAutoDeleteDays' ~)
+    =.  state
+      :*  %2  restored  (shas %vault-sign eny.bowl)  (service-origin origin.request)
+          ~  ciphers.data.request  folders.data.request
+          serial.data.request  now.bowl  ~  ~  attachments.data.request  ~
+      ==
+    [~ this(pending ~, downloads ~)]
   ?:  =(%json mark)
     ?>  &(=(src.bowl our.bowl) =(sap.bowl /gall/connect))
     =/  data=json  !<(json vase)
@@ -1200,7 +1216,15 @@
   ?>  (http-watch:ce sup.bowl src.bowl path)
   `this
 ++  on-leave  on-leave:def
-++  on-peek  on-peek:def
+++  on-peek
+  |=  =path
+  ^-  (unit (unit cage))
+  ?.  =(path /x/backup)  (on-peek:def path)
+  ?~  account  [~ ~]
+  ::  A local scry returns one consistent version, never sessions or authority.
+  =/  data=snapshot:vb
+    [%urbitwarden-backup %1 account ciphers folders attachments.state serial.state revision.state]
+  ``[%noun !>([(scot %p our.bowl) (jam data)])]
 ++  on-agent
   |=  [=wire =sign:agent:gall]
   ^-  (quip card _this)

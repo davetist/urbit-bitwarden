@@ -1,0 +1,20 @@
+# Encrypted vault backup verification — 2026-10-19
+
+This historical record describes scoped backup and recovery validation. These checks were run during backup development and do not change the repository's current [development policy](../../docs/readiness-policy.md). No new test execution is implied by this document.
+
+- The production snapshot and restore handler compiled with stock Vere 4.6 / Zuse 408.
+- Six initial focused backup checks passed: age encryption/private atomic publication, wrong key/tamper rejection, overwrite and symlink refusal, encryption failure cleanup, control access without a docked binary, and failed-upload retry/unchanged-content behavior. Fourteen existing operator deployment tests passed.
+- Two independent local fake ships hosted a source and empty destination vault. The unmodified official CLI created/imported synthetic credential data, then authenticated anew to the restored destination and locally unlocked the original wrapped key. Password equality passed.
+- Chromium created a test passkey. Its original virtual authenticator was removed before recovery. The restored key was obtained from the destination through the official CLI and installed into a new empty virtual authenticator. A new browser WebAuthn assertion passed credential ID, challenge, origin, RP-ID hash, user-presence/user-verification and signature checks against the original registration public key. A wrong challenge failed. This is a virtual-authenticator check, not a physical-device or official-extension passkey UI claim.
+- A second restore into the enrolled destination was rejected. The restored ciphertext, folders, attachment store and serial matched the backup. The check used synthetic vault contents. See [recovery.json](recovery.json).
+- Real rclone copy/readback and idempotent retry passed against a local test backend. This does not establish delivery to a cloud provider. Disposable test ships were stopped and their synthetic credential material removed.
+
+A larger synthetic snapshot exposed premature closure of the runtime thread-response path on macOS. Capture uses stock Vere's direct `%peek` interface and one native local scry instead, avoiding intermediate unencrypted files and preserving atomicity. The kernel requires local authority for this agent scry; no remote publication or HTTP export route was added.
+
+A later focused run passed seven encryption/scheduling checks and fourteen deployment tests. A regression test first reproduced duplicate captures after failed upload; the implementation now persists local capture metadata before upload so unchanged retries reuse the archive. Upload receipts include the destination and file hash, preventing a previous destination's receipt from incorrectly skipping an upload to a new destination. A separate test verifies that changed content creates exactly one new archive. The native restore target loaded the current desk successfully.
+
+The existing `npm test` suite reported eight pre-existing failures, with six passes. Its unchanged inputs still expected retired automatic four-client registration, explicit enable-client controls and legacy callback-update controls. The affected files (`web/`, `package.json`, `scripts/test_enrollment_retry.mjs`, `scripts/test_onboarding.mjs`) were unchanged by the backup work. Those tests were not weakened or rewritten. The failures were: `test_enrollment_retry.mjs`; enrollment retries reuse registrations; explicit client setup adds desktop/mobile; conflicting-registration setup; unconfigured/different issuer setup; known legacy callback update; unknown callback mismatch; and unenrolled legacy registration update.
+
+## Retention and operator guidance
+
+The current scheduler keeps one `latest.age` per local/remote destination, replacing changed content rather than retaining timestamped history. S3 destinations require disabled or suspended versioning so overwrites do not retain hidden older copies. Setup, key custody, pause/retarget commands and fresh-vault recovery are documented in the [backup guide](../../docs/backup.md).

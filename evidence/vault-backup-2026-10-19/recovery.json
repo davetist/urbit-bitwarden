@@ -1,0 +1,17 @@
+{
+  "date": "2026-10-19T09:39:09.011Z",
+  "runtime": "4.6",
+  "officialCli": "2026.9.1",
+  "sourceAndDestinationDifferentShips": true,
+  "freshDestinationEnrollment": false,
+  "freshConnectAuthorization": true,
+  "encryptedArchive": true,
+  "passwordRestored": true,
+  "passkeyRestored": true,
+  "originalAuthenticatorRemoved": true,
+  "webAuthnChallengeOriginRpIdUserVerificationAndSignature": true,
+  "wrongChallengeRejected": true,
+  "nonemptyRestoreRejected": true,
+  "authenticator": "Chromium CDP virtual authenticator; restored key from official CLI export",
+  "realUserVaultUsed": false
+}
