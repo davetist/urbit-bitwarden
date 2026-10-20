@@ -16,6 +16,8 @@ Existing `%bitwarden` installations must use the [state-preserving rename proced
 
 ## Install and connect
 
+For a quick first run, use the [tester guide](docs/tester-guide.md).
+
 Install this desk alongside the latest [Urbit Connect](https://github.com/davetist/urbit-connect) desk on the same ship. Connect is maintained independently; this repository has no pinned Connect version or Git submodule. Its reusable authorization features stay in Connect, while the Urbitwarden desk, setup UI, tests, documentation and operator tools live here. The [repository split record](docs/repository-split.md) explains source history and the boundary of the retained evidence.
 
 Use the [installation/update guide](docs/install.md) to select an existing owned ship, verify the source package and import the Connect and Urbitwarden desks through stock Clay. HTTPS terminates in native Eyre; the guide covers trusted certificates and native ACME renewal. The installer does not change the ship's DNS, ports or supervisor. Phones need a hostname reachable from the phone and a certificate trusted by the client.

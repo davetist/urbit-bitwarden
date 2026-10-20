@@ -1,0 +1,63 @@
+{
+  "review_date": "2026-10-21",
+  "environment": {
+    "target": "owned networked development moon; identity and endpoints omitted",
+    "runtime": "stock Vere 4.6, Zuse 408",
+    "transport": "trusted native Eyre HTTPS; normal client certificate validation"
+  },
+  "deployed_sources": {
+    "connect_commit": "8399f49c2a89b0277b6e04029f51bf4062cc05c8",
+    "urbitwarden_commit": "83d9a05c10574ec07e78bf0f446a63f884291431",
+    "source_package_sha256": "73008022d471492b123fbeeecfb205fb0b57b7492c90d612fdf8ace4ba076c5a",
+    "manifest_file_count": 512,
+    "note": "Identifies the installed package. Later local Connect working-tree edits were not part of this deployment."
+  },
+  "observations": {
+    "owner_enrollment": "passed in actual owner UI",
+    "cli": "fresh SSO/local unlock, create, sync/decrypt cross-client edits, trash/restore, lock/re-unlock passed",
+    "extension": "fresh SSO/local unlock, initial sync, password and notes edit passed; CLI decrypted changes",
+    "desktop": "native OS SSO callback, local unlock, initial sync and notes edit passed; CLI decrypted changes",
+    "ios_simulator": "system-browser SSO/native callback/default-scale consent, local unlock, initial sync and notes edit passed; CLI decrypted changes; restart/local re-unlock read the desktop edit",
+    "authorization": "Connect owner UI revoked the CLI session; its next sync failed; fresh official CLI SSO and sync then passed",
+    "persistence": "Harbor verified a full stopped-pier archive; after restart CLI unlocked/synced/decrypted the retained item and iOS unlocked/read the desktop edit",
+    "native_routes": "Owner-authenticated Landscape, Connect and vault API config returned HTTP 200 over trusted HTTPS after restart; development MCP identity verified"
+  },
+  "client_provenance": {
+    "cli": {
+      "version": "2026.10.0",
+      "release": "https://github.com/bitwarden/clients/releases/tag/cli-v2026.10.0",
+      "asset": "bw-macos-arm64-2026.10.0.zip",
+      "sha256": "062c880508678b8d936ab2522a3a1e92d60f52b5c534e71406e9b47329e95207",
+      "published_digest_match": true
+    },
+    "extension": {
+      "version": "2026.10.0",
+      "release": "https://github.com/bitwarden/clients/releases/tag/browser-v2026.10.0",
+      "asset": "bit-dist-chrome-2026.10.0.zip",
+      "sha256": "77e3b7a348d01d4dc3b6af0087fd9cacae9364a063a1fee5ba6db6dfc7b138cb",
+      "published_digest_match": true,
+      "execution": "Unmodified official ZIP loaded unpacked in Chromium 154.0.8037.97"
+    },
+    "desktop": {
+      "version": "2026.10.0",
+      "execution": "Signed official macOS distribution; isolated application-data profile; desktop-generated consent URI opened unchanged in isolated Chromium; normal bitwarden:// OS callback"
+    },
+    "clients_release_commit": "b449ac1d255784380d75ef026343198891286be7",
+    "ios": {
+      "version": "2026.10.0",
+      "release": "https://github.com/bitwarden/ios/releases/tag/v2026.10.0-bwpm",
+      "commit": "c56f931d35b9f34f3a7487f538d749b6d6207b84",
+      "source_archive_sha256": "cc74204eb51c1f3f00aa848e47eb48eff3c1c3d8d7c1e1a6534bc0ffba0fd373",
+      "execution": "Debug Simulator build from unchanged official release source; Xcode 26.6, iOS Simulator 26.5; original 4880 source files hash-matched archive after build"
+    }
+  },
+  "boundaries": [
+    "Default-browser desktop owner-login path not qualified; consent completed in isolated Chromium.",
+    "No Android installed-client, physical-device, App Store iOS or Windows/Linux desktop observation.",
+    "No new website autofill, passkey, attachment, import/export, adversarial or journal validation.",
+    "Archive verification and restart are not a full account or real-ship restore rehearsal.",
+    "Local machine resource pressure caused tool timeouts during restart checks; final CLI and iOS checks succeeded after isolated clients were closed and reopened.",
+    "No production runtime source edits, synthetic fixtures or soak tests in this run."
+  ],
+  "privacy": "Aggregate observations only. No ship identities, private endpoints, credentials, vault content or raw session logs included."
+}

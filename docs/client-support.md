@@ -1,10 +1,25 @@
 # Official-client support
 
-The [current development policy](readiness-policy.md) supersedes old qualification gates. The [personal Vaultwarden parity scope](vaultwarden-parity.md) defines the requested target; the tables below record historical observations, not prerequisites for daily use.
+The [current development policy](readiness-policy.md) supersedes old qualification gates. The [personal Vaultwarden parity scope](vaultwarden-parity.md) defines the requested target; the dated observations below describe exercised workflows, not prerequisites for daily use.
 
 The Urbitwarden desk is an Urbit-native personal-vault backend. Connect owns generic authorization; the Urbitwarden desk owns encrypted vault storage and Bitwarden protocol behavior. Stock Vere/Gall/Eyre serve the backend. Official distribution clients are unmodified; the iOS Simulator build uses unchanged official release source.
 
-## Versions and evidence boundary
+## Current client check — 2026-10-21
+
+Connect and Urbitwarden were installed together on an owned, networked development moon with trusted HTTPS served by stock Eyre. Fresh owner enrollment and the following actual client workflows passed. [Source and observation record](../evidence/current-2026-10-21/client-workflows.json).
+
+| Client | Observed workflows |
+|---|---|
+| Official CLI 2026.10.0 | Fresh SSO and local unlock; login creation; independent decryption of extension, iOS and desktop edits; trash/restore; lock/re-unlock; sync rejected after Connect session revocation; fresh SSO reconnect; sync/decryption after the moon restarted |
+| Official Chrome extension 2026.10.0 in Chromium | Fresh SSO and local unlock; automatic initial sync; login password/notes editing; changes independently decrypted by CLI |
+| Signed official macOS desktop 2026.10.0 | SSO through the native OS callback; local unlock; automatic initial sync; notes editing; changes independently decrypted by CLI |
+| Unchanged official iOS 2026.10.0 release source in Simulator | Fresh system-browser SSO and native callback; consent at default scale; local unlock; initial sync; notes editing; independent CLI decryption; app restart/local re-unlock and readback of the desktop edit |
+
+Desktop consent was completed in isolated Chromium; its default-browser owner-login path was not qualified. The extension used the official release ZIP, loaded unpacked without changes. The iOS result is an official-source Simulator build, not App Store or physical-device acceptance. Android and Windows/Linux desktop were not exercised. This run did not recheck website autofill, passkeys, attachments or import/export; earlier observations below remain dated evidence for their own source versions.
+
+A full stopped-pier backup passed Harbor's archive verification. The moon restarted and existing clients decrypted the retained item. This checks persistence across restart; it is not an application-account restore or real-ship recovery rehearsal. Immediate push remains unsupported; use **Sync now** for immediate cross-client refresh. Start with the short [tester guide](tester-guide.md).
+
+## Historical versions and evidence boundary
 
 The subsequent [personal-vault implementation](personal-vault-api.md) changes these sources. Its new bulk/archive, attachment, domain and account-management contracts have not been exercised in the historical runs below.
 
