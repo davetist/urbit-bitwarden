@@ -267,12 +267,32 @@ def check_target(status, ship, origin, update_existing):
         raise ValueError('Existing selected desk(s); review and pass --update-existing: ' + ', '.join(status['desks']))
 
 
-def import_expressions(ship, desk, entries):
+def import_expressions(ship, desk, entries, *, target=None, install=True):
     validate_ship(ship)
     if desk not in DESKS: raise ValueError('Unexpected selected desk')
+    target = desk if target is None else target
+    if target not in (desk, desk + '-alpha'):
+        raise ValueError('Unexpected destination desk')
+    desk = target
+    # Start a new history with only the packaged seed marks, as |new-desk does.
+    # Merging %base also copies its apps, kernel, tools and history into the app.
+    seed_names = ('mar/noun.hoon', 'mar/hoon.hoon', 'mar/txt.hoon',
+                  'mar/kelvin.hoon', 'sys.kelvin')
+    seed_rows = []
+    for name in seed_names:
+        if name not in entries:
+            raise ValueError('Missing minimal desk seed file: ' + name)
+        digits = format(int.from_bytes(entries[name], 'little'), 'x')
+        value = '0x' + '.'.join(reversed([digits[max(0, end - 4):end] for end in range(len(digits), 0, -4)]))
+        mark = name.rsplit('.', 1)[-1]
+        if mark == 'kelvin':
+            value = f'(cord-to-waft:clay `@t`{value})'
+        seed_rows.append(f'[/{name.replace(".", "/")} %{mark} {value}]')
+    seed = ' '.join(seed_rows)
     yield (f'=/  m  (strand ,vase)  ;<  now=@da  bind:m  get-time  '
            f'?:  (~(has in .^((set desk) %cd /{ship}//(scot %da now))) %{desk})  (pure:m !>(~))  '
-           f';<  ~  bind:m  (poke-our %hood %kiln-merge !>([%{desk} {ship} %base da+now %init]))  '
+           f'=/  seed=(map path page:clay)  (~(gas by *(map path page:clay)) ~[{seed}])  '
+           f';<  ~  bind:m  (send-raw-card [%pass /create %arvo (new-desk:cloy %{desk} ~ seed)])  '
            ';<  ~  bind:m  (sleep ~s1)  (pure:m !>(~))')
     for hoon_phase in (True, False):
         prefix = '=/  m  (strand ,vase)  ;<  now=@da  bind:m  get-time  '
@@ -289,8 +309,9 @@ def import_expressions(ship, desk, entries):
         if changes:
             yield (prefix + f';<  ~  bind:m  (send-raw-card [%pass /import %arvo %c %info [%{desk} %.y ~[' +
                    ' '.join(changes) + ']]])  ;<  ~  bind:m  (sleep ~s1)  (pure:m !>(~))')
-    yield (f'=/  m  (strand ,vase)  ;<  ~  bind:m  (poke-our %hood %kiln-install !>([%{desk} {ship} %{desk}]))  '
-           ';<  ~  bind:m  (sleep ~s1)  (pure:m !>(~))')
+    if install:
+        yield (f'=/  m  (strand ,vase)  ;<  ~  bind:m  (poke-our %hood %kiln-install !>([%{desk} {ship} %{desk}]))  '
+               ';<  ~  bind:m  (sleep ~s1)  (pure:m !>(~))')
 
 
 def deploy(control, release, ship, origin, apply=False, update_existing=False):

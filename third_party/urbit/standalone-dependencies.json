@@ -1,0 +1,12 @@
+{
+  "source": "Stock Urbit Zuse 408 base desk; text exported through MCP with one trailing newline",
+  "upstream": "https://github.com/urbit/urbit",
+  "license": "LICENSE.txt",
+  "files": {
+    "lib/jose.hoon": "c4d59c7b0c1c86a6c215a6b732a7ed69db1c5e7331f4c02f5b8e6ac99cd43320",
+    "lib/primitive-rsa.hoon": "d3371143e1aedf5266474084c18652eeb1b6d2011449d078f90de4b2e8f7a01b",
+    "lib/pkcs.hoon": "b26c1c9de40a06950727370dbb99601e463a1f9c497edba0190832036d320502",
+    "lib/der.hoon": "1959684b51d9896dbbe4e1fd20280c3c58a49014cbb39561538341095f910bf9",
+    "sur/asn1.hoon": "f01e12c3d78b3603208bd7a0d36bdee0d8218799b3f5dfd92cfc5320ac4e5583"
+  }
+}

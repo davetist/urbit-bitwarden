@@ -4,7 +4,20 @@ The vault backend runs in Gall/Hoon; HTTPS terminates in stock Eyre/Vere. Python
 
 Use an existing ship you own, a backed-up pier, and an HTTPS hostname reachable by every intended client. Phones need a network-reachable hostname, not the desktop's `localhost`. The certificate must cover that hostname and be trusted by each client's normal trust store. This helper does not change DNS, firewall rules, listener ports or service supervisors. The checked runtime/kernel baseline is recorded in `toolchain.json`; this installer does not upgrade either one.
 
-## Obtain the desks
+## Published alpha desks
+
+If an operator supplies an alpha publisher, install its frozen release desks from your ship's Dojo, Connect first. Replace the example publisher with the supplied ship:
+
+```hoon
+|install ~sampel-palnet %connect-alpha, =local %connect
+|install ~sampel-palnet %urbitwarden-alpha, =local %urbitwarden
+```
+
+Inspect any existing desks with these local names before changing their source. The publisher must be online for downloads and updates; installed vaults run on their own ships. Continue with the [tester guide](tester-guide.md), using your own ship's trusted HTTPS address.
+
+Alpha release desks contain only reviewed source and explicit runtime dependencies. They have separate Clay histories from the working desks and receive deliberate releases, with no continuous sync from development. The source installer creates fresh minimal desks; it does not clone `%base`. Existing desks retain their files and state when updated.
+
+## Obtain the desks from source
 
 The Urbitwarden desk uses the latest independently maintained [Connect desk](https://github.com/davetist/urbit-connect). There is no pinned Connect version or Git submodule. From a checkout of this repository, build a self-contained source package:
 
@@ -40,7 +53,7 @@ https://ship.example/apps/urbitwarden
 
 ## Install or update
 
-After reviewing that selection, repeat the same command with `--apply`. Connect source is imported and installed first, followed by the Urbitwarden desk. The imports use the live selected ship identity, not a fake-ship name. They update the selected source files through Clay; they do not replace `%base` or delete unrelated files.
+After reviewing that selection, repeat the same command with `--apply`. Connect source is imported and installed first, followed by the Urbitwarden desk. The imports use the live selected ship identity, not a fake-ship name. They update the selected source files through Clay. New desks contain only seed marks and the manifested app files; `%base` and existing unrelated files are preserved.
 
 If either selected desk already exists, inspect it first and explicitly add `--update-existing`. That authorizes replacement of packaged files in those **two named desks only**. Preserve any local modifications separately before choosing it. Import is phased because Hoon marks must be available before non-Hoon desk metadata; it is not a transaction spanning both desks. A failed command can leave an incomplete import. Fix the reported source or native error and rerun the same verified release; do not reset a pier or delete application state as a retry technique.
 
