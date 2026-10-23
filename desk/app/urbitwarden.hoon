@@ -118,11 +118,13 @@
         sessions.previous  ciphers.previous  folders.previous
         serial.previous  revision.previous  cache.previous  csrf.previous  ~  ~
     ==
-  ::  Old JWT ids disclosed refresh entropy. Reauthorize once on upgrade.
+  ::  Old JWT ids disclosed refresh entropy; a shared account ID also
+  ::  collided across installations. Reauthorize after either migration.
+  =/  missing-id  &(!=(account ~) =((opt:v account 'id') ~))
   =/  revoked=(list card)
-    ?.  legacy  ~
+    ?.  |(legacy missing-id)  ~
     (turn ~(tap by sessions) |=([p=@t q=session] (revoke-card our.bowl p)))
-  =?  state  legacy  state(sessions ~, cache ~, csrf ~)
+  =?  state  |(legacy missing-id)  state(sessions ~, cache ~, csrf ~)
   =.  pending  ~
   =.  downloads  ~
   =?  trash-next.state  &(?=(^ trash-retention) ?=(~ trash-next.state))  `(add now.bowl ~d1)
@@ -130,6 +132,8 @@
   =.  origin.state  (service-origin origin.state)
   =?  account  &(!=(account ~) =((opt:v account 'creationDate') ~))
     (put:v account 'creationDate' s+(iso:v revision.state))
+  =?  account  missing-id
+    (put:v account 'id' s+(account-id:v our.bowl eny.bowl))
   ::  Keep restart retries only while their original grace window is live.
   =.  cache.state
     (malt (skim ~(tap by cache.state) |=([p=@t q=[old=@ux until=@da response=json]] &((~(has by sessions) p) (lth now.bowl until.q)))))
@@ -154,6 +158,7 @@
     ?>  !=(account.data.request ~)
     ?>  =('https://' (crip (scag 8 (trip origin.request))))
     =/  restored  (put:v account.data.request 'securityStamp' s+(scot %uv (shas %vault-restore eny.bowl)))
+    =.  restored  (put:v restored 'id' s+(account-id:v our.bowl eny.bowl))
     ::  Retain recovered trash until the owner deliberately enables expiry.
     =.  restored  (put:v restored 'trashAutoDeleteDays' ~)
     =.  state
@@ -364,7 +369,7 @@
     =/  expiry  (add now.bowl (mul ~s1 lifetime))
     =/  claims
       %-  pairs:enjs:format
-      :~  ['sub' s+'00000000-0000-4000-8000-000000000001']
+      :~  ['sub' (opt:v account 'id')]
           ['email' (opt:v account 'email')]  ['email_verified' b+%.y]
           ['name' ?:(=(~ (opt:v account 'name')) s+'Urbit vault' (opt:v account 'name'))]  ['premium' b+%.y]
           ['iss' s+(cat 3 origin.state '/identity')]  ['aud' s+'api']
@@ -468,7 +473,7 @@
     ^-  json
     %-  pairs:enjs:format
     :~  ['object' s+'profile']
-        ['id' s+'00000000-0000-4000-8000-000000000001']
+        ['id' (opt:v account 'id')]
         ['name' ?:(=(~ (opt:v account 'name')) s+'Urbit vault' (opt:v account 'name'))]
         ['creationDate' (opt:v account 'creationDate')]
         ['email' (opt:v account 'email')]
@@ -1014,7 +1019,7 @@
       ?>  =('2.' (crip (scag 2 (trip (str:v (get:v data 'key'))))))
       ?>  =('2.' (crip (scag 2 (trip (str:v (get:v data 'privateKey'))))))
       ?>  (lte (met 3 payload) 16.384)
-      =.  state  state(account (put:v (put:v data 'creationDate' s+(iso:v now.bowl)) 'securityStamp' s+(scot %uv (shas %security-stamp eny.bowl))), origin (service-origin origin), signing-key (shas %vault-sign eny.bowl), revision now.bowl)
+      =.  state  state(account (put:v (put:v (put:v data 'id' s+(account-id:v our.bowl eny.bowl)) 'creationDate' s+(iso:v now.bowl)) 'securityStamp' s+(scot %uv (shas %security-stamp eny.bowl))), origin (service-origin origin), signing-key (shas %vault-sign eny.bowl), revision now.bowl)
       (reply rid 200 (pairs:enjs:format ~[['enrolled' b+%.y]]))
     ?:  =('/identity/connect/token' url)  (token rid req)
     ?:  |(=('/identity/accounts/prelogin' url) =('/identity/accounts/prelogin/password' url))

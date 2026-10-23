@@ -95,4 +95,11 @@
   =/  digits=@t  (decimal n)
   =/  pad=@t  (crip (reap (sub 12 (met 3 digits)) '0'))
   (rap 3 ~['00000000-0000-4000-8000-' pad digits])
+++  account-id
+  |=  [ship=@p entropy=@]
+  ^-  @t
+  =/  hash  (shax (jam [%urbitwarden-account-id ship entropy]))
+  =/  raw  (skim (slag 2 (trip (scot %ux hash))) |=(char=@tD !=(char '.')))
+  =/  hex  (weld (reap (sub 64 (lent raw)) '0') raw)
+  (rap 3 ~[(crip (scag 8 hex)) '-' (crip (scag 4 (slag 8 hex))) '-4' (crip (scag 3 (slag 12 hex))) '-8' (crip (scag 3 (slag 15 hex))) '-' (crip (scag 12 (slag 18 hex)))])
 --

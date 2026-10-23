@@ -29,10 +29,13 @@
   |=  cards=(list card:agent:gall)
   ^+  cards
   (skim cards |=(c=card:agent:gall ?=([%pass [%cache-expiry *] *] c)))
+++  clock-for
+  |=  [ship=@p now=@da]
+  =/  bowl=bowl:gall  *bowl:gall
+  bowl(now now, our ship, src ship)
 ++  clock
   |=  now=@da
-  =/  bowl=bowl:gall  *bowl:gall
-  bowl(now now, our ~zod, src ~zod)
+  (clock-for ~zod now)
 ++  fixture
   |=  [until=@da live=?]
   =/  old=legacy-state  *legacy-state
@@ -104,7 +107,9 @@
   =/  revokes=(list card:agent:gall)
     (skim -.result |=(c=card:agent:gall ?=([%pass [%revoke ~] *] c)))
   ;:  weld
-    (expect-eq !>(account.old) !>(account.saved))
+    (expect-eq !>((opt:v account.old 'key')) !>((opt:v account.saved 'key')))
+    (expect-eq !>((opt:v account.old 'creationDate')) !>((opt:v account.saved 'creationDate')))
+    (expect-eq !>(36) !>((met 3 (str:v (opt:v account.saved 'id')))))
     (expect-eq !>(ciphers.old) !>(ciphers.saved))
     (expect-eq !>(folders.old) !>(folders.saved))
     (expect-eq !>(~) !>(sessions.saved))
@@ -114,5 +119,48 @@
     (expect-eq !>(~) !>(trash-next.saved))
     (expect-eq !>(1) !>((lent revokes)))
     (expect-eq !>(~) !>((cache-cards -.result)))
+  ==
+++  test-upgrade-assigns-distinct-account-ids
+  =/  now  ~2026.10.14..12.00.00
+  =/  old  (fixture ~2026.10.14..12.00.05 &)
+  =.  old  old(account (pairs:enjs:format ~[['email' s+'tester@example.invalid'] ['key' s+'wrapped']]))
+  =/  first  ~(. vault (clock-for ~zod now))
+  =/  second  ~(. vault (clock-for ~nec now))
+  =/  result-first  (on-load:first !>([%1 +.old]))
+  =/  result-second  (on-load:second !>([%1 +.old]))
+  =/  agent-first  +.result-first
+  =/  agent-second  +.result-second
+  =/  saved-first  !<(state on-save:agent-first)
+  =/  saved-second  !<(state on-save:agent-second)
+  =/  id-first  (opt:v account.saved-first 'id')
+  =/  id-second  (opt:v account.saved-second 'id')
+  =/  reload-first  (on-load:first !>(saved-first))
+  =/  reloaded-agent  +.reload-first
+  =/  after-reload  !<(state on-save:reloaded-agent)
+  ;:  weld
+    (expect-eq !>(36) !>((met 3 (str:v id-first))))
+    (expect-eq !>(36) !>((met 3 (str:v id-second))))
+    (expect-eq !>(%.n) !>(=(id-first id-second)))
+    (expect-eq !>(id-first) !>((opt:v account.after-reload 'id')))
+    (expect-eq !>(~) !>(sessions.saved-first))
+    (expect-eq !>((opt:v account.old 'key')) !>((opt:v account.saved-first 'key')))
+  ==
+++  test-current-state-upgrade-revokes-old-id-sessions
+  =/  now  ~2026.10.14..12.00.00
+  =/  old=state  *state
+  =.  old
+    old(account (pairs:enjs:format ~[['key' s+'wrapped']]), sessions (~(put by sessions.old) 'sid' ['desktop' (add now ~m1) 0x1 0x2 ~]), ciphers (~(put by ciphers.old) 'item' s+'opaque-cipher'))
+  =/  agent  ~(. vault (clock now))
+  =/  result  (on-load:agent !>(old))
+  =/  loaded-agent  +.result
+  =/  saved  !<(state on-save:loaded-agent)
+  =/  revokes=(list card:agent:gall)
+    (skim -.result |=(c=card:agent:gall ?=([%pass [%revoke ~] *] c)))
+  ;:  weld
+    (expect-eq !>(36) !>((met 3 (str:v (opt:v account.saved 'id')))))
+    (expect-eq !>((opt:v account.old 'key')) !>((opt:v account.saved 'key')))
+    (expect-eq !>(ciphers.old) !>(ciphers.saved))
+    (expect-eq !>(~) !>(sessions.saved))
+    (expect-eq !>(1) !>((lent revokes)))
   ==
 --
