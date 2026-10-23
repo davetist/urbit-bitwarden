@@ -1,0 +1,18 @@
+{
+  "date": "2026-10-24",
+  "client": "Unmodified official Bitwarden CLI 2026.10.0",
+  "environment": "Owned networked development moon; trusted HTTPS; existing disposable test vault",
+  "sources": {
+    "connectCommit": "b2eee06e0478dc3ddeadceebb842959938ff1cb5",
+    "urbitwardenCommit": "5f606af7600d81914e4a1b0e043e6a766d62ff34"
+  },
+  "observations": {
+    "existingVaultUnlockAndSync": true,
+    "encryptedAttachmentUploadMetadataDownloadDecrypt": true,
+    "filteredJsonExportAndReencryptedImport": true,
+    "importedContentDecryptedAndMatched": true,
+    "disposableRecordsRemoved": true,
+    "temporaryPlaintextExportRemoved": true
+  },
+  "boundary": "The workflows used the canonical working desks on the development moon. Account password and KDF changes were not exercised. This is not a full security review or a physical-device test."
+}
