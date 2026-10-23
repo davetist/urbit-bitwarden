@@ -38,12 +38,14 @@ async function fixture({registrations=[],failEnrollment=false}={}){
   elements['#password-confirm'].value='synthetic-only-retry-password';
   await elements['#enroll'].handlers.submit({preventDefault(){},target:elements['#enroll']});
  }
- return{state,elements,button,submit};
+ const connect=client=>vm.runInNewContext(`ensureClient(${JSON.stringify(client)})`,context);
+ return{state,elements,button,submit,connect};
 }
 const retry=await fixture({failEnrollment:true});
 await retry.submit();
 assert.equal(retry.state.enrollAttempts,1);
-assert.equal(retry.state.registrations.length,4);
+assert.equal(retry.state.registrations.length,0);
+assert.equal(retry.state.registrationWrites,0);
 assert.equal(retry.button.disabled,false);
 assert.match(retry.elements['#status'].textContent,/503/);
 assert.equal(retry.state.configureWrites,1);
@@ -53,30 +55,37 @@ const expectedCallbacks={
  desktop:['bitwarden://sso-callback','http://localhost:8065','http://localhost:8066','http://localhost:8067','http://localhost:8068','http://localhost:8069','http://localhost:8070'],
  mobile:['bitwarden://sso-callback']
 };
-for(const client of retry.state.registrations){
- assert.deepEqual(client.integration.redirectURIs,expectedCallbacks[client.id]);
- assert.equal(client.redirectURI,expectedCallbacks[client.id][0]);
- assert.deepEqual(client.integration.scopes,['api','offline_access']);
- assert.equal(client.integration.agent,'urbitwarden');
-}
 await retry.submit();
 assert.equal(retry.state.enrollAttempts,2);
-assert.equal(retry.state.registrations.length,4);
-assert.equal(retry.state.registrationWrites,4);
+assert.equal(retry.state.registrations.length,0);
+assert.equal(retry.state.registrationWrites,0);
 assert.equal(retry.state.configureWrites,1);
 assert.equal(retry.elements['#setup'].hidden,true);
 assert.equal(retry.elements['#enrolled'].hidden,false);
 assert.match(retry.elements['#status'].textContent,/Encrypted vault created/);
 // A completed account must not attempt enrollment again.
 await retry.submit();assert.equal(retry.state.enrollAttempts,2);
-// Existing Connect registrations can also precede a fresh vault enrollment.
+// Registrations are created only when each official client starts SSO.
+for(const client of Object.keys(expectedCallbacks)){
+ assert.equal(await retry.connect(client),'urbitwarden-'+client);
+ const registration=retry.state.registrations.find(app=>app.id==='urbitwarden-'+client);
+ assert.deepEqual(registration.integration.redirectURIs,expectedCallbacks[client]);
+ assert.equal(registration.redirectURI,expectedCallbacks[client][0]);
+ assert.deepEqual(registration.integration.scopes,['api','offline_access']);
+ assert.equal(registration.integration.agent,'urbitwarden');
+}
+assert.equal(retry.state.registrationWrites,4);
+assert.equal(await retry.connect('cli'),'urbitwarden-cli');
+assert.equal(retry.state.registrationWrites,4);
+assert.equal(retry.state.configureWrites,1);
+// A conflicting registration does not block enrollment, but rejects SSO.
 const conflictClients=structuredClone(retry.state.registrations);
-conflictClients.find(c=>c.id==='cli').integration.agent='unrelated';
+conflictClients.find(c=>c.id==='urbitwarden-cli').integration.agent='unrelated';
 const conflict=await fixture({registrations:conflictClients});
 await conflict.submit();
-assert.equal(conflict.state.enrollAttempts,0);
+assert.equal(conflict.state.enrollAttempts,1);
 assert.equal(conflict.state.registrationWrites,0);
-assert.equal(conflict.state.configureWrites,0);
+assert.equal(conflict.state.configureWrites,1);
 assert.equal(conflict.button.disabled,false);
-assert.match(conflict.elements['#status'].textContent,/registration differs/);
-console.log('PASS enrollment retries reuse all four exact client registrations, configure once, preserve completed enrollment and refuse unrelated registrations');
+await assert.rejects(()=>conflict.connect('cli'),/registration differs/);
+console.log('PASS enrollment retries preserve Connect configuration and defer exact client registration checks until SSO');
