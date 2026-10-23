@@ -1057,7 +1057,7 @@
     ?:  =('/api/config' url)
       =/  base  (service-origin ?:(=(origin.state '') (cat 3 'https://' (fall (get-header:http 'host' headers) '')) origin.state))
       =/  env  (pairs:enjs:format ~[['vault' s+base] ['api' s+(cat 3 base '/api')] ['identity' s+(cat 3 base '/identity')] ['notifications' s+(cat 3 base '/notifications')] ['icons' s+(cat 3 base '/icons')] ['sso' s+(cat 3 base '/identity')] ['cloudRegion' ~]])
-      (reply rid 200 (pairs:enjs:format ~[['object' s+'config'] ['version' s+'2026.6.0'] ['server' (pairs:enjs:format ~[['name' s+'Urbitwarden backend'] ['url' s+base]])] ['environment' env] ['featureStates' (pairs:enjs:format ~[['pm-19148-innovation-archive' b+%.y]])] ['settings' (pairs:enjs:format ~[['disableUserRegistration' b+%.y]])]]))
+      (reply rid 200 (pairs:enjs:format ~[['object' s+'config'] ['version' s+'2026.6.0'] ['server' (pairs:enjs:format ~[['name' s+'Urbitwarden backend'] ['url' s+base]])] ['environment' env] ['featureStates' (pairs:enjs:format ~[['pm-19148-innovation-archive' b+%.y] ['pm-32413-multi-client-password-management' b+%.y]])] ['settings' (pairs:enjs:format ~[['disableUserRegistration' b+%.y]])]]))
     ?:  =('/api/devices/knowndevice' url)  (reply rid 200 b+%.n)
     ?:  =('/api/organizations/domain/sso/details' url)
       (reply rid 200 (pairs:enjs:format ~[['object' s+'list'] ['data' a+~] ['continuationToken' ~]]))

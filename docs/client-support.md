@@ -1,5 +1,9 @@
 # Official-client support
 
+On 2026-10-24, the signed macOS desktop 2026.10.0 was observed redirecting **Change master password** to Urbitwarden's setup page, which has no such control. Its installed code selects the native dialog only when the server advertises `pm-32413-multi-client-password-management`. The development desk now advertises that flag and its live `/api/config` response was checked. A refreshed desktop dialog and completed password change are still pending direct observation; do not claim this flow passed yet.
+
+The current backend also reports the same fixed account ID from every installation. The official desktop stores account keys under that ID, so using multiple Urbitwarden servers in one desktop profile can mix cached keys and cause an invalid-master-password error. A per-installation account-ID migration is pending; existing clients will need to sign in again after it.
+
 The [current development policy](readiness-policy.md) supersedes old qualification gates. The [personal Vaultwarden parity scope](vaultwarden-parity.md) defines the requested target; the dated observations below describe exercised workflows, not prerequisites for daily use.
 
 The Urbitwarden desk is an Urbit-native personal-vault backend. Connect owns generic authorization; the Urbitwarden desk owns encrypted vault storage and Bitwarden protocol behavior. Stock Vere/Gall/Eyre serve the backend. Official distribution clients are unmodified; the iOS Simulator build uses unchanged official release source.

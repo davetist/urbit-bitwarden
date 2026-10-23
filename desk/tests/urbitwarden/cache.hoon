@@ -1,5 +1,5 @@
 ::  Pure agent lifecycle tests: dummy responses only, no live credentials.
-/+  *test, v=vault-json
+/+  *test, v=vault-json, va=vault-attachments
 /=  vault  /app/urbitwarden
 |%
 ++  test-public-jti-does-not-disclose-refresh-seed
@@ -10,12 +10,20 @@
     (expect-eq !>(%.n) !>(=((shas %refresh seed) (shas %refresh public))))
   ==
 +$  session  [client=@t expires=@da access=@ux refresh=@ux consumed=(set @ux)]
-+$  state
++$  legacy-state
   $:  %1  account=json  signing-key=@  origin=@t
       sessions=(map @t session)  ciphers=(map @t json)  folders=(map @t json)
       serial=@ud  revision=@da
       cache=(map @t [old=@ux until=@da response=json])
       csrf=(map @ux [token=@ux expires=@da])
+  ==
++$  state
+  $:  %2  account=json  signing-key=@  origin=@t
+      sessions=(map @t session)  ciphers=(map @t json)  folders=(map @t json)
+      serial=@ud  revision=@da
+      cache=(map @t [old=@ux until=@da response=json])
+      csrf=(map @ux [token=@ux expires=@da])
+      attachments=store:va  trash-next=(unit @da)
   ==
 ++  cache-cards
   |=  cards=(list card:agent:gall)
@@ -27,7 +35,7 @@
   bowl(now now, our ~zod, src ~zod)
 ++  fixture
   |=  [until=@da live=?]
-  =/  old=state  *state
+  =/  old=legacy-state  *legacy-state
   =.  cache.old  (~(put by cache.old) 'sid' [0x0 until s+'dummy-response'])
   ?.  live  old
   old(sessions (~(put by sessions.old) 'sid' ['cli' until 0x1 0x2 ~]))
@@ -96,7 +104,14 @@
   =/  revokes=(list card:agent:gall)
     (skim -.result |=(c=card:agent:gall ?=([%pass [%revoke ~] *] c)))
   ;:  weld
-    (expect-eq !>(old(sessions ~, cache ~, csrf ~)) !>(saved))
+    (expect-eq !>(account.old) !>(account.saved))
+    (expect-eq !>(ciphers.old) !>(ciphers.saved))
+    (expect-eq !>(folders.old) !>(folders.saved))
+    (expect-eq !>(~) !>(sessions.saved))
+    (expect-eq !>(~) !>(cache.saved))
+    (expect-eq !>(~) !>(csrf.saved))
+    (expect-eq !>(~) !>(attachments.saved))
+    (expect-eq !>(~) !>(trash-next.saved))
     (expect-eq !>(1) !>((lent revokes)))
     (expect-eq !>(~) !>((cache-cards -.result)))
   ==
