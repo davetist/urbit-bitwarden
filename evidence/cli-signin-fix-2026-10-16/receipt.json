@@ -1,6 +1,6 @@
 {
   "recordedAt": "2026-10-16T17:11:56+0200",
-  "bitwardenBaseCommit": "ed41137b42067135e447a8a5b6bbab300c1bc240",
+  "bitwardenBaseCommit": "682aeadd9691885c0c77f472700f65f73a5d5ae6",
   "bitwardenDeskFiles": {
     "app/bitwarden.hoon": "55b9413387c22b19a3b18b859470d324ab6a2724ca5fff93e3c93ae3b508bd71",
     "desk.bill": "3504a2210865a1f5a37a9d94f89f1b04ca026691c6b30249595a664cb43aea8c",
@@ -13,7 +13,7 @@
     "sys.kelvin": "0a66fa5dec5893d2e3a8e854c4d6c81d62882863e4c8574ce18da9daea5a7cc4",
     "tests/bitwarden/cache.hoon": "23c9162df129ff2ff200f85d3a52f417191f46e5c968f6a2ae4a96eb2108e639"
   },
-  "connectCommit": "12c7cfe3004d6a86bb765ddde848eb0fb96aafb5",
+  "connectCommit": "21ecc1e5aff6a683521e3948d266cf4358d39ee7",
   "connectDeskFiles": {
     "app/connect.hoon": "e79baa3ab985ff878f15409152685348e7ecb3783f1f372c6459c895bd10ac53",
     "desk.bill": "d6cf88b4f21e82bc8bd6b7c0f6c50038d1d79adeafb09fe926df8bdcfcf4af21",

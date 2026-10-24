@@ -4,7 +4,7 @@ The Urbitwarden backend lives in [urbit-bitwarden](https://github.com/davetist/u
 
 ## Source history and layout
 
-The source boundary is Connect commit [`44e919268eed9b6780a3b695f1d49a2022e0db7b`](https://github.com/davetist/urbit-connect/commit/44e919268eed9b6780a3b695f1d49a2022e0db7b). Extracted subtree history ending at `604e673` preserves the history of its `integrations/bitwarden/` files. The published Connect history is preserved; removal happens in a later commit.
+The source boundary is Connect commit [`510d02870b7edeac598c039314e70745d3c569aa`](https://github.com/davetist/urbit-connect/commit/510d02870b7edeac598c039314e70745d3c569aa). Extracted subtree history ending at `528c1b6` preserves the history of its `integrations/bitwarden/` files. The published Connect history is preserved; removal happens in a later commit.
 
 | Previous location in Connect | Location here |
 |---|---|
@@ -27,7 +27,7 @@ Source packages include the selected Connect desk and record its source commit f
 
 ## Evidence and private fixtures
 
-The original evidence files and screenshots are unchanged historical records. The separate [2026-10-16 acceptance record](../evidence/current-2026-10-16/assessment.md) now tests the current split repositories together. Their original absolute paths, monorepo commands, source hashes and source locations describe the earlier run. Read an old `integrations/bitwarden/` prefix as this repository root when locating the corresponding current file. Links within historical reports that point outside that former subtree should be resolved against [the original Connect source](https://github.com/davetist/urbit-connect/tree/44e919268eed9b6780a3b695f1d49a2022e0db7b). Current commands are in the [README](../README.md), [installation guide](install.md) and [client support](client-support.md).
+The evidence files and screenshots preserve the historical observations; source commit IDs reflect the rewritten public Git history. The separate [2026-10-16 acceptance record](../evidence/current-2026-10-16/assessment.md) tests the split repositories together. Their original absolute paths, monorepo commands, source hashes and source locations describe the earlier run. Read an old `integrations/bitwarden/` prefix as this repository root when locating the corresponding current file. Links within historical reports that point outside that former subtree should be resolved against [the original Connect source](https://github.com/davetist/urbit-connect/tree/510d02870b7edeac598c039314e70745d3c569aa). Current commands are in the [README](../README.md), [installation guide](install.md) and [client support](client-support.md).
 
 Private piers, credentials, client profiles, downloads and build products were intentionally left in the original checkout, outside Git. They are not silently adopted or rebound by this split. Fresh setup creates an owned fixture beneath this repository's `.work/`; any separate migration of an existing fixture must preserve its ownership and stopped-copy boundary.
 

@@ -2,8 +2,8 @@
   "date": "2026-10-24",
   "scope": "Two owned disposable local Vere 4.6 ships using current working desks",
   "sourceCommits": {
-    "connect": "aee86c0bf8ee02e2d6d5975f0ef69cdaa44ff790",
-    "urbitwarden": "c1ad82f7dbd7e8c9a860d292394b0f9ac3b37380"
+    "connect": "16fb1b9c32c7569d224ea331799b3b53ad880fdb",
+    "urbitwarden": "7f9773cb276fd2dabe1d766a0322dfaa90346060"
   },
   "client": "Unmodified official Bitwarden CLI 2026.10.0",
   "observations": {

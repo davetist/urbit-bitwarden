@@ -1,9 +1,9 @@
 {
   "date": "2026-10-15",
   "scope": "Repository separation and relocated tooling; no new security qualification",
-  "originalConnectCommit": "44e919268eed9b6780a3b695f1d49a2022e0db7b",
-  "extractedBitwardenHistory": "604e673b2c7edf97a23afa4577c432891952542a",
-  "genericConnectCommitChecked": "b2c18acef796766568ad2f5318ae9a052a157438",
+  "originalConnectCommit": "510d02870b7edeac598c039314e70745d3c569aa",
+  "extractedBitwardenHistory": "528c1b609e5eec7592a95bee5fd3b6614229ef94",
+  "genericConnectCommitChecked": "f9a028b121bad11d99d2120f04c797f8193e5e00",
   "connectCompatibility": "latest Connect desk; checked commit is provenance, not a version pin",
   "preservation": {
     "originalBitwardenSubtreeFiles": 134,

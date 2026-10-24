@@ -1,6 +1,6 @@
 {
   "bitwarden": {
-    "commit": "3232038052437c755fa3cc515b43bf75d0c7b6d9",
+    "commit": "221f181debe76063d87220c7b9a83e5d420aaf80",
     "files": {
       "desk/sys.kelvin": "0a66fa5dec5893d2e3a8e854c4d6c81d62882863e4c8574ce18da9daea5a7cc4",
       "desk/desk.bill": "3504a2210865a1f5a37a9d94f89f1b04ca026691c6b30249595a664cb43aea8c",
@@ -19,7 +19,7 @@
     "sha256": "01d5c0ba0bf0684faeece4abb56fb57127a4d3855a22713514446c9a870918f7"
   },
   "connect": {
-    "commit": "6574acac2bbe2c7008dc2c4a7da14e21177f0c08",
+    "commit": "4f83a741958d945569700d4bc56f2a525711e067",
     "files": {
       "desk/sys.kelvin": "0a66fa5dec5893d2e3a8e854c4d6c81d62882863e4c8574ce18da9daea5a7cc4",
       "desk/desk.docket-0": "f7b939080cf29f8e8a227e0821b1a5bc6cd4fc804a8dcf9ec9c1fcfcb75f0d4f",

@@ -4,7 +4,7 @@
 
 ## Tested versions and source
 
-The run started from Bitwarden `3232038052437c755fa3cc515b43bf75d0c7b6d9` and Connect `6574acac2bbe2c7008dc2c4a7da14e21177f0c08`, including the then-uncommitted Connect generated assets and test changes. [Source-pair hashes](source-pair.json) bind every tested desk/web file. They were compared with both final working trees, including after Connect regenerated its web assets. The current token-identifier repairs are included. The subsequent Connect native-harness fix changes tests, not the desk pair exercised by Bitwarden clients.
+The run started from Bitwarden `221f181debe76063d87220c7b9a83e5d420aaf80` and Connect `4f83a741958d945569700d4bc56f2a525711e067`, including the then-uncommitted Connect generated assets and test changes. [Source-pair hashes](source-pair.json) bind every tested desk/web file. They were compared with both final working trees, including after Connect regenerated its web assets. The current token-identifier repairs are included. The subsequent Connect native-harness fix changes tests, not the desk pair exercised by Bitwarden clients.
 
 A fresh owned fake `~zod` ran stock Vere 4.6 with native Eyre HTTPS. Connect provided generic consent/authorization/revocation; Bitwarden provided SSO translation, JWTs and encrypted vault APIs. No backend service or runtime patch was introduced. Profiles and credentials were new, synthetic and private. The new fixture used separate loopback ports to preserve existing fixtures. Certificates were trusted only by the task clients and disposable Simulator; global trust was unchanged.
 

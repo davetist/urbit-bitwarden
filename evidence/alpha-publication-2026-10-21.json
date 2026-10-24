@@ -102,8 +102,8 @@
   ],
   "boundary": "Remote retrieval and native compilation were verified; no new remote installation or client enrollment was performed in this publication run. Earlier official-client acceptance is recorded separately in current-2026-10-21/client-workflows.json.",
   "inputs": {
-    "connectCommit": "8399f49c2a89b0277b6e04029f51bf4062cc05c8",
-    "urbitwardenStartingCommit": "97c1b17eff3f71b5b47fe165c7858cf325d407ab",
+    "connectCommit": "58a778cb02128606d40af2815b67fd088ca9b17c",
+    "urbitwardenStartingCommit": "b21576843ab7e5b7ec746160714d54076f6e4c2a",
     "note": "Urbitwarden release adds the explicit standard runtime dependencies committed with this record; app behavior source is unchanged. Connect working-tree changes are excluded."
   }
 }

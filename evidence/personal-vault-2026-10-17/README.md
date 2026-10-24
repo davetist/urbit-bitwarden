@@ -34,7 +34,7 @@ node --check web/app.js
 URBIT_CONNECT_ROOT=/path/to/urbit-connect PYTHONDONTWRITEBYTECODE=1 python3 scripts/package.py
 ```
 
-The generated `dist/urbit-bitwarden-source.tgz.sha256` belongs alongside its archive. Connect source commit `70304f81718969057dfd4cf1ca2e143c829dd837` is build provenance, not a compatibility pin. No Connect change is required for the personal-vault API additions.
+The generated `dist/urbit-bitwarden-source.tgz.sha256` belongs alongside its archive. Connect source commit `a5d709c0b2dc14b99be5d23434b9d88eeaf05320` is build provenance, not a compatibility pin. No Connect change is required for the personal-vault API additions.
 
 ## Remaining evidence boundary
 

@@ -2,9 +2,9 @@
   "date": "2026-10-24",
   "scope": "Owned disposable local Vere 4.6 ship, published-alpha source installed before in-place candidate upgrade",
   "sourceCommits": {
-    "alphaUrbitwarden": "5f606af",
-    "candidateUrbitwarden": "c1ad82f7dbd7e8c9a860d292394b0f9ac3b37380",
-    "connect": "ed5dc200283d413dcef12c5d1b397da8eceb2ab1"
+    "alphaUrbitwarden": "d8fc8c5",
+    "candidateUrbitwarden": "7f9773cb276fd2dabe1d766a0322dfaa90346060",
+    "connect": "5b41fd815c97106fc1a17b2efc95448c5b7a6105"
   },
   "client": "Unmodified official Bitwarden CLI 2026.10.0",
   "observations": {

@@ -3,8 +3,8 @@
   "client": "Unmodified official Bitwarden CLI 2026.10.0",
   "environment": "Owned networked development moon; trusted HTTPS; existing disposable test vault",
   "sources": {
-    "connectCommit": "b2eee06e0478dc3ddeadceebb842959938ff1cb5",
-    "urbitwardenCommit": "5f606af7600d81914e4a1b0e043e6a766d62ff34"
+    "connectCommit": "743dea04891e56ce00c831306b85ef51278d753a",
+    "urbitwardenCommit": "d8fc8c5a9a86a71ae8da93857c146c36baa0d5dc"
   },
   "observations": {
     "existingVaultUnlockAndSync": true,

@@ -1,6 +1,6 @@
 # Focused desk security review — 2026-10-24
 
-Source: `c1ad82f7dbd7e8c9a860d292394b0f9ac3b37380`. A completed offline Codex Security Standard scan reviewed all 35 tracked `desk/` files, focusing on Connect-backed authorization, encrypted attachment access, password/KDF/key management, and local recovery entry points. It reported no vulnerability under the documented single-owner ship trust model. The scan did not run a live attack replay; client and recovery behavior has separate evidence in this directory.
+Source: `7f9773cb276fd2dabe1d766a0322dfaa90346060`. A completed offline Codex Security Standard scan reviewed all 35 tracked `desk/` files, focusing on Connect-backed authorization, encrypted attachment access, password/KDF/key management, and local recovery entry points. It reported no vulnerability under the documented single-owner ship trust model. The scan did not run a live attack replay; client and recovery behavior has separate evidence in this directory.
 
 Four source-backed candidates were investigated and rejected as cross-boundary findings:
 

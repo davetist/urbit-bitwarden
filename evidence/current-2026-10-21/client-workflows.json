@@ -6,8 +6,8 @@
     "transport": "trusted native Eyre HTTPS; normal client certificate validation"
   },
   "deployed_sources": {
-    "connect_commit": "8399f49c2a89b0277b6e04029f51bf4062cc05c8",
-    "urbitwarden_commit": "83d9a05c10574ec07e78bf0f446a63f884291431",
+    "connect_commit": "58a778cb02128606d40af2815b67fd088ca9b17c",
+    "urbitwarden_commit": "4f33fc2d7af70b4ee7712d7ecaeae2aa12564344",
     "source_package_sha256": "73008022d471492b123fbeeecfb205fb0b57b7492c90d612fdf8ace4ba076c5a",
     "manifest_file_count": 512,
     "note": "Identifies the installed package. Later local Connect working-tree edits were not part of this deployment."
