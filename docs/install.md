@@ -15,6 +15,8 @@ Install from the announced stable publisher, Connect first. Replace this example
 
 Check existing local desks before installing, and use your own ship's trusted HTTPS address for Bitwarden clients. The publisher must be online while another ship downloads or updates a desk; installed vaults run on their own ships. Stable desks are separate from the development moon's alpha desks.
 
+Removal has a known limit: `|uninstall %urbitwarden` stops the desk but can leave its direct Eyre binding at `/apps/urbitwarden`. Eyre accepts a disconnect only from the Gall duct that created the binding, so nuking the agent first can strand that route even after its state and desk files are removed. This happened on a separate 408k release-check receiver. Version 0.2.0 does not provide a complete uninstall procedure. Do not nuke a vault as routine cleanup; retain its encrypted backup and wait for a supported route-retirement procedure.
+
 ## Published alpha desks
 
 If an operator supplies an alpha publisher, install its frozen release desks from your ship's Dojo, Connect first. Replace the example publisher with the supplied ship:
@@ -114,4 +116,4 @@ The only supported URL is `/apps/urbitwarden`. The old `/apps/bitwarden` route a
 
 If migration stops, do not enroll an empty replacement vault. Preserve both desks and the original Connect source, inspect the reported stage, and recover before allowing further writes. Confirm the vault summary, Connect registration/grants, and an actual client sync before retiring the old desk.
 
-After verifying migration and real client sync at the canonical URL, the old desk can be retired with `|uninstall %bitwarden`, `|nuke %bitwarden`, and deletion of the old desk's current Clay files except `/sys/kelvin`. Target the single `%bitwarden` agent when nuking; never nuke `%urbitwarden` or `%connect`. Check the new vault's encrypted content fingerprint before and after, plus its live Connect grants. Stock Clay requires `/sys/kelvin` on every desk and retains the historical desk name and revisions. The remaining Kelvin file is an inert metadata stub, with no app code or vault state. Do not bypass the kernel invariant to erase this name; clearing app files does not erase ship history.
+After verifying migration, real client sync, and that the old `/apps/bitwarden` binding is absent, the old desk can be retired with `|uninstall %bitwarden`, `|nuke %bitwarden`, and deletion of the old desk's current Clay files except `/sys/kelvin`. Target the single `%bitwarden` agent when nuking; never nuke `%urbitwarden` or `%connect`. Check the new vault's encrypted content fingerprint before and after, plus its live Connect grants. Stock Clay requires `/sys/kelvin` on every desk and retains the historical desk name and revisions. The remaining Kelvin file is an inert metadata stub, with no app code or vault state. Do not bypass the kernel invariant to erase this name; clearing app files does not erase ship history.
