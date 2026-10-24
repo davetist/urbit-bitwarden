@@ -1,4 +1,4 @@
-/** Synthetic password rewrap followed by fresh SSO in the official CLI. */
+/** Synthetic password or KDF rewrap followed by fresh SSO in the official CLI. */
 import assert from 'node:assert/strict';
 import crypto from 'node:crypto';
 import fs from 'node:fs';
@@ -10,6 +10,11 @@ import {chromium} from 'playwright';
 
 const root=path.resolve(import.meta.dirname,'..');
 assert.equal(process.env.CONNECT_BW_FIXTURE,'passkey','Use the isolated synthetic passkey fixture');
+assert.ok(process.argv.length<=3 && (process.argv.length===2 || process.argv[2]==='--kdf'),'Use only --kdf to select a KDF rewrap');
+const changeKdf=process.argv.includes('--kdf');
+const changeName=changeKdf?'kdf':'password';
+const newIterations=changeKdf?650000:600000;
+const itemName=changeKdf?'Synthetic KDF-change proof':'Synthetic password-change proof';
 const work=path.join(root,'.work/urbitwarden-passkey');
 assert.deepEqual(JSON.parse(fs.readFileSync(path.join(work,'.owned-fixture.json'))),
   {project:root,fixture:'native-urbitwarden-passkey-v1'});
@@ -26,9 +31,9 @@ const browserPath=process.env.BW_BROWSER_EXECUTABLE||path.join(os.homedir(),'Lib
 const pub=execFileSync('openssl',['x509','-in',path.join(work,'tls/cert.pem'),'-pubkey','-noout']);
 const der=execFileSync('openssl',['pkey','-pubin','-outform','DER'],{input:pub});
 const pin=crypto.createHash('sha256').update(der).digest('base64');
-const resultPath=path.join(work,'password-reauth-result.json');
+const resultPath=path.join(work,changeName+'-reauth-result.json');
 assert.ok(!fs.existsSync(resultPath),'This fixture already has a password reauthentication result');
-assert.ok(!fs.existsSync(path.join(work,'password-reauth-secret.json')),
+assert.ok(!fs.existsSync(path.join(work,changeName+'-reauth-secret.json')),
   'An earlier management request may have changed this vault; preserve it for inspection');
 
 const run=(args,env,input)=>{
@@ -40,8 +45,8 @@ const run=(args,env,input)=>{
   return result.stdout.trim();
 };
 const hmac=(key,data)=>crypto.createHmac('sha256',key).update(data).digest();
-function keyParts(passphrase){
-  const master=crypto.pbkdf2Sync(passphrase,email,600000,32,'sha256');
+function keyParts(passphrase,iterations=600000){
+  const master=crypto.pbkdf2Sync(passphrase,email,iterations,32,'sha256');
   return {master,enc:hmac(master,Buffer.from([101,110,99,1])),mac:hmac(master,Buffer.from([109,97,99,1]))};
 }
 function unwrap(envelope,passphrase){
@@ -54,13 +59,13 @@ function unwrap(envelope,passphrase){
   const decryptor=crypto.createDecipheriv('aes-256-cbc',keys.enc,iv);
   return Buffer.concat([decryptor.update(cipher),decryptor.final()]);
 }
-function wrap(plain,passphrase){
-  const keys=keyParts(passphrase),iv=crypto.randomBytes(16);
+function wrap(plain,passphrase,iterations=600000){
+  const keys=keyParts(passphrase,iterations),iv=crypto.randomBytes(16);
   const encryptor=crypto.createCipheriv('aes-256-cbc',keys.enc,iv);
   const cipher=Buffer.concat([encryptor.update(plain),encryptor.final()]);
   return `2.${iv.toString('base64')}|${cipher.toString('base64')}|${hmac(keys.mac,Buffer.concat([iv,cipher])).toString('base64')}`;
 }
-const passwordHash=(passphrase)=>crypto.pbkdf2Sync(keyParts(passphrase).master,passphrase,1,32,'sha256').toString('base64');
+const passwordHash=(passphrase,iterations=600000)=>crypto.pbkdf2Sync(keyParts(passphrase,iterations).master,passphrase,1,32,'sha256').toString('base64');
 const browser=await chromium.launch({headless:true,executablePath:browserPath,args:['--ignore-certificate-errors-spki-list='+pin]});
 const context=await browser.newContext();
 const page=await context.newPage();
@@ -125,12 +130,12 @@ function api(method,route,token,data){
 try{
   const before=fs.existsSync(path.join(work,'cli-before/data.json'))?
     existingClient('before',password):await login('before',password);
-  const matches=JSON.parse(before.bw(['list','items'])).filter(item=>item.name==='Synthetic password-change proof');
+  const matches=JSON.parse(before.bw(['list','items'])).filter(item=>item.name===itemName);
   assert.ok(matches.length<=1,'Ambiguous synthetic test item');
   let created=matches[0];
   if(!created){
     const template=JSON.parse(before.bw(['get','template','item']));
-    template.name='Synthetic password-change proof';template.type=1;
+    template.name=itemName;template.type=1;
     template.login={username:'synthetic-user',password:'synthetic-item-only',uris:[]};
     created=JSON.parse(before.bw(['create','item',before.bw(['encode'],JSON.stringify(template))]));
   }
@@ -143,14 +148,14 @@ try{
   const profile=await api('GET','/api/accounts/profile',token);
   assert.equal(profile.status,200);
   assert.deepEqual(unwrap(profile.body.key,password),userKey);
-  const newPassword=crypto.randomBytes(32).toString('base64url');
-  fs.writeFileSync(path.join(work,'password-reauth-secret.json'),JSON.stringify({newPassword}),{mode:0o600});
-  const updated=await api('POST','/api/accounts/password',token,{
-    masterPasswordHash:passwordHash(password),newMasterPasswordHash:passwordHash(newPassword),
-    key:wrap(userKey,newPassword),salt:email,kdf:0,kdfType:0,kdfIterations:600000,
+  const newPassword=changeKdf?password:crypto.randomBytes(32).toString('base64url');
+  fs.writeFileSync(path.join(work,changeName+'-reauth-secret.json'),JSON.stringify({newPassword,newIterations}),{mode:0o600});
+  const updated=await api('POST',changeKdf?'/api/accounts/kdf':'/api/accounts/password',token,{
+    masterPasswordHash:passwordHash(password),newMasterPasswordHash:passwordHash(newPassword,newIterations),
+    key:wrap(userKey,newPassword,newIterations),salt:email,kdf:0,kdfType:0,kdfIterations:newIterations,
     kdfMemory:null,kdfParallelism:null
   });
-  assert.equal(updated.status,200,'Password management request failed');
+  assert.equal(updated.status,200,'Account management request failed');
   const stale=spawnSync(bwPath,['sync'],{env:oldPeer.env,encoding:'utf8',timeout:90000});
   assert.notEqual(stale.status,0,'Old client session unexpectedly survived password change');
   const after=await login('after',newPassword);
@@ -158,8 +163,10 @@ try{
   assert.equal(read.login.password,'synthetic-item-only');
   fs.writeFileSync(resultPath,JSON.stringify({date:'2026-10-24',result:'passed',runtime:'stock Vere 4.6 / Zuse 408',
     client:'unmodified official Bitwarden CLI 2026.10.0',syntheticVault:true,
-    passwordChangeInitiatedBy:'standards-shaped management API request with client-side key rewrap',
+    changeInitiatedBy:'standards-shaped management API request with client-side key rewrap',
+    change:changeKdf?'PBKDF2 iterations 600000 to 650000':'master password with unchanged KDF',
     oldCliSessionRevoked:true,freshCliSso:true,newPasswordLocalUnlock:true,encryptedItemDecryptedAfterChange:true,
-    limits:['This did not exercise a second official-client password-change UI','KDF settings were unchanged']},null,2)+'\n',{mode:0o600});
-  console.log('PASS synthetic password rewrap revoked the old CLI session; fresh official CLI SSO unlocked and decrypted the retained item');
+    limits:[changeKdf?'This did not exercise the official web-app KDF settings control':'This did not exercise a second official-client password-change UI',
+      changeKdf?'The local vault password did not change':'KDF settings were unchanged']},null,2)+'\n',{mode:0o600});
+  console.log('PASS synthetic '+changeName+' rewrap revoked the old CLI session; fresh official CLI SSO unlocked and decrypted the retained item');
 }finally{await browser.close();}
