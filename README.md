@@ -1,6 +1,10 @@
 # Urbitwarden desk
 
-Urbitwarden is an independent project, not affiliated with or endorsed by Bitwarden. This native Gall desk connects official Bitwarden clients to Connect's reusable local-resource authorization through Enterprise SSO. The backend implements CLI, browser-extension, desktop and mobile client contracts; the exact versions and completed acceptance checks are listed in [client support](docs/client-support.md). Stock Vere 4.6, Gall, Hoon and native Eyre HTTPS serve every production request. Python/Node scripts provide local installation, backup and development/verification tooling; no auth backend, reverse proxy, Bitwarden server library, Vaultwarden code or runtime fork is required.
+Urbitwarden is an independent project, not affiliated with or endorsed by Bitwarden. This native Gall desk connects official Bitwarden clients to Connect's reusable local-resource authorization through Enterprise SSO. The backend implements CLI, browser-extension, desktop and mobile client contracts; the exact versions and completed acceptance checks are listed in [client support](docs/client-support.md). Stock Vere 4.6, Gall, Hoon and Eyre serve application requests; clients require trusted HTTPS, which may terminate in Eyre or an existing trusted ingress. Python/Node scripts provide local installation, backup and development/verification tooling; no external auth backend, Bitwarden server library, Vaultwarden code or runtime fork is required.
+
+Report maintenance issues through [GitHub Issues](https://github.com/davetist/urbit-bitwarden/issues) and sensitive vulnerabilities through [private vulnerability reporting](https://github.com/davetist/urbit-bitwarden/security/advisories/new).
+
+[0.2.0 release notes](docs/release-0.2.0.md) summarize supported client flows, upgrade behavior and verification limits.
 
 Connect owns registration, PKCE authorization codes, ship-owner consent and live grant revocation. The Urbitwarden desk maps the official `cli`/`browser`/`desktop`/`mobile` wire IDs to `urbitwarden-cli`/`urbitwarden-browser`/`urbitwarden-desktop`/`urbitwarden-mobile` registrations and owns the `api offline_access` scope, JWT claims, encrypted vault API and bounded refresh retry. See [the generic contract](https://github.com/davetist/urbit-connect/blob/main/docs/resource-integrations.md).
 

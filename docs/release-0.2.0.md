@@ -1,0 +1,9 @@
+# Urbitwarden 0.2.0
+
+This desk works with the independently maintained Connect desk on stock Vere 4.6 / Zuse 408. Dated client runs include SSO, local unlock and encrypted sync in official Bitwarden CLI 2026.10.0, Chrome extension 2026.10.0, signed macOS desktop 2026.10.0 and an unchanged official iOS 2026.10.0 source build in Simulator. The current candidate's CLI also completed encrypted attachment upload/download and JSON export/import; the desktop completed a native master-password change, new-password unlock and sync. [Client evidence](client-support.md) identifies which source revision each run covered.
+
+An older alpha vault without a per-installation account ID receives one on update. Its old Bitwarden sessions and Connect grants are revoked, so clients must complete fresh owner approval and SSO. The in-place upgrade retained encrypted items and wrapped keys. A portable age-encrypted vault snapshot restored to another ship and decrypted through the official CLI; a virtual browser verified a restored website-passkey signature.
+
+Official-client KDF changes, independent-client reauthentication after a password change, the extension's website-passkey UI, physical iOS/Android devices and Windows/Linux desktop clients are not yet verified. Do not claim those client workflows from API support or Simulator evidence. Immediate push, organizations, shared vaults, Sends, API-key login and password login are outside this release. Authorization tokens and some password-derived management hashes can remain in Urbit history under the [accepted limitation](known-limitations.md).
+
+[Install](install.md) · [Encrypted backup and restore](backup.md) · [Focused security review](../evidence/current-2026-10-24/security-review.md)

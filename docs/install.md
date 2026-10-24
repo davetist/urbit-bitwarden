@@ -1,8 +1,19 @@
 # Install the Urbitwarden desk
 
-The vault backend runs in Gall/Hoon; HTTPS terminates in stock Eyre/Vere. Python is a one-time local operator tool for source import and backup, not a running backend or service. No proxy, external identity service or runtime extension is required. Connect remains generic authorization software; the Urbitwarden desk owns the encrypted vault and Bitwarden protocol.
+The vault backend runs in Gall/Hoon and Eyre handles its HTTP requests. Official clients require trusted HTTPS, supplied either by Eyre or an existing trusted ingress such as Tailscale Serve. Python is a one-time local operator tool for source import and backup, not a running backend or service. No external identity service or runtime extension is required. Connect remains generic authorization software; the Urbitwarden desk owns the encrypted vault and Bitwarden protocol.
 
 Use an existing ship you own and an HTTPS hostname reachable by every intended client. Phones need a network-reachable hostname, not the desktop's `localhost`. The certificate must cover that hostname and be trusted by each client's normal trust store. This helper does not change DNS, firewall rules, listener ports or service supervisors. The checked runtime/kernel baseline is recorded in `toolchain.json`; this installer does not upgrade either one.
+
+## Published stable desks
+
+Install from the announced stable publisher, Connect first. Replace this example ship with the publisher named in the release announcement:
+
+```hoon
+|install ~sampel-palnet %connect
+|install ~sampel-palnet %urbitwarden
+```
+
+Check existing local desks before installing, and use your own ship's trusted HTTPS address for Bitwarden clients. The publisher must be online while another ship downloads or updates a desk; installed vaults run on their own ships. Stable desks are separate from the development moon's alpha desks.
 
 ## Published alpha desks
 
@@ -70,7 +81,9 @@ The session policy uses a six-minute initial CLI SSO access token and 60-second 
 
 ## Native HTTPS and renewal
 
-Prefer the ship's existing valid Eyre certificate and its existing renewal arrangement. Stock Urbit includes `%acme`, which obtains and renews certificates natively. On a suitable networked planet/star, `|dns-config` guides the existing Urbit domain setup. A custom domain can be added to Eyre with the native `%turf` rule; Eyre notifies `%acme` of the requested domains. DNS must already point to the ship, and the CA's HTTP challenge must reach native Eyre on public port 80. These are explicit operator network choices, never actions performed by this installer. Keep those requirements working for renewal. Public certificate issuance still uses the ordinary certificate authority; no external vault or authorization service is introduced. The native implementation is in [Eyre](https://github.com/urbit/urbit/blob/master/pkg/arvo/sys/vane/eyre.hoon) and [ACME](https://github.com/urbit/urbit/blob/master/pkg/arvo/app/acme.hoon).
+If a trusted ingress already provides HTTPS to the ship, use its validated hostname as `--origin` and keep its forwarding path restricted to the intended network. The installer does not configure or require a second TLS listener in Eyre.
+
+For native HTTPS, prefer the ship's existing valid Eyre certificate and its existing renewal arrangement. Stock Urbit includes `%acme`, which obtains and renews certificates natively. On a suitable networked planet/star, `|dns-config` guides the existing Urbit domain setup. A custom domain can be added to Eyre with the native `%turf` rule; Eyre notifies `%acme` of the requested domains. DNS must already point to the ship, and the CA's HTTP challenge must reach native Eyre on public port 80. These are explicit operator network choices, never actions performed by this installer. Keep those requirements working for renewal. Public certificate issuance still uses the ordinary certificate authority; no external vault or authorization service is introduced. The native implementation is in [Eyre](https://github.com/urbit/urbit/blob/master/pkg/arvo/sys/vane/eyre.hoon) and [ACME](https://github.com/urbit/urbit/blob/master/pkg/arvo/app/acme.hoon).
 
 If you already have a PEM certificate chain and matching PEM private key, the installer can pass them directly to Eyre. It checks that the pair loads and requires a private key file with no group/other permissions. It does not display the key, put it in a command argument, or save another copy. This explicit command replaces Eyre's existing certificate, so use it only for the chosen ship and correct hostname:
 
