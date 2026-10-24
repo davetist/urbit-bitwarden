@@ -23,7 +23,7 @@ For ordinary Bitwarden HTTP routes, Vere constructs an event input containing th
 
 ## Account-management request history
 
-Owner decision, 2026-10-17: support official-client password/KDF/key changes, purge and account deletion after disclosure of their request payloads. Some of these requests carry password-derived verification hashes. They can remain in Urbit event history and full-pier backups even though the desk discards them from active account state. These hashes are distinct from authorization tokens and are not covered by the token-only limitation above.
+Owner decision, 2026-10-17: implement official-client password/KDF/key-change, purge and account-deletion payloads after disclosure of their request contents. Changing KDF settings is deferred from the 0.2.0 stable user-facing support scope because this release has no Bitwarden web-vault control. Some of these requests carry password-derived verification hashes. They can remain in Urbit event history and full-pier backups even though the desk discards them from active account state. These hashes are distinct from authorization tokens and are not covered by the token-only limitation above.
 
 Connect remains the sole backend login and authorization authority. The desk neither stores a password verifier in active state nor uses the transmitted hashes to authorize operations. Plaintext vault passwords and unwrapped keys remain client-held. Logical account/item deletion does not erase past events or backup copies. The [account-management notes](personal-vault-api.md#account-encryption-management) describe the supported contracts and client UI boundaries.
 
