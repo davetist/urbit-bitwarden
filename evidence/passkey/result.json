@@ -1,0 +1,31 @@
+{
+  "date": "2026-10-24",
+  "result": "passed",
+  "scope": "synthetic vault on an owned local stock Vere 4.6 / Zuse 408 test ship",
+  "server": "Connect and Urbitwarden 0.2.0 release-desk sources",
+  "client": {
+    "name": "Official Bitwarden Chrome extension",
+    "version": "2026.10.0",
+    "artifact": "unmodified official release ZIP loaded unpacked in isolated Chromium",
+    "sha256": "77e3b7a348d01d4dc3b6af0087fd9cacae9364a063a1fee5ba6db6dfc7b138cb"
+  },
+  "relyingParty": "controlled secure localhost page in tests/fixtures/passkey-rp/index.html",
+  "observed": [
+    "Extension completed Connect SSO and local vault unlock",
+    "The controlled website requested a discoverable P-256 passkey through WebAuthn create",
+    "The official extension offered Save passkey as new login and the created login appeared in its vault",
+    "The website requested WebAuthn get and the extension offered the saved passkey",
+    "The returned credential ID matched the created credential and the assertion contained a nonempty signature",
+    "After stopping and restarting the ship and isolated Chromium profile, the extension showed the retained login and used the same credential in a new assertion",
+    "The owner vault bootstrap endpoint reported one retained encrypted item after restart"
+  ],
+  "screenshots": [
+    "passkey-vault-item.png",
+    "passkey-used.png",
+    "passkey-after-restart.png"
+  ],
+  "limits": [
+    "The page checked WebAuthn origin, type, matching credential ID and nonempty assertion signature; it did not independently verify this run's signature against a registered public key",
+    "This did not exercise a physical authenticator, a fresh browser profile, or a separate client redownload"
+  ]
+}

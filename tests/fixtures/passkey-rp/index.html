@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<title>Passkey acceptance site</title>
+<h1>Passkey acceptance site</h1>
+<p id="secure"></p>
+<button id="create">Create passkey</button>
+<button id="use">Use passkey</button>
+<p id="status" role="status">Ready</p>
+<script>
+const status = document.querySelector('#status');
+document.querySelector('#secure').textContent = `Secure context: ${window.isSecureContext}`;
+let createdId = new URL(location.href).searchParams.get('id') || undefined;
+document.querySelector('#create').addEventListener('click', async () => {
+  status.textContent = 'Creating passkey…';
+  try {
+    const result = await navigator.credentials.create({publicKey: {
+      challenge: crypto.getRandomValues(new Uint8Array(32)),
+      rp: {id: 'localhost', name: 'Passkey acceptance site'},
+      user: {id: new TextEncoder().encode('synthetic-user'), name: 'synthetic-user', displayName: 'Synthetic user'},
+      pubKeyCredParams: [{type: 'public-key', alg: -7}],
+      authenticatorSelection: {residentKey: 'required', userVerification: 'preferred'},
+      attestation: 'none'
+    }});
+    createdId = result.id;
+    status.textContent = `Created passkey: ${result.id}`;
+  } catch (error) {
+    status.textContent = `Create failed: ${error.name}: ${error.message}`;
+  }
+});
+document.querySelector('#use').addEventListener('click', async () => {
+  status.textContent = 'Using passkey…';
+  try {
+    const challenge = crypto.getRandomValues(new Uint8Array(32));
+    const result = await navigator.credentials.get({publicKey: {
+      challenge,
+      rpId: 'localhost',
+      allowCredentials: [],
+      userVerification: 'preferred'
+    }});
+    if (createdId && result.id !== createdId) throw new Error('Returned credential ID does not match the created passkey');
+    const clientData = JSON.parse(new TextDecoder().decode(result.response.clientDataJSON));
+    if (clientData.type !== 'webauthn.get' || clientData.origin !== location.origin) throw new Error('Unexpected WebAuthn assertion context');
+    if (result.response.signature.byteLength === 0) throw new Error('Empty assertion signature');
+    status.textContent = `Used passkey: ${result.id}; signature bytes: ${result.response.signature.byteLength}`;
+  } catch (error) {
+    status.textContent = `Use failed: ${error.name}: ${error.message}`;
+  }
+});
+</script>
+</html>

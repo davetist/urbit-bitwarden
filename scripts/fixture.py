@@ -16,14 +16,18 @@ elif NAME == 'review-fixes':
     WORK = ROOT / '.work/urbitwarden-review-fixes'
     HTTP_PORT, HTTPS_PORT, AMES_PORT = 19780, 19781, 19782
     FIXTURE_ID = 'native-urbitwarden-review-fixes-v1'
+elif NAME == 'passkey':
+    WORK = ROOT / '.work/urbitwarden-passkey'
+    HTTP_PORT, HTTPS_PORT, AMES_PORT = 19880, 19881, 19882
+    FIXTURE_ID = 'native-urbitwarden-passkey-v1'
 else:
-    raise ValueError('Unknown CONNECT_BW_FIXTURE; use sso or review-fixes')
+    raise ValueError('Unknown CONNECT_BW_FIXTURE; use sso, review-fixes or passkey')
 ORIGIN = f'https://localhost:{HTTPS_PORT}'
 BASE_PATH = '/apps/urbitwarden'
 SERVER_URL = ORIGIN + BASE_PATH
 EXPECTED = {'project': str(ROOT), 'fixture': FIXTURE_ID}
 EVIDENCE = ROOT / 'evidence'
-if NAME == 'review-fixes': EVIDENCE = EVIDENCE / 'review-fixes'
+if NAME != 'sso': EVIDENCE = EVIDENCE / NAME
 
 
 def owned(work=WORK, create=False):

@@ -14,7 +14,7 @@ SCRIPTS = Path(__file__).resolve().parent
 
 class FixtureTests(unittest.TestCase):
     def test_selection_routes_all_shared_paths(self):
-        for name, directory, port in [('sso', 'urbitwarden-sso', 19681), ('review-fixes', 'urbitwarden-review-fixes', 19781)]:
+        for name, directory, port in [('sso', 'urbitwarden-sso', 19681), ('review-fixes', 'urbitwarden-review-fixes', 19781), ('passkey', 'urbitwarden-passkey', 19881)]:
             with self.subTest(fixture=name):
                 result = subprocess.run([sys.executable, '-c',
                     'from fixture import WORK,ORIGIN,EVIDENCE; import json; print(json.dumps([str(WORK),ORIGIN,str(EVIDENCE)]))'],
@@ -23,7 +23,7 @@ class FixtureTests(unittest.TestCase):
                 work, origin, evidence = json.loads(result.stdout)
                 self.assertEqual(Path(work), ROOT / '.work' / directory)
                 self.assertEqual(origin, f'https://localhost:{port}')
-                self.assertEqual(Path(evidence), ROOT / 'evidence' / ('review-fixes' if name == 'review-fixes' else ''))
+                self.assertEqual(Path(evidence), ROOT / 'evidence' / (name if name != 'sso' else ''))
 
     def test_unknown_selection_fails_before_work(self):
         result = subprocess.run([sys.executable, '-c', 'import fixture'], cwd=SCRIPTS,
