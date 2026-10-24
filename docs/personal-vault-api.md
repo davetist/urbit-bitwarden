@@ -2,7 +2,7 @@
 
 This implementation extends the Urbitwarden desk. Connect remains the only backend authorization authority. The separate Connect desk needs no protocol change. No shared vaults, Sends, breach-database service, extra login mechanism or full browser vault is added.
 
-State migrates `%0` and `%1` into `%2` by preserving their existing account, signing key, sessions, ciphers, folders, IDs, revisions, retry cache and CSRF data, then adding empty attachment storage and trash scheduling. The existing security migration still revokes `%0` sessions/cache/CSRF; `%1` sessions remain valid. Temporary download tickets are cleared on reload.
+State migrates `%0` and `%1` into `%2` by preserving their existing account, signing key, ciphers, folders, IDs and revisions, then adding empty attachment storage and trash scheduling. The security migration revokes `%0` sessions/cache/CSRF. A later account-ID migration also revokes sessions and Connect grants when an older account lacks an ID; those clients must sign in again. Temporary download tickets are cleared on reload.
 
 ## Content and folders
 
@@ -50,4 +50,4 @@ Desktop 2026.10.0 gates its native password-change dialog on the `pm-32413-multi
 
 ## Verification boundary
 
-Source-contract review uses Vaultwarden `58a980f850464f7d9cdc99a765df36f0a3308b91`, official desktop/extension release sources and iOS `6b5abc1e7d96f49f50a74ffac6ad93061475bc3e`. The complete production Gall agent and its real imports compile against the declared Zuse 408 using stock Vere 4.6; the standalone attachment and key-normalization helpers also compiled. Source review, syntax checks, static asset inspection and deterministic source packaging are recorded in the [build evidence](../evidence/personal-vault-2026-10-17/README.md). No synthetic, unit, integration, fixture or soak tests have run. No deployment or current official-client workflow is claimed by this document.
+The original source-contract review used Vaultwarden `58a980f850464f7d9cdc99a765df36f0a3308b91`, official desktop/extension release sources and iOS `6b5abc1e7d96f49f50a74ffac6ad93061475bc3e`. The complete production Gall agent and its real imports compiled against the declared Zuse 408 using stock Vere 4.6; the standalone attachment and key-normalization helpers also compiled. That dated [build evidence](../evidence/personal-vault-2026-10-17/README.md) did not include client runtime tests. Later [client checks](client-support.md#release-candidate-checks--2026-10-24) report the workflows actually exercised against subsequent sources.

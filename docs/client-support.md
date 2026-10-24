@@ -8,6 +8,12 @@ The [current development policy](readiness-policy.md) supersedes old qualificati
 
 The Urbitwarden desk is an Urbit-native personal-vault backend. Connect owns generic authorization; the Urbitwarden desk owns encrypted vault storage and Bitwarden protocol behavior. Stock Vere/Gall/Eyre serve the backend. Official distribution clients are unmodified; the iOS Simulator build uses unchanged official release source.
 
+## Release-candidate checks — 2026-10-24
+
+Official CLI 2026.10.0 uploaded an encrypted attachment, downloaded and decrypted it, exported selected items as JSON, and reimported them on the development moon. [Client result](../evidence/current-2026-10-24/cli-extended-workflows.json). A separate disposable-ship run installed the published-alpha source, then updated the running desk in place: the encrypted item kept its ID and decrypted after a fresh Connect approval and CLI SSO. The account-ID migration intentionally revoked the old session and grant, so an alpha user must sign in again. [Upgrade result](../evidence/current-2026-10-24/upgrade-candidate.json).
+
+An encrypted portable vault snapshot restored to a different disposable ship; fresh CLI SSO/unlock decrypted the password, and a browser WebAuthn challenge verified against the recovered passkey's original public key. This used a virtual authenticator and CLI import, not the official extension's passkey UI. [Recovery result](../evidence/current-2026-10-24/recovery-candidate.json). A focused [desk security review](../evidence/current-2026-10-24/security-review.md) covered the candidate source without a live attack replay. Desktop password change, new-password unlock, item decryption and sync were observed as described above. Official-client KDF change, independent-client reauthentication after the password change, and official-extension website passkey create/use remain unverified; do not claim those client flows from API/source coverage alone.
+
 ## Current client check — 2026-10-21
 
 Connect and Urbitwarden were installed together on an owned, networked development moon with trusted HTTPS served by stock Eyre. Fresh owner enrollment and the following actual client workflows passed. [Source and observation record](../evidence/current-2026-10-21/client-workflows.json).
@@ -21,7 +27,7 @@ Connect and Urbitwarden were installed together on an owned, networked developme
 
 Desktop consent was completed in isolated Chromium; its default-browser owner-login path was not qualified. The extension used the official release ZIP, loaded unpacked without changes. The iOS result is an official-source Simulator build, not App Store or physical-device acceptance. Android and Windows/Linux desktop were not exercised. This run did not recheck website autofill, passkeys, attachments or import/export; earlier observations below remain dated evidence for their own source versions.
 
-A full stopped-pier backup passed Harbor's archive verification. The moon restarted and existing clients decrypted the retained item. This checks persistence across restart; it is not an application-account restore or real-ship recovery rehearsal. Immediate push remains unsupported; use **Sync now** for immediate cross-client refresh. Start with the short [tester guide](tester-guide.md).
+The moon restarted and existing clients decrypted the retained item. This checks persistence across restart; the later portable vault recovery is documented above. Immediate push remains unsupported; use **Sync now** for immediate cross-client refresh. Start with the short [tester guide](tester-guide.md).
 
 ## Historical versions and evidence boundary
 

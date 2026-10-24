@@ -64,7 +64,8 @@ def setup(name):
     (folder/'process.json').write_text(json.dumps(process_identity(child.pid)))
     print(name+': fresh native ship ready',flush=True)
     connect=Path(os.environ.get('URBIT_CONNECT_ROOT',str(ROOT.parent/'urbit-connect')))
-    for desk,src in [('connect',connect/'desk'),('urbitwarden',ROOT/'desk')]:
+    vault_source=Path(os.environ.get('URBITWARDEN_RECOVERY_DESK_ROOT',str(ROOT/'desk'))).resolve()
+    for desk,src in [('connect',connect/'desk'),('urbitwarden',vault_source)]:
         entries={p.relative_to(src).as_posix():p.read_bytes() for p in sorted(src.rglob('*')) if p.is_file()}
         for expr in deploy.import_expressions(ship,desk,entries): control.run(expr)
         print(name+': installed '+desk,flush=True)

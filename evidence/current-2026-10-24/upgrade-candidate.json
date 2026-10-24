@@ -1,0 +1,17 @@
+{
+  "date": "2026-10-24",
+  "scope": "Owned disposable local Vere 4.6 ship, published-alpha source installed before in-place candidate upgrade",
+  "sourceCommits": {
+    "alphaUrbitwarden": "5f606af",
+    "candidateUrbitwarden": "c1ad82f7dbd7e8c9a860d292394b0f9ac3b37380",
+    "connect": "ed5dc200283d413dcef12c5d1b397da8eceb2ab1"
+  },
+  "client": "Unmodified official Bitwarden CLI 2026.10.0",
+  "observations": {
+    "sameRunningPier": true,
+    "encryptedItemIdAndPasswordPreserved": true,
+    "oldSessionRevokedByAccountIdMigration": true,
+    "freshConnectAuthorizationAndClientSync": true
+  },
+  "boundary": "The source alpha used a fixed account ID. The candidate intentionally revokes its old local session and Connect grant during migration; the user must approve a new SSO login. Vault contents and item identity were preserved. This is not a proof that the old grant remains valid or that every official client upgrades without sign-in."
+}

@@ -1,0 +1,23 @@
+{
+  "date": "2026-10-24",
+  "scope": "Two owned disposable local Vere 4.6 ships using current working desks",
+  "sourceCommits": {
+    "connect": "aee86c0bf8ee02e2d6d5975f0ef69cdaa44ff790",
+    "urbitwarden": "c1ad82f7dbd7e8c9a860d292394b0f9ac3b37380"
+  },
+  "client": "Unmodified official Bitwarden CLI 2026.10.0",
+  "observations": {
+    "sourceFreshSsoUnlockAndSync": true,
+    "sourcePasswordAndPasskeyStored": true,
+    "encryptedVaultSnapshotVerifiedAndRestoredToDifferentShip": true,
+    "destinationFreshConnectAuthorization": true,
+    "destinationFreshSsoUnlockAndSync": true,
+    "recoveredPasswordMatchesSource": true,
+    "originalVirtualAuthenticatorRemovedBeforeRecovery": true,
+    "recoveredPasskeySignsFreshBrowserChallenge": true,
+    "challengeOriginRpIdUserVerificationAndSignatureChecked": true,
+    "wrongChallengeRejected": true,
+    "restoreIntoNonemptyDestinationRejected": true
+  },
+  "boundary": "The browser used a virtual WebAuthn authenticator and the passkey record was imported through the official CLI. This verifies encrypted vault-data recovery and cryptographic use of the restored key; it does not demonstrate official extension passkey UI, physical-device behavior, an existing-installation upgrade, or recovery of a running ship's pier. No personal vault was used."
+}
