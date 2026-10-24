@@ -19,6 +19,10 @@ class DeploymentTests(unittest.TestCase):
                  'dependencies/urbit-connect/desk/desk.bill': b'~[%connect]',
                  'desk/app/urbitwarden.hoon': b'vault source',
                  'desk/desk.bill': b'~[%urbitwarden]'}
+        for prefix in ('dependencies/urbit-connect/desk/', 'desk/'):
+            for mark in ('noun', 'hoon', 'txt', 'kelvin'):
+                files[prefix + 'mar/' + mark + '.hoon'] = b'fixture mark source'
+            files[prefix + 'sys.kelvin'] = b'[%zuse 408]'
         for name, value in files.items():
             path = root / name; path.parent.mkdir(parents=True, exist_ok=True); path.write_bytes(value)
         (root / 'INTEGRATION-MANIFEST.json').write_text(json.dumps({
@@ -152,6 +156,41 @@ class DeploymentTests(unittest.TestCase):
             self.assertTrue(any('%kiln-install' in text and '%connect' in text for text in expressions))
             self.assertTrue(any('%kiln-install' in text and '%urbitwarden' in text for text in expressions))
             self.assertTrue(all('~zod' not in text for text in expressions))
+
+    def test_empty_historical_names_require_explicit_reuse_and_reseed(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory).resolve(); self.source(root)
+            release = deploy.load_source(root)
+            control = Mock()
+            control.inspect.return_value = {'ship': '~sampel-palnet', 'desks': ['connect'],
+                                            'legacyDesk': True, 'routes': []}
+            control.inert_desk.side_effect = lambda _, desk: desk in {'connect', 'bitwarden'}
+            with self.assertRaisesRegex(ValueError, 'Existing %bitwarden vault'):
+                deploy.deploy(control, release, '~sampel-palnet', 'https://ship.example')
+            control.run.assert_not_called()
+            result = deploy.deploy(control, release, '~sampel-palnet', 'https://ship.example',
+                                   reuse_empty_history=True)
+            self.assertEqual(result['inertHistoricalDesks'], ['bitwarden', 'connect'])
+            control.run.assert_not_called()
+            deploy.deploy(control, release, '~sampel-palnet', 'https://ship.example',
+                          apply=True, reuse_empty_history=True)
+            expressions = [call.args[0] for call in control.run.call_args_list]
+            self.assertTrue(any('new-desk:cloy %connect' in text and
+                                '~(has in .^((set desk)' not in text for text in expressions))
+            control.inert_desk.side_effect = lambda _, desk: desk == 'connect'
+            with self.assertRaisesRegex(ValueError, 'Existing %bitwarden vault'):
+                deploy.deploy(control, release, '~sampel-palnet', 'https://ship.example',
+                              reuse_empty_history=True)
+
+    def test_inert_desk_requires_files_stopped_status_and_missing_gall_state(self):
+        control = deploy.Control.__new__(deploy.Control)
+        control.run = Mock(side_effect=[0, 0, RuntimeError('missing target'), 0])
+        self.assertTrue(control.inert_desk('~sampel-palnet', 'bitwarden'))
+        self.assertEqual(control.run.call_count, 4)
+        control.run = Mock(side_effect=[1, 0])
+        self.assertFalse(control.inert_desk('~sampel-palnet', 'bitwarden'))
+        control.run = Mock(side_effect=[0, 0, 0])
+        self.assertFalse(control.inert_desk('~sampel-palnet', 'bitwarden'))
 
     def test_control_decode_returns_only_success_payload(self):
         encoded = jam(cell(0, 'avow', 0, 'noun', 42))

@@ -2,7 +2,7 @@
 
 The vault backend runs in Gall/Hoon; HTTPS terminates in stock Eyre/Vere. Python is a one-time local operator tool for source import and backup, not a running backend or service. No proxy, external identity service or runtime extension is required. Connect remains generic authorization software; the Urbitwarden desk owns the encrypted vault and Bitwarden protocol.
 
-Use an existing ship you own, a backed-up pier, and an HTTPS hostname reachable by every intended client. Phones need a network-reachable hostname, not the desktop's `localhost`. The certificate must cover that hostname and be trusted by each client's normal trust store. This helper does not change DNS, firewall rules, listener ports or service supervisors. The checked runtime/kernel baseline is recorded in `toolchain.json`; this installer does not upgrade either one.
+Use an existing ship you own and an HTTPS hostname reachable by every intended client. Phones need a network-reachable hostname, not the desktop's `localhost`. The certificate must cover that hostname and be trusted by each client's normal trust store. This helper does not change DNS, firewall rules, listener ports or service supervisors. The checked runtime/kernel baseline is recorded in `toolchain.json`; this installer does not upgrade either one.
 
 ## Published alpha desks
 
@@ -57,6 +57,8 @@ After reviewing that selection, repeat the same command with `--apply`. Connect 
 
 If either selected desk already exists, inspect it first and explicitly add `--update-existing`. That authorizes replacement of packaged files in those **two named desks only**. Preserve any local modifications separately before choosing it. Import is phased because Hoon marks must be available before non-Hoon desk metadata; it is not a transaction spanning both desks. A failed command can leave an incomplete import. Fix the reported source or native error and rerun the same verified release; do not reset a pier or delete application state as a retry technique.
 
+An old, removed desk can remain in Clay's desk-name set after all its app files and Gall state are gone. In that narrow case, `--reuse-empty-history` permits re-seeding the selected name without deleting its history. The helper requires zero current files or only `/sys/kelvin`, a stopped desk, and no Gall state; an existing vault or running app still blocks installation. Review the dry-run's `inertHistoricalDesks` before repeating with `--apply`. This flag is not a migration tool for a live `%bitwarden` vault.
+
 The command reports successful control requests, not a substitute for an end-user acceptance check. After installation:
 
 1. Open the displayed Urbitwarden URL with normal HTTPS validation, log in to the ship if requested, and complete the owner setup/enrollment there.
@@ -64,7 +66,7 @@ The command reports successful control requests, not a substitute for an end-use
 3. Configure an official client with the displayed server URL, choose single sign-on and follow the page's organization instructions.
 4. Unlock locally, create one synthetic login, sync it to a second official client, then delete/restore it. Confirm the original ship home page still opens.
 
-The session policy uses a six-minute initial CLI SSO access token and 60-second access tokens for subsequent newly minted CLI tokens and all other clients. The 30-day absolute grant lifetime and five-second retry grace remain unchanged. Application reloads may require an in-flight request to retry. The first upgrade from the vulnerable Bitwarden token format revokes existing Bitwarden sessions and requires a new SSO sign-in; encrypted account keys, ciphers and folders are preserved. Later reloads preserve current sessions and the five-second retry grace.
+The session policy uses a six-minute initial CLI SSO access token and 60-second access tokens for subsequent newly minted CLI tokens and all other clients. The 30-day absolute grant lifetime and five-second retry grace remain unchanged. Application reloads may require an in-flight request to retry. Upgrading an older vault without a per-installation account ID revokes its old Bitwarden/Connect sessions and requires fresh SSO; wrapped account keys, ciphers, folders and attachments are preserved. Later reloads preserve current sessions and the five-second retry grace.
 
 ## Native HTTPS and renewal
 

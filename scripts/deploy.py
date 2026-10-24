@@ -249,6 +249,35 @@ class Control:
                 'desks': [name for name, found in [('connect', has_connect), ('urbitwarden', has_urbitwarden)] if found == 0],
                 'routes': routes}
 
+    def inert_desk(self, ship, desk):
+        """Accept only a stopped Clay name with no app files or Gall state.
+
+        A removed desk may still appear in Clay's desk set. Its sole remaining
+        file may be the mandatory Kelvin marker. Never classify an installed or
+        suspended vault with application files as an empty historical name.
+        """
+        validate_ship(ship)
+        if desk not in (*DESKS, 'bitwarden'):
+            raise ValueError('Unexpected selected desk')
+        prefix = '=/  m  (strand ,vase)  ;<  now=@da  bind:m  get-time  '
+        files = self.run(prefix + f'=/  f  .^((list path) %ct /{ship}/{desk}/(scot %da now))  '
+                         '(pure:m !>((levy f |=(p=path =(p /sys/kelvin)))))') == 0
+        stopped = self.run(prefix + f'=/  t  (~(got by .^(rock:tire:clay %cx /{ship}//(scot %da now)/tire)) %{desk})  '
+                           '(pure:m !>(=(%dead zest.t)))') == 0
+        if not (files and stopped):
+            return False
+        # A missing Gall state scry is expected for a removed agent. Any live
+        # state, even on a stopped desk, rules out re-seeding this name.
+        try:
+            self.run(prefix + f'=/  egg  .^(egg-any:gall %gv /{ship}/{desk}/(scot %da now)/(scot %tas %$))  '
+                     '(pure:m !>(~))')
+        except RuntimeError:
+            # Distinguish a missing target from a broken Gall scry/control path.
+            self.run(prefix + f'=/  egg  .^(egg-any:gall %gv /{ship}/hood/(scot %da now)/(scot %tas %$))  '
+                     '(pure:m !>(~))')
+            return True
+        return False
+
 
 def check_routes(routes, origin):
     host = urllib.parse.urlsplit(origin).hostname
@@ -267,7 +296,7 @@ def check_target(status, ship, origin, update_existing):
         raise ValueError('Existing selected desk(s); review and pass --update-existing: ' + ', '.join(status['desks']))
 
 
-def import_expressions(ship, desk, entries, *, target=None, install=True):
+def import_expressions(ship, desk, entries, *, target=None, install=True, reseed=False):
     validate_ship(ship)
     if desk not in DESKS: raise ValueError('Unexpected selected desk')
     target = desk if target is None else target
@@ -289,8 +318,9 @@ def import_expressions(ship, desk, entries, *, target=None, install=True):
             value = f'(cord-to-waft:clay `@t`{value})'
         seed_rows.append(f'[/{name.replace(".", "/")} %{mark} {value}]')
     seed = ' '.join(seed_rows)
+    guard = '' if reseed else f'?:  (~(has in .^((set desk) %cd /{ship}//(scot %da now))) %{desk})  (pure:m !>(~))  '
     yield (f'=/  m  (strand ,vase)  ;<  now=@da  bind:m  get-time  '
-           f'?:  (~(has in .^((set desk) %cd /{ship}//(scot %da now))) %{desk})  (pure:m !>(~))  '
+           + guard +
            f'=/  seed=(map path page:clay)  (~(gas by *(map path page:clay)) ~[{seed}])  '
            f';<  ~  bind:m  (send-raw-card [%pass /create %arvo (new-desk:cloy %{desk} ~ seed)])  '
            ';<  ~  bind:m  (sleep ~s1)  (pure:m !>(~))')
@@ -314,18 +344,20 @@ def import_expressions(ship, desk, entries, *, target=None, install=True):
                ';<  ~  bind:m  (sleep ~s1)  (pure:m !>(~))')
 
 
-def deploy(control, release, ship, origin, apply=False, update_existing=False):
+def deploy(control, release, ship, origin, apply=False, update_existing=False, reuse_empty_history=False):
     ship = validate_ship(ship); origin = validate_origin(origin)
     status = control.inspect(ship)
-    if status.get('legacyDesk') and 'urbitwarden' not in status['desks']:
+    selected = status['desks'] + (['bitwarden'] if status.get('legacyDesk') else [])
+    inert = {name for name in selected if reuse_empty_history and control.inert_desk(ship, name)}
+    if status.get('legacyDesk') and 'urbitwarden' not in status['desks'] and 'bitwarden' not in inert:
         raise ValueError('Existing %bitwarden vault: use scripts/migrate_urbitwarden.py to preserve its state and Connect grants')
-    check_target(status, ship, origin, update_existing)
+    check_target(status | {'desks': [name for name in status['desks'] if name not in inert]}, ship, origin, update_existing)
     result = {'ship': ship, 'origin': origin, 'urbitwardenURL': origin + '/apps/urbitwarden',
               'manifestSHA256': release['manifestSHA256'], 'desks': list(DESKS),
-              'existingDesks': status['desks'], 'applied': apply}
+              'existingDesks': status['desks'], 'inertHistoricalDesks': sorted(inert), 'applied': apply}
     if apply:
         for desk in DESKS:
-            for expression in import_expressions(ship, desk, release['desks'][desk]): control.run(expression)
+            for expression in import_expressions(ship, desk, release['desks'][desk], reseed=desk in inert): control.run(expression)
     return result
 
 
@@ -355,6 +387,7 @@ def main():
     parser.add_argument('--tls-only', action='store_true', help='Inspect or replace only the chosen Eyre certificate; do not import desks')
     parser.add_argument('--apply', action='store_true')
     parser.add_argument('--update-existing', action='store_true', help='Authorize updating the selected Connect and Urbitwarden desks')
+    parser.add_argument('--reuse-empty-history', action='store_true', help='Re-seed only stopped historical desk names with no application files or Gall state')
     parser.add_argument('--cert', type=Path); parser.add_argument('--key', type=Path)
     parser.add_argument('--apply-tls', action='store_true', help='Explicitly replace Eyre TLS with the supplied certificate/key')
     args = parser.parse_args()
@@ -374,7 +407,7 @@ def main():
             if status['ship'] != args.ship: raise ValueError('Selected ship identity does not match the live pier')
             result = {'ship': args.ship, 'origin': validate_origin(args.origin), 'desks': [], 'applied': args.apply}
         else:
-            result = deploy(control, release, args.ship, args.origin, args.apply, args.update_existing)
+            result = deploy(control, release, args.ship, args.origin, args.apply, args.update_existing, args.reuse_empty_history)
         if args.apply_tls: control.run(tls)
         result['tlsReplaced'] = args.apply_tls
         print(json.dumps(result, indent=2))
