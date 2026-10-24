@@ -27,6 +27,12 @@ Owner decision, 2026-10-17: implement official-client password/KDF/key-change, p
 
 Connect remains the sole backend login and authorization authority. The desk neither stores a password verifier in active state nor uses the transmitted hashes to authorize operations. Plaintext vault passwords and unwrapped keys remain client-held. Logical account/item deletion does not erase past events or backup copies. The [account-management notes](personal-vault-api.md#account-encryption-management) describe the supported contracts and client UI boundaries.
 
+## Older encrypted key wrappers
+
+A normal master-password change rewraps the account encryption key; it does not rotate that key or re-encrypt existing vault items. An earlier wrapped-key copy can therefore unlock current ciphertext when combined with the earlier password and access to the encrypted vault data. This was demonstrated on an owned development test vault using a retained pre-change checkpoint; its account ID and encrypted item stayed unchanged. The [post-recovery client check](../evidence/current-2026-10-24/post-recovery-clients.json) establishes fresh-client access with the restored previous password, not access with the post-change password.
+
+Urbit history, snapshots and separate backups can retain older wrappers after active state changes. A password change alone cannot erase those copies or protect data already captured in old snapshots. This risk requires both an older wrapper and its password; retained bearer tokens alone still cannot decrypt the vault. [Bitwarden distinguishes password changes from encryption-key rotation](https://bitwarden.com/help/account-encryption-key/). Version 0.2.0 has no supported user-facing key-rotation control, so do not present a password change as recovery from compromise of the previous password and historical encrypted vault data.
+
 ## Existing native history-retention tools
 
 Stock Vere already provides `roll` to start a new event-log epoch and `chop` to remove epochs older than the newest two. These are existing runtime maintenance tools, require a stopped ship, and do not change application session lifetimes. They offer a practical way to reduce accumulated historical copies without a runtime patch or another service. See the [official roll and chop documentation](https://docs.urbit.org/user-manual/running/vere#chop).

@@ -1,0 +1,17 @@
+{
+  "date": "2026-10-24",
+  "environment": "Owned networked development moon and disposable test vault",
+  "source": "The development Connect and Urbitwarden app files and vault-key library matched the checked-out 0.2.0 release sources inspected on this date",
+  "observations": {
+    "recovery": "An older retained encrypted key wrapper replaced only the newer wrapper. The account ID and one encrypted item were preserved.",
+    "signedMacDesktop2026_10_1": "Fresh Connect SSO and local unlock displayed the retained item with its expected fields.",
+    "officialCli2026_10_0": "A separate fresh profile completed Connect SSO, local unlock, sync and decryption of the retained item and expected fields.",
+    "chromium": "The ship page loaded and its refreshed vault summary reported one item.",
+    "cleanup": "The disposable recovery ship was stopped and its temporary pier, vault copy and access-code file were removed."
+  },
+  "limits": [
+    "The previous password was restored before these fresh-client checks. They do not establish independent-client reauthentication with the post-change password after the native desktop password change.",
+    "The desktop item was displayed after unlock; this check does not claim a confirmed desktop Sync now completion signal.",
+    "The ship page reports unencrypted item-count metadata and does not decrypt vault contents."
+  ]
+}
