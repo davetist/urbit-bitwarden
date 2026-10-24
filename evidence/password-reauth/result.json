@@ -1,0 +1,24 @@
+{
+  "date": "2026-10-24",
+  "result": "passed",
+  "scope": "synthetic vault on an owned local stock Vere 4.6 / Zuse 408 test ship",
+  "server": "Connect and Urbitwarden 0.2.0 release-desk sources",
+  "client": {
+    "name": "Official Bitwarden CLI",
+    "version": "2026.10.0",
+    "artifact": "unmodified official macOS arm64 release ZIP",
+    "sha256": "062c880508678b8d936ab2522a3a1e92d60f52b5c534e71406e9b47329e95207"
+  },
+  "observed": [
+    "The first CLI profile completed Connect SSO, local unlock, encrypted item creation and decryption",
+    "A separate second CLI profile completed Connect SSO, local unlock and decryption of the same item",
+    "A signed-in account-management API request rewrapped the synthetic user key for a new synthetic password; the unchanged user key decrypted before the request",
+    "The second CLI profile's next sync failed and the client reported unauthenticated",
+    "A fresh third CLI profile completed Connect SSO, unlocked with the new password, synced and decrypted the retained item"
+  ],
+  "limits": [
+    "The password-management request was constructed directly against the API; this run did not exercise another official-client password-change control",
+    "The owner's development-vault desktop password change was not independently reauthenticated in this run",
+    "KDF settings were unchanged"
+  ]
+}
